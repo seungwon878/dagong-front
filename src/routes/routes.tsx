@@ -2,6 +2,13 @@ import { createBrowserRouter } from 'react-router-dom';
 import LandingPage from '../pages/LandingPage';
 import UploadPage from '../pages/UploadPage';
 import MapPage from '../pages/MapPage';
+import RegisterPage from '../RegisterPage';
+import ChatPage from '../pages/ChatPage';
+import ChattingPage from '../pages/ChattingPage';
+import MyPage from '../pages/MyPage';
+import EditPage from '../pages/EditPage';
+import MyProPage from '../pages/MyProPage';
+import RegisterPageContainer from '../RegisterPage/RegisterPageContainer';
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +22,37 @@ export const router = createBrowserRouter([
   {
     path: '/map',
     element: <MapPage />,
+  },
+  {
+    path: '/register/:id',
+    element: <RegisterPage />,
+  },
+  {
+    path: '/chat',
+    element: <ChatPage />,
+  },
+  {
+    path: '/chat/:id',
+    element: <ChattingPage />,
+  },
+  {
+    path: '/mypage',
+    element: <MyPage />,
+  },
+  {
+    path: '/mypage/edit',
+    element: <EditPage />,
+  },
+  {
+    path: '/mypage/myproducts',
+    element: <MyProPage />,
+  },
+  {
+    path: '/mypro/:id',
+    element: <RegisterPageContainer bottomButtons={[
+      { text: '수정하기', onClick: () => alert('수정하기') },
+      { text: '공구 내리기', onClick: () => alert('공구 내리기') },
+    ]} />,
   },
   // 여기에 추가 라우트를 설정하세요
 ]); 
