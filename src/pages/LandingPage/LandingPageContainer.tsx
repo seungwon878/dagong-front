@@ -6,7 +6,23 @@ const LandingPageContainer = () => {
   const handleGoToUpload = () => {
     navigate('/upload');
   };
-  return <LandingPagePresentation onGoToUpload={handleGoToUpload} />;
+  const handleLocationClick = () => {
+    navigate('/map');
+  };
+  const handleSearchClick = () => {
+    alert('검색 기능은 추후 구현됩니다!');
+  };
+  const handleProductClick = (id: number) => {
+    navigate(`/register/${id}`);
+  };
+  return (
+    <LandingPagePresentation
+      onGoToUpload={handleGoToUpload}
+      onLocationClick={handleLocationClick}
+      onSearchClick={handleSearchClick}
+      onProductClick={handleProductClick}
+    />
+  );
 };
 
 export default LandingPageContainer; 
