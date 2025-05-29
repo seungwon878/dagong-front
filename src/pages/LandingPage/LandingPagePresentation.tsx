@@ -5,6 +5,10 @@ interface LandingPagePresentationProps {
   onLocationClick: () => void;
   onSearchClick: () => void;
   onProductClick: (id: number) => void;
+  onHome: () => void;
+  onGroup: () => void;
+  onChat: () => void;
+  onMyPage: () => void;
 }
 
 // 예시 mock 상품 데이터 (카테고리별 5~6개씩)
@@ -40,7 +44,7 @@ const categories = [
   { icon: '🧪', label: 'test' },
 ];
 
-const LandingPagePresentation = ({ onGoToUpload, onLocationClick, onSearchClick, onProductClick }: LandingPagePresentationProps) => {
+const LandingPagePresentation = ({ onGoToUpload, onLocationClick, onSearchClick, onProductClick, onHome, onGroup, onChat, onMyPage }: LandingPagePresentationProps) => {
   // 카테고리별 상품 분류
   const getProductsByCategory = (catLabel: string) =>
     products.filter((p) => p.category === catLabel);
@@ -99,10 +103,10 @@ const LandingPagePresentation = ({ onGoToUpload, onLocationClick, onSearchClick,
       ))}
       {/* 하단 네비게이션 */}
       <div className="landing-bottomnav">
-        <div className="landing-nav-item active">🏠<br />홈</div>
-        <div className="landing-nav-item">👥<br />공구</div>
-        <div className="landing-nav-item">💬<br />채팅</div>
-        <div className="landing-nav-item">👤<br />마이페이지</div>
+        <button className="landing-nav-item active" onClick={onHome}>🏠<br />홈</button>
+        <button className="landing-nav-item" onClick={onGroup}>👥<br />공구</button>
+        <button className="landing-nav-item" onClick={onChat}>💬<br />채팅</button>
+        <button className="landing-nav-item" onClick={onMyPage}>👤<br />마이페이지</button>
       </div>
     </div>
   );
