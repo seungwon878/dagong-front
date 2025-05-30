@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 const texts = [
-  '공구마켓은 함께 사서 더 저렴하게 구매하는 플랫폼입니다!',
+  ' "DAGONG"은 함께 사서 더 저렴하게 구매하는 플랫폼입니다!',
   '믿을 수 있는 이웃과 공동구매를 시작해보세요.',
-  'DAGONG과 함께라면 누구나 쉽게 공구를 열고 참여할 수 있어요!'
+  '"DAGONG"과 함께라면 누구나 쉽게 공구를 열고 참여할 수 있어요!'
 ];
 
 export const FadeTextSlider = () => {
