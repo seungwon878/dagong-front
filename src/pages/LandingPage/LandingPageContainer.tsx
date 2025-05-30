@@ -23,55 +23,40 @@ const LandingPageContainer = () => {
   const handleProductClick = (id: number) => {
     navigate(`/register/${id}`);
   };
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  const handleHome = () => navigate('/');
-  const handleGroup = () => navigate('/'); // TODO: 공구 메인 페이지로 연결 시 경로 수정
+
   const handleChat = () => navigate('/chat');
   const handleMyPage = () => navigate('/mypage');
-=======
->>>>>>> 58d632debe5d373c14857b330b092f81c14892e2
-  const handleChat = () => navigate('/chat');
-  const handleMyPage = () => navigate('/mypage');
+  
   // 네비게이션 버튼 클릭 시 패널 오픈
   const handleCategoryNavClick = () => {
     setTempSelectedCategories(selectedCategories);
     setCategoryPanelOpen(true);
   };
+  
   // 카테고리 토글
   const handleCategoryToggle = (cat: string) => {
     setTempSelectedCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     );
   };
+  
   // 카테고리 반영
   const handleCategoryApply = () => {
     setSelectedCategories(tempSelectedCategories.length > 0 ? tempSelectedCategories : defaultCategories);
     setCategoryPanelOpen(false);
   };
+  
   // 카테고리 패널 닫기
   const handleCategoryPanelClose = () => {
     setCategoryPanelOpen(false);
   };
 
-<<<<<<< HEAD
-=======
->>>>>>> cad84cc (a)
->>>>>>> 58d632debe5d373c14857b330b092f81c14892e2
   return (
     <LandingPagePresentation
       onGoToUpload={handleGoToUpload}
       onLocationClick={handleLocationClick}
       onSearchClick={handleSearchClick}
       onProductClick={handleProductClick}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-      onHome={handleHome}
-      onGroup={handleGroup}
-=======
->>>>>>> 58d632debe5d373c14857b330b092f81c14892e2
       selectedCategories={selectedCategories}
       categoryPanelOpen={categoryPanelOpen}
       tempSelectedCategories={tempSelectedCategories}
@@ -80,10 +65,6 @@ const LandingPageContainer = () => {
       onCategoryApply={handleCategoryApply}
       onCategoryPanelClose={handleCategoryPanelClose}
       allCategories={allCategories}
-<<<<<<< HEAD
-=======
->>>>>>> cad84cc (a)
->>>>>>> 58d632debe5d373c14857b330b092f81c14892e2
       onChat={handleChat}
       onMyPage={handleMyPage}
     />
