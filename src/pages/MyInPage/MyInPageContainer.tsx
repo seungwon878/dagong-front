@@ -20,6 +20,9 @@ const MyInPageContainer = () => {
   const handleChat = () => navigate('/chat');
   const handleMyPage = () => navigate('/mypage');
   const handleCancel = () => navigate(-1);
+  const handleCategory = () => {
+    navigate('/category');
+  };
 
   return (
     <MyInPagePresentation
@@ -29,6 +32,7 @@ const MyInPageContainer = () => {
       onChat={handleChat}
       onMyPage={handleMyPage}
       onCancel={handleCancel}
+      onCategory={handleCategory}
     />
   );
 };

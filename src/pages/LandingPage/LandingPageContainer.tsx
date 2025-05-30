@@ -51,6 +51,14 @@ const LandingPageContainer = () => {
     setCategoryPanelOpen(false);
   };
 
+  const handleCategory = () => {
+    navigate('/category');
+  };
+
+  const handleProductListClick = () => {
+    navigate('/category');
+  };
+
   return (
     <LandingPagePresentation
       onGoToUpload={handleGoToUpload}
@@ -67,6 +75,8 @@ const LandingPageContainer = () => {
       allCategories={allCategories}
       onChat={handleChat}
       onMyPage={handleMyPage}
+      onCategory={handleCategory}
+      onProductListClick={handleProductListClick}
     />
   );
 };

@@ -10,6 +10,7 @@ interface MyPagePresentationProps {
   onHome: () => void;
   onChat: () => void;
   onMyPage: () => void;
+  onCategory: () => void;
 }
 
 const MyPagePresentation = ({
@@ -22,6 +23,7 @@ const MyPagePresentation = ({
   onHome,
   onChat,
   onMyPage,
+  onCategory,
 }: MyPagePresentationProps) => {
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
@@ -48,7 +50,9 @@ const MyPagePresentation = ({
         <button onClick={onHome} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
           🏠<br />홈
         </button>
-        <div style={{ flex: 1, color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2 }}>👥<br />공구</div>
+        <button onClick={onCategory} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
+          📂<br />카테고리
+        </button>
         <button onClick={onChat} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
           💬<br />채팅
         </button>

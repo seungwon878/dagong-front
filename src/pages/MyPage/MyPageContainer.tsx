@@ -1,4 +1,3 @@
-
 import { useNavigate } from 'react-router-dom';
 import MyPagePresentation from './MyPagePresentation';
 
@@ -17,6 +16,9 @@ const MyPageContainer = () => {
   const handleHome = () => navigate('/');
   const handleChat = () => navigate('/chat');
   const handleMyPage = () => navigate('/mypage');
+  const handleCategory = () => {
+    navigate('/category');
+  };
 
   return (
     <MyPagePresentation
@@ -29,6 +31,7 @@ const MyPageContainer = () => {
       onHome={handleHome}
       onChat={handleChat}
       onMyPage={handleMyPage}
+      onCategory={handleCategory}
     />
   );
 };
