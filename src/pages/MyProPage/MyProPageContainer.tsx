@@ -19,6 +19,12 @@ const MyProPageContainer = () => {
   const handleCategory = () => {
     navigate('/category');
   };
+  const handleCancel = () => {
+    navigate(-1);
+  };
+  const handleDeleteProduct = (id: number) => {
+    alert(`공구 ID ${id} 삭제 기능은 추후 구현됩니다.`);
+  };
 
   return (
     <MyProPagePresentation
@@ -28,6 +34,8 @@ const MyProPageContainer = () => {
       onChat={handleChat}
       onMyPage={handleMyPage}
       onCategory={handleCategory}
+      onCancel={handleCancel}
+      onDeleteProduct={handleDeleteProduct}
     />
   );
 };
