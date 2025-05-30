@@ -12,9 +12,10 @@ interface ChatPagePresentationProps {
   chatRooms: ChatRoom[];
   onRoomClick: (id: number) => void;
   onHomeClick: () => void;
+  onMyPageClick: () => void;
 }
 
-const ChatPagePresentation = ({ chatRooms, onRoomClick, onHomeClick }: ChatPagePresentationProps) => {
+const ChatPagePresentation = ({ chatRooms, onRoomClick, onHomeClick, onMyPageClick }: ChatPagePresentationProps) => {
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
       {/* 상단바 */}
@@ -49,7 +50,9 @@ const ChatPagePresentation = ({ chatRooms, onRoomClick, onHomeClick }: ChatPageP
         </button>
         <div style={{ flex: 1, color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2 }}>👥<br />공구</div>
         <div style={{ flex: 1, color: '#e89cae', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2 }}>💬<br />채팅</div>
-        <div style={{ flex: 1, color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2 }}>👤<br />마이페이지</div>
+        <button onClick={onMyPageClick} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
+          👤<br />마이페이지
+        </button>
       </div>
     </div>
   );

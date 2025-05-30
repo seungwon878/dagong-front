@@ -5,8 +5,14 @@ interface LandingPagePresentationProps {
   onLocationClick: () => void;
   onSearchClick: () => void;
   onProductClick: (id: number) => void;
-  onHome: () => void;
-  onGroup: () => void;
+  selectedCategories: string[];
+  categoryPanelOpen: boolean;
+  tempSelectedCategories: string[];
+  onCategoryNavClick: () => void;
+  onCategoryToggle: (cat: string) => void;
+  onCategoryApply: () => void;
+  onCategoryPanelClose: () => void;
+  allCategories: string[];
   onChat: () => void;
   onMyPage: () => void;
 }
@@ -36,15 +42,20 @@ const products = [
   { id: 26, name: '스트레칭밴드', price: 9000, image: '', category: '운동 용품' },
 ];
 
-const categories = [
-  { icon: '🔥', label: '식제품' },
-  { icon: '📱', label: '전자제품' },
-  { icon: '🏋️‍♂️', label: '운동 용품' },
-  { icon: '⚙️', label: '작업 공구' },
-  { icon: '🧪', label: 'test' },
-];
+const categoryIcons: Record<string, string> = {
+  '식제품': '🔥',
+  '전자제품': '📱',
+  '운동 용품': '🏋️‍♂️',
+  '작업 공구': '⚙️',
+  'test': '🧪',
+};
 
-const LandingPagePresentation = ({ onGoToUpload, onLocationClick, onSearchClick, onProductClick, onHome, onGroup, onChat, onMyPage }: LandingPagePresentationProps) => {
+const LandingPagePresentation = ({
+  onGoToUpload, onLocationClick, onSearchClick, onProductClick,
+  selectedCategories, categoryPanelOpen, tempSelectedCategories,
+  onCategoryNavClick, onCategoryToggle, onCategoryApply, onCategoryPanelClose, allCategories,
+  onChat, onMyPage
+}: LandingPagePresentationProps) => {
   // 카테고리별 상품 분류
   const getProductsByCategory = (catLabel: string) =>
     products.filter((p) => p.category === catLabel);
@@ -63,21 +74,52 @@ const LandingPagePresentation = ({ onGoToUpload, onLocationClick, onSearchClick,
         <span className="landing-toolbar-title">공구 중인 상품 보기</span>
         <button className="landing-upload-btn" onClick={onGoToUpload}>공구 등록하러 가기</button>
       </div>
-      {/* 카테고리 */}
+      {/* 카테고리 바 */}
       <div className="landing-categories">
-        {categories.map((cat) => (
-          <span className="landing-category" key={cat.label}>
-            <span className="landing-category-icon">{cat.icon}</span>
-            <span className="landing-category-label">{cat.label}</span>
+        <button className="landing-category-nav" onClick={onCategoryNavClick} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, marginRight: 8 }}>☰</button>
+        {selectedCategories.map((cat) => (
+          <span className="landing-category" key={cat}>
+            <span className="landing-category-icon">{categoryIcons[cat]}</span>
+            <span className="landing-category-label">{cat}</span>
           </span>
         ))}
       </div>
-      {/* 상품 리스트 */}
-      {categories.slice(0, 3).map((cat) => (
-        <div className="landing-section" key={cat.label}>
-          <div className="landing-section-title">{cat.icon} {cat.label}</div>
+      {/* 카테고리 패널(오버레이) */}
+      {categoryPanelOpen && (
+        <div className="category-panel-overlay" style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.15)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }} onClick={onCategoryPanelClose}>
+          <div className="category-panel" style={{ background: '#fff', borderRadius: 12, marginTop: 40, boxShadow: '0 4px 24px #0002', padding: 16, minWidth: 220, maxHeight: 500, overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 12 }}>카테고리 선택</div>
+            {allCategories.map((cat) => (
+              <div
+                key={cat}
+                onClick={() => onCategoryToggle(cat)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', cursor: 'pointer',
+                  color: tempSelectedCategories.includes(cat) ? '#e89cae' : '#444',
+                  fontWeight: tempSelectedCategories.includes(cat) ? 700 : 400,
+                  background: tempSelectedCategories.includes(cat) ? '#f8e6eb' : 'transparent',
+                  borderRadius: 8,
+                  paddingLeft: 8,
+                }}
+              >
+                <span style={{ fontSize: 18 }}>{categoryIcons[cat]}</span>
+                <span>{cat}</span>
+                {tempSelectedCategories.includes(cat) && <span style={{ marginLeft: 'auto', color: '#e89cae', fontSize: 18 }}>✔</span>}
+              </div>
+            ))}
+            <button
+              onClick={onCategoryApply}
+              style={{ width: '100%', marginTop: 16, background: '#444', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 0', fontSize: 16, fontWeight: 500, cursor: 'pointer' }}
+            >카테고리 반영</button>
+          </div>
+        </div>
+      )}
+      {/* 카테고리별 상품 리스트 */}
+      {selectedCategories.map((cat) => (
+        <div className="landing-section" key={cat}>
+          <div className="landing-section-title">{categoryIcons[cat]} {cat}</div>
           <div className="landing-cards landing-cards-scroll">
-            {getProductsByCategory(cat.label).map((product) => (
+            {getProductsByCategory(cat).map((product) => (
               <button
                 key={product.id}
                 className="landing-card landing-card-half"
@@ -103,10 +145,10 @@ const LandingPagePresentation = ({ onGoToUpload, onLocationClick, onSearchClick,
       ))}
       {/* 하단 네비게이션 */}
       <div className="landing-bottomnav">
-        <button className="landing-nav-item active" onClick={onHome}>🏠<br />홈</button>
-        <button className="landing-nav-item" onClick={onGroup}>👥<br />공구</button>
-        <button className="landing-nav-item" onClick={onChat}>💬<br />채팅</button>
-        <button className="landing-nav-item" onClick={onMyPage}>👤<br />마이페이지</button>
+        <div className="landing-nav-item active">🏠<br />홈</div>
+        <div className="landing-nav-item">👥<br />공구</div>
+        <button className="landing-nav-item" onClick={onChat} style={{ background: 'none', border: 'none' }}>💬<br />채팅</button>
+        <button className="landing-nav-item" onClick={onMyPage} style={{ background: 'none', border: 'none' }}>👤<br />마이페이지</button>
       </div>
     </div>
   );

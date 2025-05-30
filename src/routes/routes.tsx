@@ -9,8 +9,12 @@ import MyPage from '../pages/MyPage';
 import EditPage from '../pages/EditPage';
 import MyProPage from '../pages/MyProPage';
 import RegisterPageContainer from '../RegisterPage/RegisterPageContainer';
+<<<<<<< HEAD
 import MyInPage from '../pages/MyInPage';
 import MyHeart from '../pages/MyHeart';
+=======
+import SearchProductPage from '../pages/SearchProductPage';
+>>>>>>> cad84cc (a)
 
 export const router = createBrowserRouter([
   {
@@ -57,12 +61,17 @@ export const router = createBrowserRouter([
     ]} />,
   },
   {
+<<<<<<< HEAD
     path: '/mypage/myjoined',
     element: <MyInPage />,
   },
   {
     path: '/mypage/myliked',
     element: <MyHeart />,
+=======
+    path: '/search-product',
+    element: <SearchProductPage />,
+>>>>>>> cad84cc (a)
   },
   // 여기에 추가 라우트를 설정하세요
 ]); 

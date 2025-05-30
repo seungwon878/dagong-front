@@ -16,6 +16,7 @@ const MyPageContainer = () => {
   const handleDelivery = () => navigate('/mypage/delivery');
   const handleHome = () => navigate('/');
   const handleChat = () => navigate('/chat');
+  const handleMyPage = () => navigate('/mypage');
 
   return (
     <MyPagePresentation
@@ -27,6 +28,7 @@ const MyPageContainer = () => {
       onDelivery={handleDelivery}
       onHome={handleHome}
       onChat={handleChat}
+      onMyPage={handleMyPage}
     />
   );
 };

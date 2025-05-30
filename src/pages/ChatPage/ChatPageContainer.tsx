@@ -19,11 +19,15 @@ const ChatPageContainer = () => {
   const handleHomeClick = () => {
     navigate('/');
   };
+  const handleMyPageClick = () => {
+    navigate('/mypage');
+  };
   return (
     <ChatPagePresentation
       chatRooms={chatRooms}
       onRoomClick={handleRoomClick}
       onHomeClick={handleHomeClick}
+      onMyPageClick={handleMyPageClick}
     />
   );
 };
