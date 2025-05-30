@@ -9,10 +9,9 @@ import MyPage from '../pages/MyPage';
 import EditPage from '../pages/EditPage';
 import MyProPage from '../pages/MyProPage';
 import RegisterPageContainer from '../RegisterPage/RegisterPageContainer';
-
-
-//import SearchProductPage from '../pages/SearchProductPage';
-
+import SearchProductPage from '../pages/SearchProductPage';
+import MyInPage from '../pages/MyInPage';
+import MyHeart from '../pages/MyHeart';
 
 export const router = createBrowserRouter([
   {
@@ -58,7 +57,17 @@ export const router = createBrowserRouter([
       { text: '공구 내리기', onClick: () => alert('공구 내리기') },
     ]} />,
   },
-  
-
+  {
+    path: '/search-product',
+    element: <SearchProductPage />,
+  },
+  {
+    path: '/mypage/myjoined',
+    element: <MyInPage />,
+  },
+  {
+    path: '/mypage/myliked',
+    element: <MyHeart />,
+  },
   // 여기에 추가 라우트를 설정하세요
 ]); 
