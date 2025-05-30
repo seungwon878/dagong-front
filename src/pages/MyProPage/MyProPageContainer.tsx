@@ -16,6 +16,9 @@ const MyProPageContainer = () => {
   const handleHome = () => navigate('/');
   const handleChat = () => navigate('/chat');
   const handleMyPage = () => navigate('/mypage');
+  const handleCategory = () => {
+    navigate('/category');
+  };
 
   return (
     <MyProPagePresentation
@@ -24,6 +27,7 @@ const MyProPageContainer = () => {
       onHome={handleHome}
       onChat={handleChat}
       onMyPage={handleMyPage}
+      onCategory={handleCategory}
     />
   );
 };

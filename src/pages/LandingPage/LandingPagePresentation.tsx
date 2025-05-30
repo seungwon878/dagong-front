@@ -1,4 +1,5 @@
 import './LandingPagePresentation.css';
+import { FadeTextSlider } from '../../components/FadeTextSlider';
 
 interface LandingPagePresentationProps {
   onGoToUpload: () => void;
@@ -15,6 +16,8 @@ interface LandingPagePresentationProps {
   allCategories: string[];
   onChat: () => void;
   onMyPage: () => void;
+  onCategory: () => void;
+  onProductListClick: () => void;
 }
 
 // 예시 mock 상품 데이터 (카테고리별 5~6개씩)
@@ -54,7 +57,7 @@ const LandingPagePresentation = ({
   onGoToUpload, onLocationClick, onSearchClick, onProductClick,
   selectedCategories, categoryPanelOpen, tempSelectedCategories,
   onCategoryNavClick, onCategoryToggle, onCategoryApply, onCategoryPanelClose, allCategories,
-  onChat, onMyPage
+  onChat, onMyPage, onCategory, onProductListClick
 }: LandingPagePresentationProps) => {
   // 카테고리별 상품 분류
   const getProductsByCategory = (catLabel: string) =>
@@ -62,20 +65,36 @@ const LandingPagePresentation = ({
 
   return (
     <div className="landing-root">
-      {/* 상단바 */}
-      <div className="landing-topbar">
-        <button className="landing-location-btn" onClick={onLocationClick}>상도동 ▼</button>
-        <span className="landing-title"></span>
-        <button className="landing-search-btn" onClick={onSearchClick}>🔍</button>
-        <span className="landing-bell">🔔</span>
+      {/* 상단 검색 영역 - 네이버 스토어 스타일 */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: 340, background: '#fff', border: '2px solid #8854d9', borderRadius: 8, padding: '0 12px', height: 48, boxSizing: 'border-box', boxShadow: '0 2px 8px #0001' }}>
+          <img src="/img/dagong.png" alt="DAGONG 로고" style={{ width: 38, height: 38, marginRight: 8 }} />
+          <span style={{ fontSize: 20, marginRight: 4 }}>🔍</span>
+          <input type="text" placeholder="   상품명 또는 브랜드 입력" style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, background: 'transparent', color: '#222', marginRight: 8 }} />
+          <span style={{ color: '#8854d9', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>▼</span>
+        </div>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginTop: 14 }}>
+          <button className="landing-location-btn" onClick={onLocationClick} style={{ marginLeft: 16 }}>
+            상도동 ▼
+          </button>
+        </div>
       </div>
-      {/* 검색/필터/정렬 바 */}
-      <div className="landing-toolbar">
-        <span className="landing-toolbar-title">공구 중인 상품 보기</span>
-        <button className="landing-upload-btn" onClick={onGoToUpload}>공구 등록하러 가기</button>
+      {/* 중앙 소개/페이드 애니메이션 영역 + 배경 */}
+      <div className="landing-intro-fade" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 350, margin: '30px 0', position: 'relative', background: 'linear-gradient(135deg, #fff7e6 0%, #ffe6f7 100%)', borderRadius: 24, boxShadow: '0 4px 24px #0001' }}>
+        <img src="/img/dagong.png" alt="DAGONG 로고" style={{ width: 120, marginBottom: 24, zIndex: 1 }} />
+        <FadeTextSlider />
+      </div>
+      {/* 애니메이션 하단 버튼 2개를 배경 바깥 하단으로 이동 */}
+      <div style={{ display: 'flex', gap: 20, width: 'fit-content', margin: '10px auto 0 auto' }}>
+        <button className="landing-toolbar-btn" onClick={onProductListClick} style={{ fontSize: 15, padding: '10px 18px', borderRadius: 20, background: '#fff', color: '#e89cae', border: '2px solid #e89cae', fontWeight: 600, boxShadow: '0 2px 8px #0001', cursor: 'pointer' }}>
+          공구 중인 상품 보기
+        </button>
+        <button className="landing-upload-btn" onClick={onGoToUpload} style={{ fontSize: 15, padding: '10px 18px', borderRadius: 20 }}>
+          공구 등록하러 가기
+        </button>
       </div>
       {/* 카테고리 바 */}
-      <div className="landing-categories">
+      {/* <div className="landing-categories">
         <button className="landing-category-nav" onClick={onCategoryNavClick} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, marginRight: 8 }}>☰</button>
         {selectedCategories.map((cat) => (
           <span className="landing-category" key={cat}>
@@ -83,9 +102,9 @@ const LandingPagePresentation = ({
             <span className="landing-category-label">{cat}</span>
           </span>
         ))}
-      </div>
+      </div> */}
       {/* 카테고리 패널(오버레이) */}
-      {categoryPanelOpen && (
+      {/* {categoryPanelOpen && (
         <div className="category-panel-overlay" style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.15)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }} onClick={onCategoryPanelClose}>
           <div className="category-panel" style={{ background: '#fff', borderRadius: 12, marginTop: 40, boxShadow: '0 4px 24px #0002', padding: 16, minWidth: 220, maxHeight: 500, overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 12 }}>카테고리 선택</div>
@@ -113,40 +132,11 @@ const LandingPagePresentation = ({
             >카테고리 반영</button>
           </div>
         </div>
-      )}
-      {/* 카테고리별 상품 리스트 */}
-      {selectedCategories.map((cat) => (
-        <div className="landing-section" key={cat}>
-          <div className="landing-section-title">{categoryIcons[cat]} {cat}</div>
-          <div className="landing-cards landing-cards-scroll">
-            {getProductsByCategory(cat).map((product) => (
-              <button
-                key={product.id}
-                className="landing-card landing-card-half"
-                onClick={() => onProductClick(product.id)}
-              >
-                {/* 이미지 영역 */}
-                <div className="landing-card-imgbox">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} style={{ width: '70%', height: '70%', objectFit: 'contain' }} />
-                  ) : (
-                    <span role="img" aria-label="camera" style={{ fontSize: 32, color: '#bbb' }}>📷</span>
-                  )}
-                </div>
-                {/* 하단 상품명/가격 */}
-                <div className="landing-card-info">
-                  <div className="landing-card-name">{product.name}</div>
-                  <div className="landing-card-price">{product.price.toLocaleString()}원</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
+      )}  */}
       {/* 하단 네비게이션 */}
       <div className="landing-bottomnav">
         <div className="landing-nav-item active">🏠<br />홈</div>
-        <div className="landing-nav-item">👥<br />공구</div>
+        <button className="landing-nav-item" onClick={onCategory} style={{ background: 'none', border: 'none' }}>📂<br />카테고리</button>
         <button className="landing-nav-item" onClick={onChat} style={{ background: 'none', border: 'none' }}>💬<br />채팅</button>
         <button className="landing-nav-item" onClick={onMyPage} style={{ background: 'none', border: 'none' }}>👤<br />마이페이지</button>
       </div>

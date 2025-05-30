@@ -13,9 +13,10 @@ interface MyProPagePresentationProps {
   onHome: () => void;
   onChat: () => void;
   onMyPage: () => void;
+  onCategory: () => void;
 }
 
-const MyProPagePresentation = ({ products, onProductClick, onHome, onChat, onMyPage }: MyProPagePresentationProps) => {
+const MyProPagePresentation = ({ products, onProductClick, onHome, onChat, onMyPage, onCategory }: MyProPagePresentationProps) => {
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
       <div style={{ padding: '18px 0 8px 0', fontSize: 18, fontWeight: 600, borderBottom: '1px solid #eee', textAlign: 'left', paddingLeft: 20 }}></div>
@@ -43,7 +44,9 @@ const MyProPagePresentation = ({ products, onProductClick, onHome, onChat, onMyP
         <button onClick={onHome} style={{ flex: 1, background: 'none', border: 'none', color: '#e89cae', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
           🏠<br />홈
         </button>
-        <div style={{ flex: 1, color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2 }}>👥<br />공구</div>
+        <button onClick={onCategory} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
+          📂<br />카테고리
+        </button>
         <button onClick={onChat} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
           💬<br />채팅
         </button>

@@ -20,6 +20,9 @@ const MyHeartContainer = () => {
   const handleChat = () => navigate('/chat');
   const handleMyPage = () => navigate('/mypage');
   const handleCancel = () => navigate(-1);
+  const handleCategory = () => {
+    navigate('/category');
+  };
 
   return (
     <MyHeartPresentation
@@ -29,6 +32,7 @@ const MyHeartContainer = () => {
       onChat={handleChat}
       onMyPage={handleMyPage}
       onCancel={handleCancel}
+      onCategory={handleCategory}
     />
   );
 };

@@ -14,9 +14,10 @@ interface MyHeartPresentationProps {
   onChat: () => void;
   onMyPage: () => void;
   onCancel: () => void;
+  onCategory: () => void;
 }
 
-const MyHeartPresentation = ({ products, onProductClick, onHome, onChat, onMyPage, onCancel }: MyHeartPresentationProps) => {
+const MyHeartPresentation = ({ products, onProductClick, onHome, onChat, onMyPage, onCancel, onCategory }: MyHeartPresentationProps) => {
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
       {/* 상단바 */}
@@ -47,7 +48,9 @@ const MyHeartPresentation = ({ products, onProductClick, onHome, onChat, onMyPag
         <button onClick={onHome} style={{ flex: 1, background: 'none', border: 'none', color: '#e89cae', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
           🏠<br />홈
         </button>
-        <div style={{ flex: 1, color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2 }}>👥<br />공구</div>
+        <button onClick={onCategory} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
+          📂<br />카테고리
+        </button>
         <button onClick={onChat} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
           💬<br />채팅
         </button>

@@ -12,6 +12,7 @@ import RegisterPageContainer from '../RegisterPage/RegisterPageContainer';
 import SearchProductPage from '../pages/SearchProductPage';
 import MyInPage from '../pages/MyInPage';
 import MyHeart from '../pages/MyHeart';
+import CatePage from '../pages/CatePage';
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
   {
     path: '/mypage/myliked',
     element: <MyHeart />,
+  },
+  {
+    path: '/category',
+    element: <CatePage />,
   },
   // 여기에 추가 라우트를 설정하세요
 ]); 
