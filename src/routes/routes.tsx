@@ -13,11 +13,25 @@ import SearchProductPage from '../pages/SearchProductPage';
 import MyInPage from '../pages/MyInPage';
 import MyHeart from '../pages/MyHeart';
 import CatePage from '../pages/CatePage';
+import LoginPage from '../pages/LoginPage';
+import SignupPage from '../pages/SignupPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <LandingPage />,
+  },
+  {
+    path: '/landing',
+    element: <LandingPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignupPage />,
   },
   {
     path: '/upload',

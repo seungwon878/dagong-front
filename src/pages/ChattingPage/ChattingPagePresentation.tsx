@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ChattingPagePresentationProps {
   roomTitle: string;
@@ -12,6 +12,139 @@ interface ChattingPagePresentationProps {
   onSend: () => void;
 }
 
+const dummyUsers = [
+  { id: 1, nickname: '홍길동', img: '' },
+  { id: 2, nickname: '이순신', img: '' },
+  { id: 3, nickname: '김철수', img: '' },
+  { id: 4, nickname: '박영희', img: '' },
+];
+
+const UserListModal = ({ open, onClose, users, roomTitle, currentPeople, maxPeople }: { 
+  open: boolean; 
+  onClose: () => void; 
+  users: { id: number; nickname: string; img: string }[];
+  roomTitle: string;
+  currentPeople: number;
+  maxPeople: number;
+}) => {
+  if (!open) return null;
+  return (
+    <div style={{
+      position: 'fixed', 
+      top: 0, 
+      left: 0, 
+      width: '100vw', 
+      height: '100vh', 
+      background: 'rgba(0,0,0,0.4)', 
+      zIndex: 9999, 
+      display: 'flex', 
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      animation: 'fadeIn 0.2s ease-out'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff', 
+        width: '100%', 
+        maxWidth: 430,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
+        padding: '24px 20px 32px 20px',
+        position: 'relative',
+        animation: 'slideUp 0.3s ease-out',
+        maxHeight: '80vh',
+        overflowY: 'auto'
+      }} onClick={e => e.stopPropagation()}>
+        {/* 채팅방 정보 */}
+        <div style={{ 
+          textAlign: 'center', 
+          marginBottom: 24,
+          paddingBottom: 20,
+          borderBottom: '1px solid #f0f0f0'
+        }}>
+          <div style={{ 
+            fontWeight: 700, 
+            fontSize: 20, 
+            color: '#191919',
+            marginBottom: 4
+          }}>{roomTitle}</div>
+          <div style={{ 
+            fontSize: 14, 
+            color: '#8e8e8e',
+            fontWeight: 500
+          }}>참여자 {currentPeople}명</div>
+        </div>
+
+        {/* 참여자 목록 */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 16 
+        }}>
+          {users.map(user => (
+            <div key={user.id} style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 12,
+              padding: '8px 4px',
+              borderRadius: 8,
+              cursor: 'pointer'
+            }}>
+              <div style={{ 
+                position: 'relative',
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}>
+                <img 
+                  src={user.img} 
+                  alt={user.nickname} 
+                  style={{ 
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }} 
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontWeight: 600, 
+                  fontSize: 16, 
+                  color: '#191919',
+                  marginBottom: 2
+                }}>{user.nickname}</div>
+                <div style={{ 
+                  fontSize: 13, 
+                  color: '#8e8e8e'
+                }}>참여자</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 닫기 버튼 */}
+        <button 
+          onClick={onClose} 
+          style={{ 
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            background: 'none',
+            border: 'none',
+            fontSize: 20,
+            color: '#8e8e8e',
+            cursor: 'pointer',
+            padding: 8,
+            borderRadius: '50%'
+          }}
+        >✕</button>
+      </div>
+    </div>
+  );
+};
+
 const ChattingPagePresentation = ({
   roomTitle,
   productName,
@@ -23,14 +156,23 @@ const ChattingPagePresentation = ({
   onInputChange,
   onSend,
 }: ChattingPagePresentationProps) => {
+  const [userListOpen, setUserListOpen] = useState(false);
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80, display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* 상단바 */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '18px 0 8px 0', fontSize: 18, fontWeight: 600, borderBottom: '1px solid #eee' }}>
         <button onClick={onBack} style={{ position: 'absolute', left: 16, top: 18, background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer' }}>←</button>
         <span>{roomTitle}</span>
-        <button style={{ position: 'absolute', right: 16, top: 18, background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer' }}>⋮</button>
+        <button onClick={() => setUserListOpen(true)} style={{ position: 'absolute', right: 16, top: 18, background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer' }}>⋮</button>
       </div>
+      <UserListModal 
+        open={userListOpen} 
+        onClose={() => setUserListOpen(false)} 
+        users={dummyUsers}
+        roomTitle={roomTitle}
+        currentPeople={currentPeople}
+        maxPeople={maxPeople}
+      />
       {/* 상단 상품 정보 */}
       <div style={{ margin: '18px 16px 0 16px', border: '1px solid #eee', borderRadius: 8, display: 'flex', alignItems: 'center', padding: 12, background: '#fafafa' }}>
         <div style={{ width: 48, height: 48, background: '#ededed', borderRadius: 8, marginRight: 14 }} />
