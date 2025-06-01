@@ -14,7 +14,7 @@ const MyInPageContainer = () => {
   // 참여한 공구만 필터
   const products = allProducts.filter((p) => p.joined && !p.mine);
   const handleProductClick = (id: number) => {
-    navigate(`/register/${id}`);
+    navigate(`/myjoined/${id}`);
   };
   const handleHome = () => navigate('/');
   const handleChat = () => navigate('/chat');
