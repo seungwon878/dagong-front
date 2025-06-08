@@ -1,31 +1,34 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
 
-const KakaoContainer = () => {
+const KakaoRedirectPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const handledRef = useRef(false);
 
   useEffect(() => {
+    if (handledRef.current) return;
     const params = new URLSearchParams(location.search);
     const code = params.get('code');
     if (code) {
-      fetch(`/api/auth/login/kakao?code=${code}`)
-        .then(res => res.json())
+      handledRef.current = true;
+      getKakaoLogin(code)
         .then(data => {
           if (data.isSuccess && data.result) {
             localStorage.setItem('authToken', data.result.token);
             localStorage.setItem('memberId', data.result.id.toString());
             localStorage.setItem('nickname', data.result.nickname);
             localStorage.setItem('email', data.result.email);
-            navigate('/landing');
+            navigate('/landing', { replace: true });
           } else {
             alert('카카오 로그인에 실패했습니다.');
-            navigate('/');
+            navigate('/', { replace: true });
           }
         })
         .catch(() => {
           alert('카카오 로그인 중 오류가 발생했습니다.');
-          navigate('/');
+          navigate('/', { replace: true });
         });
     }
   }, [location, navigate]);
@@ -33,4 +36,4 @@ const KakaoContainer = () => {
   return null;
 };
 
-export default KakaoContainer;
+export default KakaoRedirectPage; 
