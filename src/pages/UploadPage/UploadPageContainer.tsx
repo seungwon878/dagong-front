@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadPagePresentation from './UploadPagePresentation';
+import { registerGroupPurchase } from '../../Apis/groupPurchaseApi';
 
 const peopleOptions = [1, 2, 3, 4, 5, 6];
 
@@ -51,8 +52,41 @@ const UploadPageContainer = () => {
     // 위치 설정 페이지로 이동 (기존 로직)
     alert('위치 설정 기능은 추후 구현됩니다!');
   };
-  const handleRegister = () => {
-    alert('공구 등록! (기능은 추후 구현)');
+  const handleRegister = async () => {
+    if (!selectedProduct && !manualName) {
+      alert('상품을 선택하거나 직접 등록해주세요.');
+      return;
+    }
+    const product = selectedProduct
+      ? {
+          name: selectedProduct.name,
+          imageUrl: selectedProduct.image,
+          title: selectedProduct.title,
+        }
+      : {
+          name: manualName,
+          imageUrl: manualImage,
+          title: manualName,
+        };
+    const payload = {
+      title: product.title,
+      content: desc,
+      name: product.name,
+      imageUrl: product.imageUrl || '',
+      category1: '', // 필요시 입력
+      category2: '', // 필요시 입력
+      price: Number(price || manualPrice),
+      quantity: amount,
+      maxParticipants: people,
+    };
+    try {
+      const memberId = Number(localStorage.getItem('memberId'));
+      await registerGroupPurchase(memberId, payload);
+      alert('공구가 등록되었습니다!');
+      navigate('/');
+    } catch (e) {
+      alert('등록에 실패했습니다.');
+    }
   };
 
   // 상단 버튼 핸들러

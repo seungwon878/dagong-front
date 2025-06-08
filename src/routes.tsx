@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import FirstPagePresentation from './pages/FirstPage/FirstPagePresentation';
+import FirstPage from './pages/FirstPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import UploadPage from './pages/UploadPage';
@@ -16,6 +16,7 @@ import SearchProductPage from './pages/SearchProductPage';
 import MyInPage from './pages/MyInPage';
 import MyHeart from './pages/MyHeart';
 import CatePage from './pages/CatePage';
+import KakaoRedirectPage from './pages/FirstPage/KakaoRedirectPage';
 
 export const router = createBrowserRouter([
   {
@@ -28,7 +29,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/first',
-    element: <FirstPagePresentation />,
+    element: <FirstPage />,
+  },
+  {
+    path: '/kakao',
+    element: <KakaoRedirectPage />,
   },
   {
     path: '/login',

@@ -153,7 +153,11 @@ const FeatureItem = styled.div`
   font-size: 0.875rem;
 `;
 
-const FirstPagePresentation: React.FC = () => {
+interface FirstPagePresentationProps {
+  onKakaoLogin: () => void;
+}
+
+const FirstPagePresentation: React.FC<FirstPagePresentationProps> = ({ onKakaoLogin }) => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -162,10 +166,6 @@ const FirstPagePresentation: React.FC = () => {
 
   const handleRegister = () => {
     navigate('/signup');
-  };
-
-  const handleKakaoLogin = () => {
-    console.log('카카오 로그인');
   };
 
   return (
@@ -185,7 +185,7 @@ const FirstPagePresentation: React.FC = () => {
           <Button variant="secondary" onClick={handleRegister}>
             회원가입하기
           </Button>
-          <Button variant="kakao" onClick={handleKakaoLogin}>
+          <Button variant="kakao" onClick={onKakaoLogin}>
             <KakaoIcon>K</KakaoIcon>
             카카오톡으로 로그인하기
           </Button>
