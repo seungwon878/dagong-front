@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import FirstPagePresentation from './FirstPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
 
-const REST_API_KEY = '1f60ce581c951d8faae4ace440a8c707';
+const REST_API_KEY = '5955280f944cb8528d2e482805bf936e';
+//const REDIRECT_URI = 'http://localhost:5173/kakao';
 
 const FirstPageContainer: React.FC = () => {
   const navigate = useNavigate();
@@ -38,9 +39,9 @@ const FirstPageContainer: React.FC = () => {
 
   const handleKakaoLogin = () => {
     const state = Date.now().toString();
-    const redirectUri = 'http://localhost:5173/kakao';
+    const redirectUri = 'http://13.209.95.208:8080/auth/login/kakao';
     const kakaoAuthUrl =
-      `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}` +
+      `http://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}` +
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
       `&response_type=code` +
       `&state=${state}`;
