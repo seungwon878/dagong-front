@@ -2,9 +2,28 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LandingPagePresentation from './LandingPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
+import { getAllProducts } from '../../Apis/groupPurchaseApi';
+
+// 상품 타입 정의
+interface Product {
+  id: number;
+  title: string;
+  content: string;
+  name: string;
+  imageUrl: string;
+  price: number;
+  quantity: number;
+  maxParticipants: number;
+  category1: string;
+  category2: string;
+  views: number;
+  likes: number;
+}
 
 const defaultCategories = ['식제품', '전자제품'];
 const allCategories = ['식제품', '전자제품', '운동 용품', '작업 공구', 'test'];
+
+type SortType = 'views' | 'likes';
 
 const LandingPageContainer = () => {
   const navigate = useNavigate();
@@ -14,6 +33,13 @@ const LandingPageContainer = () => {
   const [tempSelectedCategories, setTempSelectedCategories] = useState<string[]>(selectedCategories);
   const [isProcessingLogin, setIsProcessingLogin] = useState(false);
   const processedCodeRef = useRef<string | null>(null);
+  
+  // 새로 추가된 상태들
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<SortType>('views');
+  const [sortPanelOpen, setSortPanelOpen] = useState(false);
 
   const handleGoToUpload = () => {
     navigate('/upload');
@@ -61,6 +87,45 @@ const LandingPageContainer = () => {
 
   const handleProductListClick = () => {
     navigate('/category');
+  };
+
+  // 상품 목록 조회
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getAllProducts(1, 10); // 전체 상품 조회
+      if (response.isSuccess) {
+        const sortedProducts = [...response.result.content];
+        // 정렬 적용
+        sortedProducts.sort((a, b) => {
+          if (sortType === 'views') {
+            return b.views - a.views;
+          } else {
+            return b.likes - a.likes;
+          }
+        });
+        setProducts(sortedProducts);
+      } else {
+        setError(response.message || '상품 목록을 불러오는데 실패했습니다.');
+      }
+    } catch (err) {
+      setError('상품 목록을 불러오는데 실패했습니다.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 정렬 기준 변경 시 상품 목록 다시 조회
+  useEffect(() => {
+    fetchProducts();
+  }, [sortType]);
+
+  // 정렬 기준 변경 핸들러
+  const handleSortChange = (newSortType: SortType) => {
+    setSortType(newSortType);
+    setSortPanelOpen(false);
   };
 
   /**
@@ -150,6 +215,14 @@ const LandingPageContainer = () => {
       onMyPage={handleMyPage}
       onCategory={handleCategory}
       onProductListClick={handleProductListClick}
+      products={products}
+      loading={loading}
+      error={error}
+      sortType={sortType}
+      sortPanelOpen={sortPanelOpen}
+      onSortClick={() => setSortPanelOpen(true)}
+      onSortChange={handleSortChange}
+      onSortPanelClose={() => setSortPanelOpen(false)}
     />
   );
 };

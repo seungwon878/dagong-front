@@ -1,6 +1,23 @@
 import './LandingPagePresentation.css';
 import { FadeTextSlider } from '../../components/FadeTextSlider';
 
+interface Product {
+  id: number;
+  title: string;
+  content: string;
+  name: string;
+  imageUrl: string;
+  price: number;
+  quantity: number;
+  maxParticipants: number;
+  category1: string;
+  category2: string;
+  views: number;
+  likes: number;
+}
+
+type SortType = 'views' | 'likes';
+
 interface LandingPagePresentationProps {
   onGoToUpload: () => void;
   onLocationClick: () => void;
@@ -18,6 +35,14 @@ interface LandingPagePresentationProps {
   onMyPage: () => void;
   onCategory: () => void;
   onProductListClick: () => void;
+  products: Product[];
+  loading: boolean;
+  error: string | null;
+  sortType: SortType;
+  sortPanelOpen: boolean;
+  onSortClick: () => void;
+  onSortChange: (type: SortType) => void;
+  onSortPanelClose: () => void;
 }
 
 // 예시 mock 상품 데이터 (카테고리별 5~6개씩)
@@ -57,11 +82,52 @@ const LandingPagePresentation = ({
   onGoToUpload, onLocationClick, onSearchClick, onProductClick,
   selectedCategories, categoryPanelOpen, tempSelectedCategories,
   onCategoryNavClick, onCategoryToggle, onCategoryApply, onCategoryPanelClose, allCategories,
-  onChat, onMyPage, onCategory, onProductListClick
+  onChat, onMyPage, onCategory, onProductListClick,
+  products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose
 }: LandingPagePresentationProps) => {
-  // 카테고리별 상품 분류
-  const getProductsByCategory = (catLabel: string) =>
-    products.filter((p) => p.category === catLabel);
+  // 상품 카드 렌더링 함수
+  const renderProductCard = (product: Product) => (
+    <div 
+      key={product.id} 
+      onClick={() => onProductClick(product.id)}
+      style={{ 
+        border: '1px solid #eee',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        cursor: 'pointer',
+        background: '#fff',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+      }}
+    >
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ width: 100, height: 100, borderRadius: 8, overflow: 'hidden', background: '#f5f5f5' }}>
+          <img 
+            src={product.imageUrl || '/img/dagong.png'} 
+            alt={product.title} 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover' 
+            }} 
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: 16, fontWeight: 600 }}>{product.title}</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: 14, color: '#666' }}>{product.content}</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: '#e89cae' }}>
+              {product.price.toLocaleString()}원
+            </span>
+            <div style={{ display: 'flex', gap: 8, fontSize: 14, color: '#888' }}>
+              <span>👁️ {product.views}</span>
+              <span>❤️ {product.likes}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="landing-root">
@@ -73,18 +139,107 @@ const LandingPagePresentation = ({
           <input type="text" placeholder="   상품명 또는 브랜드 입력" style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, background: 'transparent', color: '#222', marginRight: 8 }} />
           <span style={{ color: '#8854d9', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>▼</span>
         </div>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginTop: 14 }}>
-          <button className="landing-location-btn" onClick={onLocationClick} style={{ marginLeft: 16 }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', gap: 8, marginTop: 14, paddingLeft: 16 }}>
+          <button className="landing-location-btn" onClick={onLocationClick}>
             상도동 ▼
+          </button>
+          <button className="landing-location-btn" onClick={onSortClick}>
+            {sortType === 'views' ? '조회수 순' : '찜 순'} ▼
           </button>
         </div>
       </div>
-      {/* 중앙 소개/페이드 애니메이션 영역 + 배경 */}
-      <div className="landing-intro-fade" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 350, margin: '30px 0', position: 'relative', background: 'linear-gradient(135deg, #fff7e6 0%, #ffe6f7 100%)', borderRadius: 24, boxShadow: '0 4px 24px #0001' }}>
-        <img src="/img/dagong.png" alt="DAGONG 로고" style={{ width: 120, marginBottom: 24, zIndex: 1 }} />
-        <FadeTextSlider />
+
+      {/* 상품 목록 영역 (기존 애니메이션 영역 대체) */}
+      <div style={{ margin: '24px 16px', minHeight: 350 }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
+            로딩 중...
+          </div>
+        ) : error ? (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#e89cae' }}>
+            {error}
+          </div>
+        ) : products.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
+            등록된 상품이 없습니다.
+          </div>
+        ) : (
+          <div>
+            {products.map(renderProductCard)}
+          </div>
+        )}
       </div>
-      {/* 애니메이션 하단 버튼 2개를 배경 바깥 하단으로 이동 */}
+
+      {/* 정렬 기준 선택 패널 */}
+      {sortPanelOpen && (
+        <div 
+          style={{ 
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            background: 'rgba(0,0,0,0.4)', 
+            zIndex: 1000,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            paddingTop: 100
+          }}
+          onClick={onSortPanelClose}
+        >
+          <div 
+            style={{ 
+              background: '#fff', 
+              borderRadius: 12, 
+              padding: 16, 
+              width: '90%', 
+              maxWidth: 300,
+              boxShadow: '0 4px 24px rgba(0,0,0,0.1)'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 16, color: '#222' }}>정렬 기준</div>
+            <button 
+              onClick={() => onSortChange('views')}
+              style={{ 
+                width: '100%',
+                padding: '12px',
+                marginBottom: 8,
+                border: 'none',
+                borderRadius: 8,
+                background: sortType === 'views' ? '#f8e6eb' : '#f5f5f5',
+                color: sortType === 'views' ? '#e89cae' : '#444',
+                fontSize: 15,
+                fontWeight: sortType === 'views' ? 600 : 400,
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}
+            >
+              조회수 순
+            </button>
+            <button 
+              onClick={() => onSortChange('likes')}
+              style={{ 
+                width: '100%',
+                padding: '12px',
+                border: 'none',
+                borderRadius: 8,
+                background: sortType === 'likes' ? '#f8e6eb' : '#f5f5f5',
+                color: sortType === 'likes' ? '#e89cae' : '#444',
+                fontSize: 15,
+                fontWeight: sortType === 'likes' ? 600 : 400,
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}
+            >
+              찜 순
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 하단 버튼 */}
       <div style={{ display: 'flex', gap: 20, width: 'fit-content', margin: '10px auto 0 auto' }}>
         <button className="landing-toolbar-btn" onClick={onProductListClick} style={{ fontSize: 15, padding: '10px 18px', borderRadius: 20, background: '#fff', color: '#e89cae', border: '2px solid #e89cae', fontWeight: 600, boxShadow: '0 2px 8px #0001', cursor: 'pointer' }}>
           공구 중인 상품 보기
@@ -93,46 +248,7 @@ const LandingPagePresentation = ({
           공구 등록하러 가기
         </button>
       </div>
-      {/* 카테고리 바 */}
-      {/* <div className="landing-categories">
-        <button className="landing-category-nav" onClick={onCategoryNavClick} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, marginRight: 8 }}>☰</button>
-        {selectedCategories.map((cat) => (
-          <span className="landing-category" key={cat}>
-            <span className="landing-category-icon">{categoryIcons[cat]}</span>
-            <span className="landing-category-label">{cat}</span>
-          </span>
-        ))}
-      </div> */}
-      {/* 카테고리 패널(오버레이) */}
-      {/* {categoryPanelOpen && (
-        <div className="category-panel-overlay" style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.15)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }} onClick={onCategoryPanelClose}>
-          <div className="category-panel" style={{ background: '#fff', borderRadius: 12, marginTop: 40, boxShadow: '0 4px 24px #0002', padding: 16, minWidth: 220, maxHeight: 500, overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 12 }}>카테고리 선택</div>
-            {allCategories.map((cat) => (
-              <div
-                key={cat}
-                onClick={() => onCategoryToggle(cat)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', cursor: 'pointer',
-                  color: tempSelectedCategories.includes(cat) ? '#e89cae' : '#444',
-                  fontWeight: tempSelectedCategories.includes(cat) ? 700 : 400,
-                  background: tempSelectedCategories.includes(cat) ? '#f8e6eb' : 'transparent',
-                  borderRadius: 8,
-                  paddingLeft: 8,
-                }}
-              >
-                <span style={{ fontSize: 18 }}>{categoryIcons[cat]}</span>
-                <span>{cat}</span>
-                {tempSelectedCategories.includes(cat) && <span style={{ marginLeft: 'auto', color: '#e89cae', fontSize: 18 }}>✔</span>}
-              </div>
-            ))}
-            <button
-              onClick={onCategoryApply}
-              style={{ width: '100%', marginTop: 16, background: '#444', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 0', fontSize: 16, fontWeight: 500, cursor: 'pointer' }}
-            >카테고리 반영</button>
-          </div>
-        </div>
-      )}  */}
+
       {/* 하단 네비게이션 */}
       <div className="landing-bottomnav">
         <div className="landing-nav-item active">🏠<br />홈</div>
