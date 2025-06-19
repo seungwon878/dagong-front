@@ -1,5 +1,18 @@
 import React from 'react';
 
+interface Product {
+  id: number;
+  title: string;
+  content: string;
+  name: string;
+  imageUrl: string;
+  price: number;
+  quantity: number;
+  maxParticipants: number;
+  category1: string;
+  category2: string;
+}
+
 interface CatePagePresentationProps {
   mainCategories: string[];
   selectedMain: string;
@@ -10,10 +23,67 @@ interface CatePagePresentationProps {
   onChat: () => void;
   onMyPage: () => void;
   onDetailCategoryClick: (detail: string) => void;
+  selectedDetail: string;
+  products: Product[];
+  loading: boolean;
+  error: string | null;
 }
 
-const CatePagePresentation = ({ mainCategories, selectedMain, onSelectMain, categoryDetails, onHome, onCategory, onChat, onMyPage, onDetailCategoryClick }: CatePagePresentationProps) => {
+const CatePagePresentation = ({ 
+  mainCategories, 
+  selectedMain, 
+  onSelectMain, 
+  categoryDetails, 
+  onHome, 
+  onCategory, 
+  onChat, 
+  onMyPage, 
+  onDetailCategoryClick,
+  selectedDetail,
+  products,
+  loading,
+  error
+}: CatePagePresentationProps) => {
   const detail = categoryDetails[selectedMain];
+
+  // 상품 카드 렌더링 함수
+  const renderProductCard = (product: Product) => (
+    <div key={product.id} style={{ 
+      border: '1px solid #eee',
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      cursor: 'pointer',
+      transition: 'transform 0.2s',
+    }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ width: 100, height: 100, borderRadius: 8, overflow: 'hidden' }}>
+          <img 
+            src={product.imageUrl} 
+            alt={product.title} 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover' 
+            }} 
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: 16, fontWeight: 600 }}>{product.title}</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: 14, color: '#666' }}>{product.content}</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: '#e89cae' }}>
+              {product.price.toLocaleString()}원
+            </span>
+            <span style={{ fontSize: 14, color: '#888' }}>
+              {product.maxParticipants}명 모집 중
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ maxWidth: 700, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', display: 'flex', flexDirection: 'column', position: 'relative', paddingBottom: 80 }}>
       {/* 상단 타이틀 */}
@@ -43,18 +113,70 @@ const CatePagePresentation = ({ mainCategories, selectedMain, onSelectMain, cate
         {/* 오른쪽 상세 카테고리 영역 */}
         <div style={{ flex: 1, padding: '24px 32px', minHeight: 400 }}>
           <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 18, color: '#222' }}>{selectedMain}</div>
-          {detail ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {detail.details.map((d, idx) => (
-                <button key={d} onClick={() => onDetailCategoryClick(d)} style={{ fontSize: 16, color: '#222', padding: '8px 0', background: 'none', border: 'none', borderRadius: 0, cursor: 'pointer', textAlign: 'left', paddingLeft: 0 }}>{d}</button>
-              ))}
-              {/* 더보기 예시 */}
-              <div style={{ marginTop: 8 }}>
-                <a href="#" style={{ color: '#2966e3', fontSize: 15, textDecoration: 'none' }}>더보기 &gt;</a>
+          {!selectedDetail ? (
+            // 상세 카테고리 목록
+            detail ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {detail.details.map((d, idx) => (
+                  <button 
+                    key={d} 
+                    onClick={() => onDetailCategoryClick(d)} 
+                    style={{ 
+                      fontSize: 16, 
+                      color: '#222', 
+                      padding: '8px 0', 
+                      background: 'none', 
+                      border: 'none', 
+                      borderRadius: 0, 
+                      cursor: 'pointer', 
+                      textAlign: 'left', 
+                      paddingLeft: 0 
+                    }}
+                  >
+                    {d}
+                  </button>
+                ))}
               </div>
-            </div>
+            ) : (
+              <div style={{ color: '#bbb', fontSize: 15 }}>상세 카테고리가 없습니다.</div>
+            )
           ) : (
-            <div style={{ color: '#bbb', fontSize: 15 }}>상세 카테고리와 이미지는 추후 추가 예정</div>
+            // 상품 목록
+            <div>
+              <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button 
+                  onClick={() => onDetailCategoryClick('')} 
+                  style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    padding: 0, 
+                    color: '#888', 
+                    cursor: 'pointer' 
+                  }}
+                >
+                  ← 카테고리로 돌아가기
+                </button>
+                <span style={{ color: '#222', fontWeight: 600 }}>{selectedDetail}</span>
+              </div>
+              
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
+                  로딩 중...
+                </div>
+              ) : error ? (
+                <div style={{ textAlign: 'center', padding: '40px 0', color: '#e89cae' }}>
+                  {error}
+                </div>
+              ) : products.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
+                  등록된 상품이 없습니다.
+                </div>
+              ) : (
+                <div>
+                  {products.map(renderProductCard)}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

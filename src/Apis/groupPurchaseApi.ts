@@ -91,3 +91,45 @@ export async function registerGroupPurchase(
   const json: GroupPurchaseResponse = await res.json();
   return json;
 }
+
+// 카테고리별 상품 목록 조회
+export const getCategoryProducts = async (category1: string, category2: string, page: number = 1, size: number = 10) => {
+  try {
+    const response = await fetch(`/api/purchases/category?category1=${encodeURIComponent(category1)}&category2=${encodeURIComponent(category2)}&page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch category products');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching category products:', error);
+    throw error;
+  }
+};
+
+// 전체 상품 목록 조회
+export const getAllProducts = async (page: number = 1, size: number = 10) => {
+  try {
+    const response = await fetch(`/api/purchases?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
+};

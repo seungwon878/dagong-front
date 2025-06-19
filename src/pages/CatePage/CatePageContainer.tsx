@@ -1,6 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CatePagePresentation from './CatePagePresentation';
+import { getCategoryProducts } from '../../Apis/groupPurchaseApi';
+
+// 상품 타입 정의
+interface Product {
+  id: number;
+  title: string;
+  content: string;
+  name: string;
+  imageUrl: string;
+  price: number;
+  quantity: number;
+  maxParticipants: number;
+  category1: string;
+  category2: string;
+}
 
 const mainCategories = [
   '여성의류', '남성의류', '패션잡화', '신발', '화장품/미용', '신선식품', '가공식품', '건강식품',
@@ -70,7 +85,37 @@ const categoryDetails: Record<string, { emoji: string; details: string[] }> = {
 
 const CatePageContainer = () => {
   const [selectedMain, setSelectedMain] = useState(mainCategories[0]);
+  const [selectedDetail, setSelectedDetail] = useState<string>('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
   const navigate = useNavigate();
+
+  // 상품 목록 조회
+  const fetchProducts = async (category1: string, category2: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getCategoryProducts(category1, category2);
+      if (response.isSuccess) {
+        setProducts(response.result.content || []);
+      } else {
+        setError(response.message || '상품 목록을 불러오는데 실패했습니다.');
+      }
+    } catch (err) {
+      setError('상품 목록을 불러오는데 실패했습니다.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 상세 카테고리 클릭 시 상품 목록 조회
+  const handleDetailCategoryClick = async (detail: string) => {
+    setSelectedDetail(detail);
+    await fetchProducts(selectedMain, detail);
+  };
 
   return (
     <CatePagePresentation
@@ -82,10 +127,11 @@ const CatePageContainer = () => {
       onCategory={() => navigate('/category')}
       onChat={() => navigate('/chat')}
       onMyPage={() => navigate('/mypage')}
-      onDetailCategoryClick={(detail) => {
-        // 추후 네이버 API 연동 예정
-        console.log('상세 카테고리 클릭:', detail);
-      }}
+      onDetailCategoryClick={handleDetailCategoryClick}
+      selectedDetail={selectedDetail}
+      products={products}
+      loading={loading}
+      error={error}
     />
   );
 };
