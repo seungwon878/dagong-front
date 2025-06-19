@@ -16,6 +16,11 @@ export default defineConfig({
         target: 'http://13.209.95.208:8080',
         changeOrigin: true,
       },
+      // 검색 API 요청 프록시 설정
+      '/search': {
+        target: 'http://13.209.95.208:8080',
+        changeOrigin: true,
+      },
     },
   },
 });

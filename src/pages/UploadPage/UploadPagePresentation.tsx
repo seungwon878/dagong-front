@@ -1,36 +1,44 @@
 import './UploadPagePresentation.css';
+import type { ChangeEvent } from 'react';
 
 interface UploadPagePresentationProps {
+  mode: 'manual';
   image: string | null;
-  onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
   people: number;
   onPeopleSelect: (num: number) => void;
   amount: number;
-  onAmountChange: (delta: number) => void;
+  onAmountChange: (e: ChangeEvent<HTMLInputElement>) => void;
   price: string;
-  onPriceChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPriceChange: (e: ChangeEvent<HTMLInputElement>) => void;
   desc: string;
-  onDescChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onDescChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onLocationClick: () => void;
   onRegister: () => void;
-  mode: 'none' | 'manual';
   onNaverSearch: () => void;
   onManualRegister: () => void;
   showManualModal: boolean;
   manualName: string;
-  setManualName: (v: string) => void;
+  setManualName: (name: string) => void;
   manualPrice: string;
-  setManualPrice: (v: string) => void;
+  setManualPrice: (price: string) => void;
   manualImage: string | null;
-  setManualImage: (v: string | null) => void;
+  setManualImage: (image: string | null) => void;
   onManualCancel: () => void;
   onManualSubmit: () => void;
-  selectedProduct: {
-    image: string | null;
-    name: string;
-    title: string;
-  } | null;
+  selectedProduct: { image: string; name: string; title: string } | null;
   onCancel: () => void;
+  selectedCategory1: string;
+  selectedCategory2: string;
+  showCategory1Modal: boolean;
+  showCategory2Modal: boolean;
+  setShowCategory1Modal: (show: boolean) => void;
+  setShowCategory2Modal: (show: boolean) => void;
+  onCategory1Select: (category: string) => void;
+  onCategory2Select: (category: string) => void;
+  onManualImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  mainCategories: string[];
+  categoryData: Record<string, string[]>;
 }
 
 const peopleOptions = [1, 2, 3, 4, 5, 6];
@@ -62,6 +70,17 @@ const UploadPagePresentation = ({
   onManualSubmit,
   selectedProduct,
   onCancel,
+  selectedCategory1,
+  selectedCategory2,
+  showCategory1Modal,
+  showCategory2Modal,
+  setShowCategory1Modal,
+  setShowCategory2Modal,
+  onCategory1Select,
+  onCategory2Select,
+  onManualImageChange,
+  mainCategories,
+  categoryData,
 }: UploadPagePresentationProps) => {
   return (
     <div className="upload-root">
@@ -101,27 +120,105 @@ const UploadPagePresentation = ({
       )}
       {/* 직접 등록 모달 */}
       {showManualModal && (
-        <div style={{
-          position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 9999,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div style={{ background: '#fff', borderRadius: 16, padding: 24, width: '90%', maxWidth: 340, boxShadow: '0 4px 24px #0002', display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>직접 상품 등록</div>
-            <input value={manualName} onChange={e => setManualName(e.target.value)} placeholder="공구 이름" style={{ padding: '12px', border: '1px solid #eee', borderRadius: 8, fontSize: 15 }} />
-            <input value={manualPrice} onChange={e => setManualPrice(e.target.value)} placeholder="공구 가격" type="number" style={{ padding: '12px', border: '1px solid #eee', borderRadius: 8, fontSize: 15 }} />
-            <input type="file" accept="image/*" onChange={e => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = () => setManualImage(reader.result as string);
-                reader.readAsDataURL(file);
-              }
-            }} />
-            {manualImage && <img src={manualImage} alt="preview" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, alignSelf: 'center' }} />}
-            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-              <button onClick={onManualSubmit} style={{ flex: 1, background: '#e89cae', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 0', fontSize: 16, fontWeight: 500, cursor: 'pointer' }}>등록</button>
-              <button onClick={onManualCancel} style={{ flex: 1, background: '#eee', color: '#444', border: 'none', borderRadius: 8, padding: '12px 0', fontSize: 16, fontWeight: 500, cursor: 'pointer' }}>취소</button>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ width: '90%', maxWidth: 400, background: '#fff', borderRadius: 16, padding: 24 }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: 18 }}>직접 상품 등록하기</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <input
+                type="text"
+                value={manualName}
+                onChange={(e) => setManualName(e.target.value)}
+                placeholder="상품명"
+                style={{ padding: 12, border: '1px solid #ddd', borderRadius: 8, fontSize: 15 }}
+              />
+              <input
+                type="number"
+                value={manualPrice}
+                onChange={(e) => setManualPrice(e.target.value)}
+                placeholder="가격"
+                style={{ padding: 12, border: '1px solid #ddd', borderRadius: 8, fontSize: 15 }}
+              />
+              {/* 이미지 파일 선택 */}
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onManualImageChange}
+                  style={{ display: 'none' }}
+                  id="manual-image-upload"
+                />
+                <label
+                  htmlFor="manual-image-upload"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 12,
+                    border: '1px solid #ddd',
+                    borderRadius: 8,
+                    fontSize: 15,
+                    cursor: 'pointer',
+                    background: '#f5f5f5'
+                  }}
+                >
+                  {manualImage ? '이미지 변경' : '이미지 선택'}
+                </label>
+                {manualImage && (
+                  <img
+                    src={manualImage}
+                    alt="미리보기"
+                    style={{
+                      width: '100%',
+                      height: 200,
+                      objectFit: 'cover',
+                      borderRadius: 8,
+                      marginTop: 8
+                    }}
+                  />
+                )}
+              </div>
+              {/* 카테고리 선택 버튼 */}
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button type="button" style={{ flex: 1, padding: 12, border: '1px solid #e89cae', borderRadius: 8, background: '#fff', color: '#e89cae', fontSize: 15 }} onClick={() => setShowCategory1Modal(true)}>
+                  {selectedCategory1 ? selectedCategory1 : '카테고리1 선택'}
+                </button>
+                <button type="button" style={{ flex: 1, padding: 12, border: '1px solid #e89cae', borderRadius: 8, background: '#fff', color: '#e89cae', fontSize: 15 }} onClick={() => selectedCategory1 && setShowCategory2Modal(true)} disabled={!selectedCategory1}>
+                  {selectedCategory2 ? selectedCategory2 : '카테고리2 선택'}
+                </button>
+              </div>
             </div>
+            <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
+              <button onClick={onManualCancel} style={{ flex: 1, padding: 12, border: '1px solid #e89cae', borderRadius: 8, background: '#fff', color: '#e89cae', fontSize: 15 }}>취소</button>
+              <button onClick={onManualSubmit} style={{ flex: 1, padding: 12, border: 'none', borderRadius: 8, background: '#e89cae', color: '#fff', fontSize: 15 }}>등록</button>
+            </div>
+            {/* 카테고리1 모달 */}
+            {showCategory1Modal && (
+              <div className="modal-overlay" style={{ zIndex: 1000 }}>
+                <div className="modal-content" style={{ width: '90%', maxWidth: 400, background: '#fff', borderRadius: 16, padding: 24, maxHeight: 400, overflowY: 'auto' }}>
+                  <h4 style={{ marginBottom: 12 }}>카테고리1 선택</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {mainCategories.map((cat) => (
+                      <button key={cat} style={{ padding: 10, border: '1px solid #eee', borderRadius: 8, background: cat === selectedCategory1 ? '#f8e6eb' : '#fff', color: cat === selectedCategory1 ? '#e89cae' : '#444', fontWeight: 500 }} onClick={() => onCategory1Select(cat)}>{cat}</button>
+                    ))}
+                  </div>
+                  <button style={{ marginTop: 16, width: '100%', padding: 10, border: 'none', borderRadius: 8, background: '#eee', color: '#888' }} onClick={() => setShowCategory1Modal(false)}>닫기</button>
+                </div>
+              </div>
+            )}
+            {/* 카테고리2 모달 */}
+            {showCategory2Modal && selectedCategory1 && (
+              <div className="modal-overlay" style={{ zIndex: 1000 }}>
+                <div className="modal-content" style={{ width: '90%', maxWidth: 400, background: '#fff', borderRadius: 16, padding: 24, maxHeight: 400, overflowY: 'auto' }}>
+                  <h4 style={{ marginBottom: 12 }}>카테고리2 선택</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {categoryData[selectedCategory1].map((cat2) => (
+                      <button key={cat2} style={{ padding: 10, border: '1px solid #eee', borderRadius: 8, background: cat2 === selectedCategory2 ? '#f8e6eb' : '#fff', color: cat2 === selectedCategory2 ? '#e89cae' : '#444', fontWeight: 500 }} onClick={() => onCategory2Select(cat2)}>{cat2}</button>
+                    ))}
+                  </div>
+                  <button style={{ marginTop: 16, width: '100%', padding: 10, border: 'none', borderRadius: 8, background: '#eee', color: '#888' }} onClick={() => setShowCategory2Modal(false)}>닫기</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -162,9 +259,9 @@ const UploadPagePresentation = ({
         {/* 마감 개수 */}
         <div className="upload-label">마감 개수</div>
         <div className="upload-amount-box">
-          <button className="upload-amount-btn" onClick={() => onAmountChange(-1)}>-</button>
+          <button className="upload-amount-btn" onClick={() => onAmountChange({ target: { value: String(amount - 1) } } as any)}>-</button>
           <span className="upload-amount">{amount}개</span>
-          <button className="upload-amount-btn" onClick={() => onAmountChange(1)}>+</button>
+          <button className="upload-amount-btn" onClick={() => onAmountChange({ target: { value: String(amount + 1) } } as any)}>+</button>
         </div>
         {/* 설명 */}
         <div className="upload-label">설명</div>
