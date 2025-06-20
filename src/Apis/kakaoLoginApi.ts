@@ -9,9 +9,11 @@ export interface KakaoLoginResponse {
   message: string;
   result?: {
     token: string;
-    id: number;
-    nickname: string;
-    email: string;
+    user: {
+      id: number;
+      nickname: string;
+      email: string;
+    }
   };
 }
 
