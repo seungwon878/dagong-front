@@ -9,6 +9,8 @@ interface AppContextType {
   setMemberid: (memberid: string) => void;
   authToken: string;
   setAuthToken: (authToken: string) => void;
+  isSuccess: boolean;
+  setIsSuccess: (isSuccess: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -17,20 +19,24 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [memberid, setMemberid] = useState('');
   const [authToken, setAuthToken] = useState('');
-  
+  const [isSuccess, setIsSuccess] = useState(false);
   useEffect(() => {
     const memberid = localStorage.getItem('memberId');
     const authToken = localStorage.getItem('authToken'); 
+    const isSuccess = localStorage.getItem('isSuccess');
     if (memberid) {
       setMemberid(memberid);
     } 
     if (authToken) {
       setAuthToken(authToken);
     }
+    if (isSuccess) {
+      setIsSuccess(isSuccess === 'true');
+    }
   }, []);
 
   return (
-    <AppContext.Provider value={{ isLoading, setIsLoading, memberid, setMemberid, authToken, setAuthToken }}>
+    <AppContext.Provider value={{ isLoading, setIsLoading, memberid, setMemberid, authToken, setAuthToken, isSuccess, setIsSuccess }}>
       {children}
     </AppContext.Provider>
   );

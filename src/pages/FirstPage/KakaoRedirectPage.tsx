@@ -34,6 +34,7 @@ const KakaoRedirectPage: React.FC = () => {
       getKakaoLogin(code)
         .then(data => {
           if (data.isSuccess && data.result) {
+            localStorage.setItem('isSuccess', "true");
             localStorage.setItem('authToken', data.result.token);
             localStorage.setItem('memberId', data.result.id.toString());
             localStorage.setItem('nickname', data.result.nickname);

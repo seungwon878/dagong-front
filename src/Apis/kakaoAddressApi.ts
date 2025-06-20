@@ -62,28 +62,18 @@ export interface LatLngInfo {
  * @returns 위도/경도 정보
  */
 export async function getLatLngFromAddress(placeAddress: string): Promise<LatLngInfo> {
-  console.log('🚀 getLatLngFromAddress 함수 시작');
-  console.log('📍 입력된 주소:', placeAddress);
   
   try {
     const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(placeAddress)}`;
     
     // 환경 변수 확인
     const apiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
-    console.log('🔑 API Key 확인:', apiKey ? '설정됨' : '설정되지 않음');
-    console.log('🔑 API Key (처음 10자리):', apiKey ? apiKey.substring(0, 10) + '...' : '없음');
     
     if (!apiKey) {
       throw new Error('카카오 REST API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.');
     }
     
-    console.log('🌐 요청 URL:', url);
-    console.log('📤 요청 헤더:', {
-      'Authorization': `KakaoAK ${apiKey.substring(0, 10)}...`,
-      'Content-Type': 'application/json',
-    });
     
-    console.log('📡 API 요청 시작...');
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -93,19 +83,13 @@ export async function getLatLngFromAddress(placeAddress: string): Promise<LatLng
       },
     });
 
-    console.log('📥 API 응답 받음');
-    console.log('📊 응답 상태:', response.status);
-    console.log('📋 응답 헤더:', Object.fromEntries(response.headers.entries()));
-
     if (!response.ok) {
       const errorText = await response.text();
       console.error('❌ API 응답 에러 내용:', errorText);
       throw new Error(`카카오 주소 검색 실패: ${response.status} - ${errorText}`);
     }
 
-    console.log('✅ API 응답 성공');
     const data: KakaoAddressResponse = await response.json();
-    console.log('📄 응답 데이터:', data);
     
     if (data.documents.length === 0) {
       console.log('⚠️ 검색 결과 없음');
@@ -113,16 +97,12 @@ export async function getLatLngFromAddress(placeAddress: string): Promise<LatLng
     }
 
     const result = data.documents[0];
-    console.log('🎯 첫 번째 검색 결과:', result);
     
     const latLngInfo = {
       latitude: parseFloat(result.y),
       longitude: parseFloat(result.x),
       address: result.address_name,
     };
-    
-    console.log('📍 변환된 위도/경도 정보:', latLngInfo);
-    console.log('✅ getLatLngFromAddress 함수 완료');
     
     return latLngInfo;
   } catch (error) {
