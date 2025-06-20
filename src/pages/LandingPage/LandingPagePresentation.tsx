@@ -95,27 +95,27 @@ const LandingPagePresentation = ({
     <div 
       key={product.id} 
       onClick={() => onProductClick(product.id)}
-      style={styles.productCard}
+      className="product-card"
     >
-      <div style={styles.productImageContainer}>
+      <div className="product-image-container">
         <img 
           src={'/img/dagong.png'}
           alt={product.title} 
-          style={styles.productImage}
+          className="product-image"
         />
-        {product.status === 'ACTIVE' && <div style={styles.statusBadge}>공구중</div>}
+        {product.status === 'ACTIVE' && <div className="status-badge">공구중</div>}
       </div>
-      <div style={styles.productInfo}>
+      <div className="product-info">
         <div>
-          <h3 style={styles.productTitle}>{product.title}</h3>
-          <p style={styles.productPlace}>{product.place}</p>
+          <h3 className="product-title">{product.title}</h3>
+          <p className="product-place">{product.place}</p>
         </div>
-        <div style={styles.productFooter}>
-          <span style={styles.productPrice}>{product.price.toLocaleString()}원</span>
-          <div style={styles.productMeta}>
-            <span style={styles.metaItem}>❤️ {product.likes}</span>
-            <span style={styles.metaItem}>|</span>
-            <span style={styles.metaItem}>참여 {product.currentParticipants}/{product.maxParticipants}</span>
+        <div className="product-footer">
+          <span className="product-price">{product.price.toLocaleString()}원</span>
+          <div className="product-meta">
+            <span className="meta-item">❤️ {product.likes}</span>
+            <span className="meta-item-separator">|</span>
+            <span className="meta-item">참여 {product.currentParticipants}/{product.maxParticipants}</span>
           </div>
         </div>
       </div>
@@ -139,123 +139,77 @@ const LandingPagePresentation = ({
           </div>
         </div>
       )}
-      {/* 상단 검색 영역 - 네이버 스토어 스타일 */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: 340, background: '#fff', border: '2px solid #8854d9', borderRadius: 8, padding: '0 12px', height: 48, boxSizing: 'border-box', boxShadow: '0 2px 8px #0001' }}>
-          <img src="/img/dagong.png" alt="DAGONG 로고" style={{ width: 38, height: 38, marginRight: 8 }} />
-          <span style={{ fontSize: 20, marginRight: 4 }}>🔍</span>
-          <input type="text" placeholder="   상품명 또는 브랜드 입력" style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, background: 'transparent', color: '#222', marginRight: 8 }} />
-          <span style={{ color: '#8854d9', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>▼</span>
+      {/* 상단 헤더 영역 */}
+      <header className="landing-header">
+        <div className="search-bar">
+          <span className="search-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
+          <input type="text" placeholder="상품명 혹은 브랜드명을 입력해주세요." className="search-input" />
         </div>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, padding: '0 16px' }}>
-          <div>
-            {city} {district} {town}
+        
+        <div className="header-row">
+          <div className="location-display">
+            📍 {city} {district} {town}
           </div>
-          <button className="landing-location-btn" onClick={onSortClick}>
-            {sortType === 'views' ? '조회수 순' : '찜 순'} ▼
-          </button>
+          {/* --- 정렬 버튼 및 드롭다운 컨테이너 --- */}
+          <div className="sort-container">
+            <button className="sort-button" onClick={onSortClick}>
+              {sortType === 'views' ? '인기순' : '찜 많은순'} ▼
+            </button>
+            
+            {sortPanelOpen && (
+              <div className="sort-dropdown" onClick={(e) => e.stopPropagation()}>
+                {[
+                  { key: 'views', label: '인기순' },
+                  { key: 'likes', label: '찜 많은순' },
+                ].map((option) => (
+                  <div 
+                    key={option.key}
+                    className={`sort-option ${sortType === option.key ? 'active' : ''}`}
+                    onClick={() => onSortChange(option.key as SortType)}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+      </header>
+
+      {/* --- 액션 버튼 영역 --- */}
+      <div className="action-button-container">
+        <button className="landing-upload-btn" onClick={onGoToUpload}>
+          + 새로운 공동구매 등록하기
+        </button>
       </div>
 
-      {/* 상품 목록 영역 (기존 애니메이션 영역 대체) */}
-      <div style={{ margin: '24px 16px', minHeight: 350 }}>
+      {/* 상품 목록 영역 */}
+      <main className="product-list-container">
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
-            로딩 중...
-          </div>
+          <div className="message-box">로딩 중...</div>
         ) : error ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#e89cae' }}>
-            {error}
-          </div>
+          <div className="message-box error">{error}</div>
         ) : products.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
-            등록된 상품이 없습니다.
-          </div>
+          <div className="message-box">등록된 상품이 없습니다.</div>
         ) : (
-          <div>
+          <div className="product-grid">
             {products.map(renderProductCard)}
           </div>
         )}
-      </div>
+      </main>
 
-      {/* 정렬 기준 선택 패널 */}
+      {/* 정렬 기준 선택 패널 (기존 모달 방식은 삭제) */}
       {sortPanelOpen && (
         <div 
-          style={{ 
-            position: 'fixed', 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            bottom: 0, 
-            background: 'rgba(0,0,0,0.4)', 
-            zIndex: 1000,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            paddingTop: 100
-          }}
+          className="dropdown-overlay"
           onClick={onSortPanelClose}
-        >
-          <div 
-            style={{ 
-              background: '#fff', 
-              borderRadius: 12, 
-              padding: 16, 
-              width: '90%', 
-              maxWidth: 300,
-              boxShadow: '0 4px 24px rgba(0,0,0,0.1)'
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 16, color: '#222' }}>정렬 기준</div>
-            <button 
-              onClick={() => onSortChange('views')}
-              style={{ 
-                width: '100%',
-                padding: '12px',
-                marginBottom: 8,
-                border: 'none',
-                borderRadius: 8,
-                background: sortType === 'views' ? '#f8e6eb' : '#f5f5f5',
-                color: sortType === 'views' ? '#e89cae' : '#444',
-                fontSize: 15,
-                fontWeight: sortType === 'views' ? 600 : 400,
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}
-            >
-              조회수 순
-            </button>
-            <button 
-              onClick={() => onSortChange('likes')}
-              style={{ 
-                width: '100%',
-                padding: '12px',
-                border: 'none',
-                borderRadius: 8,
-                background: sortType === 'likes' ? '#f8e6eb' : '#f5f5f5',
-                color: sortType === 'likes' ? '#e89cae' : '#444',
-                fontSize: 15,
-                fontWeight: sortType === 'likes' ? 600 : 400,
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}
-            >
-              찜 순
-            </button>
-          </div>
-        </div>
+        />
       )}
-
-      {/* 하단 버튼 */}
-      <div style={{ display: 'flex', gap: 20, width: 'fit-content', margin: '10px auto 0 auto' }}>
-        <button className="landing-toolbar-btn" onClick={onProductListClick} style={{ fontSize: 15, padding: '10px 18px', borderRadius: 20, background: '#fff', color: '#e89cae', border: '2px solid #e89cae', fontWeight: 600, boxShadow: '0 2px 8px #0001', cursor: 'pointer' }}>
-          공구 중인 상품 보기
-        </button>
-        <button className="landing-upload-btn" onClick={onGoToUpload} style={{ fontSize: 15, padding: '10px 18px', borderRadius: 20 }}>
-          공구 등록하러 가기
-        </button>
-      </div>
 
       {/* 하단 네비게이션 */}
       <div className="landing-bottomnav">
@@ -268,91 +222,6 @@ const LandingPagePresentation = ({
   );
 };
 
-const styles: { [key: string]: React.CSSProperties } = {
-  productCard: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    backgroundColor: '#fff',
-    borderRadius: '16px',
-    padding: '10px',
-    marginBottom: '10px',
-    cursor: 'pointer',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.07)',
-    border: '1px solid #f0f0f0',
-    overflow: 'hidden',
-  },
-  productImageContainer: {
-    position: 'relative',
-    width: '90px',
-    height: '90px',
-    borderRadius: '10px',
-    overflow: 'hidden',
-    backgroundColor: '#f5f5f5',
-    marginRight: '12px',
-    flexShrink: 0,
-  },
-  productImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  statusBadge: {
-    position: 'absolute',
-    top: '0',
-    left: '0',
-    backgroundColor: 'rgba(232, 156, 174, 0.9)',
-    color: '#fff',
-    padding: '4px 9px',
-    borderRadius: '10px 0 8px 0',
-    fontSize: '10px',
-    fontWeight: '600',
-  },
-  productInfo: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  productTitle: {
-    margin: '0 0 6px 0',
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#333',
-    lineHeight: 1.35,
-    display: '-webkit-box',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    minHeight: '38px',
-  },
-  productPlace: {
-    margin: 0,
-    fontSize: '12px',
-    color: '#888',
-  },
-  productFooter: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '8px',
-  },
-  productPrice: {
-    fontSize: '15px',
-    fontWeight: 'bold',
-    color: '#e89cae',
-  },
-  productMeta: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontSize: '11px',
-    color: '#888',
-  },
-  metaItem: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-};
+const styles: { [key: string]: React.CSSProperties } = {};
 
 export default LandingPagePresentation; 
