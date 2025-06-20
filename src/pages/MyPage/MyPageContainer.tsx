@@ -19,14 +19,6 @@ const MyPageContainer = () => {
   const handleDelivery = () => alert('배송 조회 기능은 준비중입니다.');
   const handleNavigate = (path: string) => navigate(path);
 
-  const handleHome = () => navigate('/');
-  const handleChat = () => navigate('/chat');
-  const handleUpload = () => navigate('/upload');
-  const handleMyPage = () => navigate('/mypage');
-  const handleCategory = () => {
-    navigate('/category');
-  };
-
   const handleLogout = () => {
     logout();
     navigate('/first');
@@ -60,11 +52,6 @@ const MyPageContainer = () => {
       onMyJoined={handleMyJoined}
       onMyLiked={handleMyLiked}
       onDelivery={handleDelivery}
-      onHome={handleHome}
-      onChat={handleChat}
-      onUpload={handleUpload}
-      onMyPage={handleMyPage}
-      onCategory={handleCategory}
       onNavigate={handleNavigate}
       onLogout={handleLogout}
       onDeleteAccount={handleDeleteAccount}
