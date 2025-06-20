@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import LandingPagePresentation from './LandingPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
 import { getAllProducts } from '../../Apis/groupPurchaseApi';
+import { useAuth } from '../../contexts/AuthContext';
 
 // 상품 타입 정의
 interface Product {
@@ -28,12 +29,13 @@ type SortType = 'views' | 'likes';
 const LandingPageContainer = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, login } = useAuth();
   const [selectedCategories, setSelectedCategories] = useState<string[]>(defaultCategories);
   const [categoryPanelOpen, setCategoryPanelOpen] = useState(false);
   const [tempSelectedCategories, setTempSelectedCategories] = useState<string[]>(selectedCategories);
   const [isProcessingLogin, setIsProcessingLogin] = useState(false);
   const processedCodeRef = useRef<string | null>(null);
-  
+
   // 새로 추가된 상태들
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,26 +58,26 @@ const LandingPageContainer = () => {
 
   const handleChat = () => navigate('/chat');
   const handleMyPage = () => navigate('/mypage');
-  
+
   // 네비게이션 버튼 클릭 시 패널 오픈
   const handleCategoryNavClick = () => {
     setTempSelectedCategories(selectedCategories);
     setCategoryPanelOpen(true);
   };
-  
+
   // 카테고리 토글
   const handleCategoryToggle = (cat: string) => {
     setTempSelectedCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     );
   };
-  
+
   // 카테고리 반영
   const handleCategoryApply = () => {
     setSelectedCategories(tempSelectedCategories.length > 0 ? tempSelectedCategories : defaultCategories);
     setCategoryPanelOpen(false);
   };
-  
+
   // 카테고리 패널 닫기
   const handleCategoryPanelClose = () => {
     setCategoryPanelOpen(false);
@@ -119,8 +121,11 @@ const LandingPageContainer = () => {
 
   // 정렬 기준 변경 시 상품 목록 다시 조회
   useEffect(() => {
-    fetchProducts();
-  }, [sortType]);
+    // 인증된 경우에만 상품 목록을 가져옴
+    if (isAuthenticated) {
+      fetchProducts();
+    }
+  }, [sortType, isAuthenticated]);
 
   // 정렬 기준 변경 핸들러
   const handleSortChange = (newSortType: SortType) => {
@@ -148,25 +153,33 @@ const LandingPageContainer = () => {
       // 바로 카카오 로그인 진행
       getKakaoLogin(code)
         .then(data => {
-          if (data.isSuccess && data.result) {
-            localStorage.setItem('authToken', data.result.token);
-            localStorage.setItem('memberId', data.result.id.toString());
-            localStorage.setItem('nickname', data.result.nickname);
-            localStorage.setItem('email', data.result.email);
+          console.log('백엔드로부터 받은 전체 응답:', JSON.stringify(data, null, 2));
+
+          if (data.isSuccess && data.result && data.result.user && typeof data.result.user.id === 'number' && data.result.token) {
+            // AuthContext의 login 함수를 사용하여 로그인 상태 업데이트
+            login(
+              data.result.token,
+              data.result.user.id.toString(),
+              data.result.user.nickname,
+              data.result.user.email
+            );
             console.log('카카오 로그인 성공:', data.result);
             // code 파라미터를 제거하고 새로고침
             navigate('/landing', { replace: true });
           } else {
-            console.error('카카오 로그인 실패:', data);
-            alert('카카오 로그인에 실패했습니다.');
+            console.error('카카오 로그인 실패: 백엔드 응답 데이터가 올바르지 않습니다.', data);
+            alert('카카오 로그인에 실패했습니다. (서버 응답 데이터 오류)');
             navigate('/landing', { replace: true });
           }
         })
-        .catch((error) => {
+        .catch((error: Error) => {
           console.error('카카오 로그인 에러 상세:', error);
+          if (error?.message) {
+            console.error('백엔드 응답 에러 메시지:', error.message);
+          }
           
           // invalid_grant 에러인 경우 특별한 메시지 표시
-          if (error.message.includes('invalid_grant')) {
+          if (error?.message?.includes('invalid_grant')) {
             alert('인증 코드가 만료되었거나 이미 사용되었습니다. 다시 로그인해주세요.');
           } else {
             alert('카카오 로그인 중 오류가 발생했습니다.');
@@ -178,7 +191,7 @@ const LandingPageContainer = () => {
           setIsProcessingLogin(false);
         });
     }
-  }, [location, navigate, isProcessingLogin]);
+  }, [location, navigate, isProcessingLogin, login]);
 
   // 로딩 중일 때 로딩 화면 표시
   if (isProcessingLogin) {
