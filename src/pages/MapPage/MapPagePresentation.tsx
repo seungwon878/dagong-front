@@ -1,5 +1,6 @@
 import React from 'react';
 import './MapPagePresentation.css';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   onClose: () => void;
@@ -31,7 +32,10 @@ const MapPagePresentation: React.FC<Props> = ({
   coords,
   showSaveBtn,
   onSaveLocation,
-}) => (
+}) => {
+  const navigate = useNavigate();
+
+  return (
   <div className="map-root">
     {/* 상단바 */}
     <div className="map-topbar">
@@ -76,7 +80,13 @@ const MapPagePresentation: React.FC<Props> = ({
 
     {showSaveBtn && (
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
-        <button onClick={onSaveLocation} style={{ padding: '10px 24px', fontSize: 16, borderRadius: 8, background: '#e89cae', color: '#fff', border: 'none', cursor: 'pointer' }}>
+        <button 
+          onClick={() => {
+            onSaveLocation();
+            navigate('/');
+          }} 
+          style={{ padding: '10px 24px', fontSize: 16, borderRadius: 8, background: '#e89cae', color: '#fff', border: 'none', cursor: 'pointer' }}
+        >
           위치 저장
         </button>
       </div>
@@ -92,6 +102,7 @@ const MapPagePresentation: React.FC<Props> = ({
     )}
 
   </div>
-);
+  );
+};
 
 export default MapPagePresentation;

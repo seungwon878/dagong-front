@@ -4,6 +4,7 @@ import LandingPagePresentation from './LandingPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
 import { getAllProducts } from '../../Apis/groupPurchaseApi';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAppContext } from '../../AppContext';
 
 // 상품 타입 정의
 interface Product {
@@ -35,6 +36,10 @@ const LandingPageContainer = () => {
   const [tempSelectedCategories, setTempSelectedCategories] = useState<string[]>(selectedCategories);
   const [isProcessingLogin, setIsProcessingLogin] = useState(false);
   const processedCodeRef = useRef<string | null>(null);
+  // const { memberid, authToken, isSuccess } = useAppContext();
+  const memberid = localStorage.getItem('memberId');
+  const authToken = localStorage.getItem('authToken');
+  const isSuccess = localStorage.getItem('isSuccess');
 
   // 새로 추가된 상태들
   const [products, setProducts] = useState<Product[]>([]);
@@ -42,6 +47,51 @@ const LandingPageContainer = () => {
   const [error, setError] = useState<string | null>(null);
   const [sortType, setSortType] = useState<SortType>('views');
   const [sortPanelOpen, setSortPanelOpen] = useState(false);
+  const [showAddressPopup, setShowAddressPopup] = useState(false);
+  const [city, setCity] = useState<string | null>(null);
+  const [district, setDistrict] = useState<string | null>(null);
+  const [town, setTown] = useState<string | null>(null);
+  const [loadingLocation, setLoadingLocation] = useState(false);
+
+  const getLocation = async (memberId: number) => {
+    try {
+      setLoadingLocation(true);
+      const res = await fetch(`http://13.209.95.208:8080/location/${memberId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+      });
+      const data = await res.json();
+
+      console.log('getLocation 데이터', data);
+      // result가 빈 배열이면 팝업 오픈
+      if (Array.isArray(data.result) && data.result.length === 0) {
+        setShowAddressPopup(true);
+      } else if (Array.isArray(data.result) && data.result.length > 0) {
+        setCity(data.result[0].city);
+        setDistrict(data.result[0].district);
+        setTown(data.result[0].town);
+      } else {
+        setCity(null);
+        setDistrict(null);
+        setTown(null);
+      }
+    } catch (e: any) {
+      alert('위치 저장 실패: ' + e.message);
+    } finally {
+      setLoadingLocation(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      getLocation(Number(memberid));
+    }
+  }, [isSuccess]);
+
+
 
   const handleGoToUpload = () => {
     navigate('/upload');
@@ -119,6 +169,7 @@ const LandingPageContainer = () => {
     }
   };
 
+
   // 정렬 기준 변경 시 상품 목록 다시 조회
   useEffect(() => {
     // 인증된 경우에만 상품 목록을 가져옴
@@ -146,15 +197,12 @@ const LandingPageContainer = () => {
     const code = params.get('code');
     
     if (code && processedCodeRef.current !== code && !isProcessingLogin) {
-      console.log('카카오 로그인 코드 감지:', code);
       processedCodeRef.current = code;
       setIsProcessingLogin(true);
       
       // 바로 카카오 로그인 진행
       getKakaoLogin(code)
         .then(data => {
-          console.log('백엔드로부터 받은 전체 응답:', JSON.stringify(data, null, 2));
-
           if (data.isSuccess && data.result && data.result.user && typeof data.result.user.id === 'number' && data.result.token) {
             // AuthContext의 login 함수를 사용하여 로그인 상태 업데이트
             login(
@@ -163,7 +211,11 @@ const LandingPageContainer = () => {
               data.result.user.nickname,
               data.result.user.email
             );
-            console.log('카카오 로그인 성공:', data.result);
+            localStorage.setItem('isSuccess', "true");
+            localStorage.setItem('authToken', data.result.token);
+            localStorage.setItem('memberId', data.result.user.id.toString());
+            localStorage.setItem('nickname', data.result.user.nickname);
+            localStorage.setItem('email', data.result.user.email);
             // code 파라미터를 제거하고 새로고침
             navigate('/landing', { replace: true });
           } else {
@@ -194,7 +246,7 @@ const LandingPageContainer = () => {
   }, [location, navigate, isProcessingLogin, login]);
 
   // 로딩 중일 때 로딩 화면 표시
-  if (isProcessingLogin) {
+  if (isProcessingLogin || loadingLocation) {
     return (
       <div style={{ 
         display: 'flex', 
@@ -204,7 +256,7 @@ const LandingPageContainer = () => {
         flexDirection: 'column',
         gap: '20px'
       }}>
-        <div>카카오 로그인 처리 중...</div>
+        <div>{isProcessingLogin ? '카카오 로그인 처리 중...' : '위치 정보 불러오는 중...'}</div>
         <div style={{ fontSize: '14px', color: '#666' }}>잠시만 기다려주세요.</div>
       </div>
     );
@@ -236,6 +288,11 @@ const LandingPageContainer = () => {
       onSortClick={() => setSortPanelOpen(true)}
       onSortChange={handleSortChange}
       onSortPanelClose={() => setSortPanelOpen(false)}
+      showAddressPopup={showAddressPopup}
+      setShowAddressPopup={setShowAddressPopup}
+      city={city}
+      district={district}
+      town={town}
     />
   );
 };

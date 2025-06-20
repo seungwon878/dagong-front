@@ -1,5 +1,6 @@
 import './LandingPagePresentation.css';
 import { FadeTextSlider } from '../../components/FadeTextSlider';
+import { useNavigate } from 'react-router-dom';
 
 interface Product {
   id: number;
@@ -43,6 +44,11 @@ interface LandingPagePresentationProps {
   onSortClick: () => void;
   onSortChange: (type: SortType) => void;
   onSortPanelClose: () => void;
+  showAddressPopup?: boolean;
+  setShowAddressPopup?: (show: boolean) => void;
+  city?: string | null;
+  district?: string | null;
+  town?: string | null;
 }
 
 // 예시 mock 상품 데이터 (카테고리별 5~6개씩)
@@ -83,8 +89,11 @@ const LandingPagePresentation = ({
   selectedCategories, categoryPanelOpen, tempSelectedCategories,
   onCategoryNavClick, onCategoryToggle, onCategoryApply, onCategoryPanelClose, allCategories,
   onChat, onMyPage, onCategory, onProductListClick,
-  products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose
+  products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose,
+  showAddressPopup, setShowAddressPopup, city, district, town
 }: LandingPagePresentationProps) => {
+  const navigate = useNavigate();
+
   // 상품 카드 렌더링 함수
   const renderProductCard = (product: Product) => (
     <div 
@@ -131,6 +140,21 @@ const LandingPagePresentation = ({
 
   return (
     <div className="landing-root">
+      {/* 주소 등록 팝업 */}
+      {showAddressPopup && setShowAddressPopup && (
+        <div style={{
+          position: 'fixed', left: 0, top: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.3)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{
+            background: '#fff', padding: '30px 20px', borderRadius: 12, textAlign: 'center', minWidth: 250
+          }}>
+            <p style={{ fontSize: 18, marginBottom: 20 }}>주소를 등록해주세요!</p>
+            <button onClick={() => navigate('/map')} style={{ padding: '8px 20px', borderRadius: 8, background: '#e89cae', color: '#fff', border: 'none', fontWeight: 600, fontSize: 16, marginRight: 8 }}>주소 등록하러 가기</button>
+          </div>
+        </div>
+      )}
       {/* 상단 검색 영역 - 네이버 스토어 스타일 */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: 340, background: '#fff', border: '2px solid #8854d9', borderRadius: 8, padding: '0 12px', height: 48, boxSizing: 'border-box', boxShadow: '0 2px 8px #0001' }}>
@@ -139,10 +163,10 @@ const LandingPagePresentation = ({
           <input type="text" placeholder="   상품명 또는 브랜드 입력" style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, background: 'transparent', color: '#222', marginRight: 8 }} />
           <span style={{ color: '#8854d9', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>▼</span>
         </div>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', gap: 8, marginTop: 14, paddingLeft: 16 }}>
-          <button className="landing-location-btn" onClick={onLocationClick}>
-            상도동 ▼
-          </button>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, padding: '0 16px' }}>
+          <div>
+            {city} {district} {town}
+          </div>
           <button className="landing-location-btn" onClick={onSortClick}>
             {sortType === 'views' ? '조회수 순' : '찜 순'} ▼
           </button>
