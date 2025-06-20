@@ -17,6 +17,7 @@ import MyInPage from './pages/MyInPage';
 import MyHeart from './pages/MyHeart';
 import CatePage from './pages/CatePage';
 import KakaoRedirectPage from './pages/FirstPage/KakaoRedirectPage';
+import MyInfoPage from './pages/MyInfoPage';
 
 export const router = createBrowserRouter([
   {
@@ -100,5 +101,13 @@ export const router = createBrowserRouter([
   {
     path: '/myjoined/:id',
     element: <RegisterPageContainer isJoinedMode={true} />,
+  },
+  {
+    path: '/my-info',
+    element: <MyInfoPage />,
+  },
+  {
+    path: '/auth/kakao/callback',
+    element: <KakaoRedirectPage />,
   },
 ]); 

@@ -9,8 +9,12 @@ interface MyPagePresentationProps {
   onDelivery: () => void;
   onHome: () => void;
   onChat: () => void;
+  onUpload: () => void;
   onMyPage: () => void;
   onCategory: () => void;
+  onNavigate: (path: string) => void;
+  onLogout: () => void;
+  onDeleteAccount: () => void;
 }
 
 const MyPagePresentation = ({
@@ -22,8 +26,12 @@ const MyPagePresentation = ({
   onDelivery,
   onHome,
   onChat,
+  onUpload,
   onMyPage,
   onCategory,
+  onNavigate,
+  onLogout,
+  onDeleteAccount,
 }: MyPagePresentationProps) => {
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
@@ -43,8 +51,18 @@ const MyPagePresentation = ({
         <button onClick={onMyProducts} style={{ background: 'none', border: 'none', fontWeight: 700, fontSize: 18, textAlign: 'left', padding: 0, cursor: 'pointer' }}>내가 올린 공구</button>
         <button onClick={onMyJoined} style={{ background: 'none', border: 'none', fontWeight: 700, fontSize: 18, textAlign: 'left', padding: 0, cursor: 'pointer' }}>내가 참여한 공구</button>
         <button onClick={onMyLiked} style={{ background: 'none', border: 'none', fontWeight: 700, fontSize: 18, textAlign: 'left', padding: 0, cursor: 'pointer' }}>내가 찜 해놓은 공구</button>
-        <button onClick={onDelivery} style={{ background: 'none', border: 'none', fontWeight: 700, fontSize: 18, textAlign: 'left', padding: 0, cursor: 'pointer' }}>배송 조회</button>
+        <button onClick={() => onNavigate('/my-info')} style={{ background: 'none', border: 'none', fontWeight: 700, fontSize: 18, textAlign: 'left', padding: 0, cursor: 'pointer' }}>내 정보 조회</button>
       </div>
+
+      {/* 구분선 및 로그아웃/회원탈퇴 버튼 */}
+      <div style={{ margin: '30px 24px 0 24px' }}>
+        <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0' }} />
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px', paddingBottom: '100px' }}>
+          <button onClick={onLogout} style={actionButtonStyle}>로그아웃</button>
+          <button onClick={onDeleteAccount} style={{...actionButtonStyle, color: '#d32f2f'}}>회원탈퇴</button>
+        </div>
+      </div>
+
       {/* 하단 네비게이션 */}
       <div style={{ position: 'fixed', left: '50%', bottom: 0, transform: 'translateX(-50%)', width: '100%', maxWidth: 430, background: '#fff', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-around', padding: '6px 0 2px 0', zIndex: 100 }}>
         <button onClick={onHome} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
@@ -62,6 +80,15 @@ const MyPagePresentation = ({
       </div>
     </div>
   );
+};
+
+const actionButtonStyle: React.CSSProperties = {
+  background: 'none',
+  border: 'none',
+  fontSize: '14px',
+  color: '#888',
+  cursor: 'pointer',
+  padding: '8px 12px',
 };
 
 export default MyPagePresentation;
