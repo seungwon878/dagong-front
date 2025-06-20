@@ -5,16 +5,14 @@ import { useNavigate } from 'react-router-dom';
 interface Product {
   id: number;
   title: string;
-  content: string;
-  name: string;
-  imageUrl: string;
+  status: string;
+  place: string;
   price: number;
-  quantity: number;
   maxParticipants: number;
-  category1: string;
-  category2: string;
+  currentParticipants: number;
   views: number;
   likes: number;
+  deadline: string;
 }
 
 type SortType = 'views' | 'likes';
@@ -94,44 +92,35 @@ const LandingPagePresentation = ({
 }: LandingPagePresentationProps) => {
   const navigate = useNavigate();
 
-  // 상품 카드 렌더링 함수
   const renderProductCard = (product: Product) => (
     <div 
       key={product.id} 
       onClick={() => onProductClick(product.id)}
-      style={{ 
-        border: '1px solid #eee',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        cursor: 'pointer',
-        background: '#fff',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-      }}
+      style={styles.productCard}
     >
-      <div style={{ display: 'flex', gap: 16 }}>
-        <div style={{ width: 100, height: 100, borderRadius: 8, overflow: 'hidden', background: '#f5f5f5' }}>
-          <img 
-            src={product.imageUrl || '/img/dagong.png'} 
-            alt={product.title} 
-            style={{ 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover' 
-            }} 
-          />
+      <div style={styles.productImageContainer}>
+        <img 
+          src={'/img/dagong.png'}
+          alt={product.title} 
+          style={styles.productImage}
+        />
+        <div style={styles.productStats}>
+          <span style={styles.statItem}>👁️ {product.views}</span>
+          <span style={styles.statItem}>❤️ {product.likes}</span>
         </div>
-        <div style={{ flex: 1 }}>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: 16, fontWeight: 600 }}>{product.title}</h3>
-          <p style={{ margin: '0 0 8px 0', fontSize: 14, color: '#666' }}>{product.content}</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 16, fontWeight: 600, color: '#e89cae' }}>
-              {product.price.toLocaleString()}원
+        {product.status === 'ACTIVE' && <div style={styles.statusBadge}>공구중</div>}
+      </div>
+      <div style={styles.productInfo}>
+        <h3 style={styles.productTitle}>{product.title}</h3>
+        <p style={styles.productPlace}>{product.place}</p>
+        <div style={styles.productFooter}>
+          <span style={styles.productPrice}>
+            {product.price.toLocaleString()}원
+          </span>
+          <div style={styles.productMeta}>
+            <span style={styles.metaItem}>
+              참여: {product.currentParticipants} / {product.maxParticipants}명
             </span>
-            <div style={{ display: 'flex', gap: 8, fontSize: 14, color: '#888' }}>
-              <span>👁️ {product.views}</span>
-              <span>❤️ {product.likes}</span>
-            </div>
           </div>
         </div>
       </div>
@@ -282,6 +271,97 @@ const LandingPagePresentation = ({
       </div>
     </div>
   );
+};
+
+const styles: { [key: string]: React.CSSProperties } = {
+  productCard: {
+    display: 'flex',
+    border: '1px solid #eee',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    cursor: 'pointer',
+    background: '#fff',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+  },
+  productImageContainer: {
+    position: 'relative',
+    width: 100, 
+    height: 100,
+    borderRadius: 8,
+    overflow: 'hidden',
+    background: '#f5f5f5',
+    marginRight: 16,
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover'
+  },
+  productStats: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    background: 'rgba(0,0,0,0.5)',
+    padding: '4px 6px',
+    borderRadius: '8px',
+  },
+  statItem: {
+    color: '#fff',
+    fontSize: 12,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  productInfo: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  productTitle: {
+    margin: '0 0 8px 0',
+    fontSize: 16,
+    fontWeight: 600
+  },
+  productPlace: {
+    margin: '0 0 12px 0',
+    fontSize: '14px',
+    color: '#666',
+    lineHeight: '1.4',
+  },
+  productFooter: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 'auto',
+  },
+  productPrice: {
+    fontSize: 16,
+    fontWeight: 600,
+    color: '#e89cae'
+  },
+  productMeta: {
+    display: 'flex',
+    gap: 8,
+    fontSize: 14,
+    color: '#888'
+  },
+  metaItem: {
+    fontWeight: 400
+  },
+  statusBadge: {
+    position: 'absolute',
+    top: '8px',
+    left: '8px',
+    background: '#e89cae',
+    color: '#fff',
+    padding: '4px 8px',
+    borderRadius: '8px',
+    fontSize: '12px',
+    fontWeight: '600',
+  }
 };
 
 export default LandingPagePresentation; 
