@@ -116,19 +116,22 @@ export const getCategoryProducts = async (category1: string, category2: string, 
 };
 
 // 전체 상품 목록 조회
-export const getAllProducts = async (page: number = 1, size: number = 10) => {
+export const getAllProducts = async (memberId: number, page: number = 0, size: number = 10) => {
   const token = localStorage.getItem('authToken');
+  console.log("토큰", token);
   try {
-    const response = await fetch(`/api/purchases?page=${page}&size=${size}`, {
+    const response = await fetch(`/api/purchases/${memberId}?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch products');
+      // 500 에러를 포함하여 서버에서 오는 모든 에러를 처리합니다.
+      const errorBody = await response.json().catch(() => ({ message: '응답 본문이 없거나 JSON 형식이 아닙니다.' }));
+      console.error('상품 목록 조회 실패:', response.status, errorBody);
+      throw new Error(errorBody.message || '상품 목록을 가져오는데 실패했습니다.');
     }
     
     return await response.json();

@@ -10,16 +10,17 @@ import { useAppContext } from '../../AppContext';
 interface Product {
   id: number;
   title: string;
-  content: string;
-  name: string;
-  imageUrl: string;
+  // name: string; // API 응답에 없음
+  // imageUrl: string; // API 응답에 없음. 상세 조회 시 있을 수 있음
+  // content: string; // API 응답에 없음
+  status: string;
+  place: string;
   price: number;
-  quantity: number;
   maxParticipants: number;
-  category1: string;
-  category2: string;
+  currentParticipants: number;
   views: number;
   likes: number;
+  deadline: string;
 }
 
 const defaultCategories = ['식제품', '전자제품'];
@@ -64,8 +65,6 @@ const LandingPageContainer = () => {
         },
       });
       const data = await res.json();
-
-      console.log('getLocation 데이터', data);
       // result가 빈 배열이면 팝업 오픈
       if (Array.isArray(data.result) && data.result.length === 0) {
         setShowAddressPopup(true);
@@ -143,26 +142,47 @@ const LandingPageContainer = () => {
 
   // 상품 목록 조회
   const fetchProducts = async () => {
+    const memberId = localStorage.getItem('memberId');
+    const authToken = localStorage.getItem('authToken');
+
+    console.log('%c[API Request] 상품 목록 조회 시작', 'color: blue; font-weight: bold;', {
+        timestamp: new Date().toISOString(),
+        isAuthenticated: isAuthenticated,
+        memberId: memberId,
+        authToken: authToken ? `${authToken.substring(0, 15)}...` : null
+    });
+
+    if (!memberId || !isAuthenticated) {
+      console.warn('로그인 정보가 없어 상품 목록 조회를 중단합니다.');
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
-      const response = await getAllProducts(1, 10); // 전체 상품 조회
-      if (response.isSuccess) {
-        const sortedProducts = [...response.result.content];
+      const response = await getAllProducts(Number(memberId), 0, 10);
+      if (response.isSuccess && response.result.content) {
+        // API 응답 구조에 맞게 데이터 가공
+        const fetchedProducts = response.result.content.map((p: any) => ({
+          ...p,
+          // 혹시 모를 필드 부재에 대한 기본값 처리
+          views: p.views ?? 0,
+          likes: p.likes ?? 0,
+        }));
+
         // 정렬 적용
-        sortedProducts.sort((a, b) => {
+        const sortedProducts = [...fetchedProducts].sort((a, b) => {
           if (sortType === 'views') {
             return b.views - a.views;
-          } else {
-            return b.likes - a.likes;
           }
+          return b.likes - a.likes;
         });
         setProducts(sortedProducts);
       } else {
         setError(response.message || '상품 목록을 불러오는데 실패했습니다.');
       }
-    } catch (err) {
-      setError('상품 목록을 불러오는데 실패했습니다.');
+    } catch (err: any) {
+      setError(err.message || '상품 목록을 불러오는데 실패했습니다.');
       console.error(err);
     } finally {
       setLoading(false);
