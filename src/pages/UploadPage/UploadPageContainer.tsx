@@ -166,6 +166,12 @@ const UploadPageContainer = () => {
       if (state.selectedProduct.lprice) {
         setPrice(state.selectedProduct.lprice.toString());
       }
+      if (state.selectedProduct.category1) {
+        setSelectedCategory1(state.selectedProduct.category1);
+      }
+      if (state.selectedProduct.category2) {
+        setSelectedCategory2(state.selectedProduct.category2);
+      }
       // history state 초기화 (뒤로가기 시 중복 방지)
       navigate(location.pathname, { replace: true, state: {} });
     }

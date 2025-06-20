@@ -103,23 +103,19 @@ const LandingPagePresentation = ({
           alt={product.title} 
           style={styles.productImage}
         />
-        <div style={styles.productStats}>
-          <span style={styles.statItem}>👁️ {product.views}</span>
-          <span style={styles.statItem}>❤️ {product.likes}</span>
-        </div>
         {product.status === 'ACTIVE' && <div style={styles.statusBadge}>공구중</div>}
       </div>
       <div style={styles.productInfo}>
-        <h3 style={styles.productTitle}>{product.title}</h3>
-        <p style={styles.productPlace}>{product.place}</p>
+        <div>
+          <h3 style={styles.productTitle}>{product.title}</h3>
+          <p style={styles.productPlace}>{product.place}</p>
+        </div>
         <div style={styles.productFooter}>
-          <span style={styles.productPrice}>
-            {product.price.toLocaleString()}원
-          </span>
+          <span style={styles.productPrice}>{product.price.toLocaleString()}원</span>
           <div style={styles.productMeta}>
-            <span style={styles.metaItem}>
-              참여: {product.currentParticipants} / {product.maxParticipants}명
-            </span>
+            <span style={styles.metaItem}>❤️ {product.likes}</span>
+            <span style={styles.metaItem}>|</span>
+            <span style={styles.metaItem}>참여 {product.currentParticipants}/{product.maxParticipants}</span>
           </div>
         </div>
       </div>
@@ -275,92 +271,88 @@ const LandingPagePresentation = ({
 const styles: { [key: string]: React.CSSProperties } = {
   productCard: {
     display: 'flex',
-    border: '1px solid #eee',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    backgroundColor: '#fff',
+    borderRadius: '16px',
+    padding: '10px',
+    marginBottom: '10px',
     cursor: 'pointer',
-    background: '#fff',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.07)',
+    border: '1px solid #f0f0f0',
+    overflow: 'hidden',
   },
   productImageContainer: {
     position: 'relative',
-    width: 100, 
-    height: 100,
-    borderRadius: 8,
+    width: '90px',
+    height: '90px',
+    borderRadius: '10px',
     overflow: 'hidden',
-    background: '#f5f5f5',
-    marginRight: 16,
+    backgroundColor: '#f5f5f5',
+    marginRight: '12px',
+    flexShrink: 0,
   },
   productImage: {
     width: '100%',
     height: '100%',
-    objectFit: 'cover'
+    objectFit: 'cover',
   },
-  productStats: {
+  statusBadge: {
     position: 'absolute',
-    top: '8px',
-    right: '8px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-    background: 'rgba(0,0,0,0.5)',
-    padding: '4px 6px',
-    borderRadius: '8px',
-  },
-  statItem: {
+    top: '0',
+    left: '0',
+    backgroundColor: 'rgba(232, 156, 174, 0.9)',
     color: '#fff',
-    fontSize: 12,
-    display: 'flex',
-    alignItems: 'center',
+    padding: '4px 9px',
+    borderRadius: '10px 0 8px 0',
+    fontSize: '10px',
+    fontWeight: '600',
   },
   productInfo: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   productTitle: {
-    margin: '0 0 8px 0',
-    fontSize: 16,
-    fontWeight: 600
+    margin: '0 0 6px 0',
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#333',
+    lineHeight: 1.35,
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    minHeight: '38px',
   },
   productPlace: {
-    margin: '0 0 12px 0',
-    fontSize: '14px',
-    color: '#666',
-    lineHeight: '1.4',
+    margin: 0,
+    fontSize: '12px',
+    color: '#888',
   },
   productFooter: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 'auto',
+    marginTop: '8px',
   },
   productPrice: {
-    fontSize: 16,
-    fontWeight: 600,
-    color: '#e89cae'
+    fontSize: '15px',
+    fontWeight: 'bold',
+    color: '#e89cae',
   },
   productMeta: {
     display: 'flex',
-    gap: 8,
-    fontSize: 14,
-    color: '#888'
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '11px',
+    color: '#888',
   },
   metaItem: {
-    fontWeight: 400
+    display: 'flex',
+    alignItems: 'center',
   },
-  statusBadge: {
-    position: 'absolute',
-    top: '8px',
-    left: '8px',
-    background: '#e89cae',
-    color: '#fff',
-    padding: '4px 8px',
-    borderRadius: '8px',
-    fontSize: '12px',
-    fontWeight: '600',
-  }
 };
 
 export default LandingPagePresentation; 

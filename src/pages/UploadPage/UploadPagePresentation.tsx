@@ -82,6 +82,27 @@ const UploadPagePresentation = ({
   mainCategories,
   categoryData,
 }: UploadPagePresentationProps) => {
+  // 카테고리 선택 버튼 UI를 렌더링하는 함수
+  const renderCategorySelectors = () => (
+    <div style={{ display: 'flex', gap: 8 }}>
+      <button 
+        type="button" 
+        className="category-selector-btn"
+        onClick={() => setShowCategory1Modal(true)}
+      >
+        {selectedCategory1 || '카테고리1 선택'}
+      </button>
+      <button 
+        type="button" 
+        className="category-selector-btn"
+        onClick={() => selectedCategory1 && setShowCategory2Modal(true)} 
+        disabled={!selectedCategory1}
+      >
+        {selectedCategory2 || '카테고리2 선택'}
+      </button>
+    </div>
+  );
+
   return (
     <div className="upload-root">
       {/* 상단바 */}
@@ -177,15 +198,8 @@ const UploadPagePresentation = ({
                   />
                 )}
               </div>
-              {/* 카테고리 선택 버튼 */}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button type="button" style={{ flex: 1, padding: 12, border: '1px solid #e89cae', borderRadius: 8, background: '#fff', color: '#e89cae', fontSize: 15 }} onClick={() => setShowCategory1Modal(true)}>
-                  {selectedCategory1 ? selectedCategory1 : '카테고리1 선택'}
-                </button>
-                <button type="button" style={{ flex: 1, padding: 12, border: '1px solid #e89cae', borderRadius: 8, background: '#fff', color: '#e89cae', fontSize: 15 }} onClick={() => selectedCategory1 && setShowCategory2Modal(true)} disabled={!selectedCategory1}>
-                  {selectedCategory2 ? selectedCategory2 : '카테고리2 선택'}
-                </button>
-              </div>
+              {/* 카테고리 선택 버튼 (함수로 대체) */}
+              {renderCategorySelectors()}
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
               <button onClick={onManualCancel} style={{ flex: 1, padding: 12, border: '1px solid #e89cae', borderRadius: 8, background: '#fff', color: '#e89cae', fontSize: 15 }}>취소</button>
@@ -244,17 +258,19 @@ const UploadPagePresentation = ({
         {/* <div className="upload-label">위치</div>
         <input className="upload-input" type="text" value="서울 특별시 상도동 전체" readOnly onClick={onLocationClick} /> */}
         {/* 인원 */}
-        <div className="upload-label">인원</div>
-        <div className="upload-people-options">
-          {peopleOptions.map((num) => (
-            <button
-              key={num}
-              className={`upload-people-btn${num === people ? ' selected' : ''}`}
-              onClick={() => onPeopleSelect(num)}
-            >
-              {num}명
-            </button>
-          ))}
+        <div className="upload-section">
+          <div className="upload-label">인원</div>
+          <div className="upload-people-options">
+            {peopleOptions.map((num) => (
+              <button
+                key={num}
+                className={`upload-people-btn${num === people ? ' selected' : ''}`}
+                onClick={() => onPeopleSelect(num)}
+              >
+                {num}명
+              </button>
+            ))}
+          </div>
         </div>
         {/* 마감 개수 */}
         <div className="upload-label">마감 개수</div>

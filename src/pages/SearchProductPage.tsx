@@ -32,7 +32,9 @@ const SearchProductPage = () => {
       image: item.image,
       name: item.title,
       title: item.title,
-      lprice: item.lprice
+      lprice: item.lprice,
+      category1: item.category1,
+      category2: item.category2
     }}});
   };
 
