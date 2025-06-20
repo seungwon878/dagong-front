@@ -1,8 +1,18 @@
 import React from 'react';
 import BottomNavBar from '../../components/BottomNavBar';
 
+interface UserInfo {
+  id: number;
+  email: string;
+  nickname: string;
+  kakaoId: number;
+  profileUrl: string;
+  mainCategory: string;
+  subCategory: string;
+}
+
 interface MyPagePresentationProps {
-  user: { name: string; location: string };
+  userInfo: UserInfo | null;
   onEditProfile: () => void;
   onMyProducts: () => void;
   onMyJoined: () => void;
@@ -14,7 +24,7 @@ interface MyPagePresentationProps {
 }
 
 const MyPagePresentation = ({
-  user,
+  userInfo,
   onEditProfile,
   onMyProducts,
   onMyJoined,
@@ -30,10 +40,14 @@ const MyPagePresentation = ({
       <div style={{ padding: '18px 0 8px 0', fontSize: 18, fontWeight: 600, borderBottom: '1px solid #eee', textAlign: 'left', paddingLeft: 20 }}></div>
       {/* 유저 정보 */}
       <div style={{ display: 'flex', alignItems: 'center', margin: '32px 0 32px 24px' }}>
-        <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#ededed', marginRight: 16 }} />
+        <img 
+          src={userInfo?.profileUrl || 'https://via.placeholder.com/44'} 
+          alt="프로필" 
+          style={{ width: 44, height: 44, borderRadius: '50%', marginRight: 16, objectFit: 'cover' }} 
+        />
         <div>
-          <div style={{ fontWeight: 600, fontSize: 16 }}>{user.name}</div>
-          <div style={{ color: '#bbb', fontSize: 13 }}>{user.location}</div>
+          <div style={{ fontWeight: 600, fontSize: 16 }}>{userInfo?.nickname}</div>
+          <div style={{ color: '#bbb', fontSize: 13 }}>{userInfo?.mainCategory}</div>
         </div>
       </div>
       {/* 메뉴 리스트 */}
