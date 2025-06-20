@@ -127,4 +127,31 @@ export const deleteMember = async (memberId: number) => {
   }
 
   return response.json();
-}; 
+};
+
+/**
+ * 특정 회원이 찜한 상품 목록을 조회합니다.
+ * @param memberId 조회할 회원의 ID
+ * @returns 찜한 상품 목록
+ */
+export const getLikedItems = async (memberId: number) => {
+  const token = localStorage.getItem('authToken');
+  const response = await fetch(`/api/member/members/${memberId}/likes`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    try {
+      const errorData = await response.json();
+      throw new Error(errorData.message || '찜한 상품 목록 조회에 실패했습니다.');
+    } catch (e) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  }
+
+  return response.json();
+} 

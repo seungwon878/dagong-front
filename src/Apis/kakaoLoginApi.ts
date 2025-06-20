@@ -40,7 +40,6 @@ export async function checkBackendHealth(): Promise<boolean> {
 export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
   try {
     const url = `/auth/login/kakao?code=${encodeURIComponent(code)}`;
-    console.log('카카오 로그인 요청 URL:', url);
     
     const res = await fetch(url, {
       method: 'GET',
@@ -50,9 +49,6 @@ export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
       // credentials 등 필요하다면 여기에 추가
       // credentials: 'include'
     });
-    
-    console.log('응답 상태:', res.status, res.statusText);
-    console.log('응답 헤더:', Object.fromEntries(res.headers.entries()));
     
     if (!res.ok) {
       const errorText = await res.text();

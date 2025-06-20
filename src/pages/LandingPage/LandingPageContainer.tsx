@@ -142,14 +142,6 @@ const LandingPageContainer = () => {
   // 상품 목록 조회
   const fetchProducts = async () => {
     const memberId = localStorage.getItem('memberId');
-    const authToken = localStorage.getItem('authToken');
-
-    console.log('%c[API Request] 상품 목록 조회 시작', 'color: blue; font-weight: bold;', {
-        timestamp: new Date().toISOString(),
-        isAuthenticated: isAuthenticated,
-        memberId: memberId,
-        authToken: authToken ? `${authToken.substring(0, 15)}...` : null
-    });
 
     if (!memberId || !isAuthenticated) {
       console.warn('로그인 정보가 없어 상품 목록 조회를 중단합니다.');

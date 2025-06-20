@@ -48,44 +48,8 @@ interface LandingPagePresentationProps {
   town?: string | null;
 }
 
-// 예시 mock 상품 데이터 (카테고리별 5~6개씩)
-const products = [
-  // 식제품
-  { id: 1, name: '마이프로틴', price: 10000, image: '', category: '식제품' },
-  { id: 2, name: '닭가슴살', price: 12000, image: '', category: '식제품' },
-  { id: 3, name: '고구마말랭이', price: 8000, image: '', category: '식제품' },
-  { id: 4, name: '오트밀', price: 9000, image: '', category: '식제품' },
-  { id: 5, name: '단백질바', price: 7000, image: '', category: '식제품' },
-  { id: 6, name: '아몬드', price: 6000, image: '', category: '식제품' },
-  // 전자제품
-  { id: 11, name: '에어팟', price: 150000, image: '', category: '전자제품' },
-  { id: 12, name: '갤럭시버즈', price: 110000, image: '', category: '전자제품' },
-  { id: 13, name: '아이패드', price: 450000, image: '', category: '전자제품' },
-  { id: 14, name: '갤럭시탭', price: 420000, image: '', category: '전자제품' },
-  { id: 15, name: '블루투스스피커', price: 35000, image: '', category: '전자제품' },
-  { id: 16, name: '스마트워치', price: 90000, image: '', category: '전자제품' },
-  // 운동 용품
-  { id: 21, name: '덤벨', price: 20000, image: '', category: '운동 용품' },
-  { id: 22, name: '요가매트', price: 25000, image: '', category: '운동 용품' },
-  { id: 23, name: '폼롤러', price: 18000, image: '', category: '운동 용품' },
-  { id: 24, name: '푸쉬업바', price: 15000, image: '', category: '운동 용품' },
-  { id: 25, name: '헬스장갑', price: 12000, image: '', category: '운동 용품' },
-  { id: 26, name: '스트레칭밴드', price: 9000, image: '', category: '운동 용품' },
-];
-
-const categoryIcons: Record<string, string> = {
-  '식제품': '🔥',
-  '전자제품': '📱',
-  '운동 용품': '🏋️‍♂️',
-  '작업 공구': '⚙️',
-  'test': '🧪',
-};
-
 const LandingPagePresentation = ({
-  onGoToUpload, onLocationClick, onSearchClick, onProductClick,
-  selectedCategories, categoryPanelOpen, tempSelectedCategories,
-  onCategoryNavClick, onCategoryToggle, onCategoryApply, onCategoryPanelClose, allCategories,
-  onChat, onMyPage, onCategory, onProductListClick,
+  onGoToUpload,  onProductClick,onChat, onMyPage, onCategory, onProductListClick,
   products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose,
   showAddressPopup, setShowAddressPopup, city, district, town
 }: LandingPagePresentationProps) => {
