@@ -7,7 +7,6 @@ interface MyPagePresentationProps {
   onMyProducts: () => void;
   onMyJoined: () => void;
   onMyLiked: () => void;
-  onDelivery: () => void;
   onNavigate: (path: string) => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
@@ -19,7 +18,6 @@ const MyPagePresentation = ({
   onMyProducts,
   onMyJoined,
   onMyLiked,
-  onDelivery,
   onNavigate,
   onLogout,
   onDeleteAccount,
