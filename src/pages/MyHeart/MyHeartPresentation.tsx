@@ -1,14 +1,7 @@
-import React from 'react';
-
-interface Product {
-  id: number;
-  name: string;
-  status: string;
-  liked: boolean;
-}
+import type { LikedItem } from './MyHeartContainer';
 
 interface MyHeartPresentationProps {
-  products: Product[];
+  products: LikedItem[];
   onProductClick: (id: number) => void;
   onHome: () => void;
   onChat: () => void;
@@ -17,7 +10,15 @@ interface MyHeartPresentationProps {
   onCategory: () => void;
 }
 
-const MyHeartPresentation = ({ products, onProductClick, onHome, onChat, onMyPage, onCancel, onCategory }: MyHeartPresentationProps) => {
+const MyHeartPresentation = ({ 
+  products, 
+  onProductClick, 
+  onHome, 
+  onChat, 
+  onMyPage, 
+  onCancel, 
+  onCategory
+}: MyHeartPresentationProps) => {
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
       {/* 상단바 */}
@@ -25,23 +26,25 @@ const MyHeartPresentation = ({ products, onProductClick, onHome, onChat, onMyPag
         <span style={{ fontWeight: 600, fontSize: 18 }}>내가 찜한 공구</span>
         <button style={{ position: 'absolute', right: 16, top: 18, background: 'none', border: 'none', color: '#bbb', fontSize: 15, cursor: 'pointer' }} onClick={onCancel}>취소</button>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 32, margin: '0 0 32px 0' }}>
-        {products.map((p) => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: '16px 0' }}>
+        {products.length > 0 ? products.map((p) => (
           <button
-            key={p.id}
-            onClick={() => onProductClick(p.id)}
-            style={{ display: 'flex', alignItems: 'center', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0, margin: 0 }}
+            key={p.groupPurchaseId}
+            onClick={() => onProductClick(p.groupPurchaseId)}
+            style={{ display: 'flex', alignItems: 'center', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '0 16px', margin: 0 }}
           >
-            <div style={{ width: 110, height: 90, background: '#ededed', borderRadius: 12, position: 'relative', marginLeft: 24, marginRight: 18, flexShrink: 0 }}>
-              <span style={{ position: 'absolute', top: 10, right: 10, fontSize: 22, color: p.liked ? '#e89cae' : '#ccc' }}>♡</span>
+            <div style={{ width: 110, height: 90, background: '#ededed', borderRadius: 12, position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
+              <img src={p.imageUrl} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+              <span style={{ position: 'absolute', top: 10, right: 10, fontSize: 22, color: '#e89cae' }}>♡</span>
             </div>
-            <div style={{ flex: 1, textAlign: 'left', fontSize: 16, color: '#222', fontWeight: 500 }}>
-              <div style={{ marginBottom: 6 }}>상품명: {p.name}</div>
-              <div style={{ color: '#888', fontSize: 15 }}>현재 상태: {p.status}</div>
+            <div style={{ flex: 1, textAlign: 'left', fontSize: 16, color: '#222', fontWeight: 500, marginLeft: 16 }}>
+              <div style={{ marginBottom: 6 }}>{p.title}</div>
             </div>
-            <div style={{ marginRight: 24, color: '#bbb', fontSize: 22 }}>{'>'}</div>
+            <div style={{ color: '#bbb', fontSize: 22 }}>{'>'}</div>
           </button>
-        ))}
+        )) : (
+          <div style={{textAlign: 'center', color: '#888', padding: '40px 0'}}>찜한 상품이 없습니다.</div>
+        )}
       </div>
       {/* 하단 네비게이션 */}
       <div style={{ position: 'fixed', left: '50%', bottom: 0, transform: 'translateX(-50%)', width: '100%', maxWidth: 430, background: '#fff', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-around', padding: '6px 0 2px 0', zIndex: 100 }}>

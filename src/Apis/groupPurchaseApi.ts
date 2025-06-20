@@ -118,7 +118,6 @@ export const getCategoryProducts = async (category1: string, category2: string, 
 // 전체 상품 목록 조회
 export const getAllProducts = async (memberId: number, page: number = 1, size: number = 10) => {
   const token = localStorage.getItem('authToken');
-  console.log("토큰", token);
   try {
     const response = await fetch(`/api/purchases/${memberId}?page=${page}&size=${size}`, {
       method: 'GET',
@@ -140,3 +139,30 @@ export const getAllProducts = async (memberId: number, page: number = 1, size: n
     throw error;
   }
 };
+
+/**
+ * ID로 특정 공구 상품의 상세 정보를 조회합니다.
+ * @param groupPurchaseId 조회할 공구 상품의 ID
+ * @returns 공구 상품의 상세 정보
+ */
+export const getGroupPurchaseDetail = async (groupPurchaseId: number) => {
+  const token = localStorage.getItem('authToken');
+  const response = await fetch(`/api/purchases/detail/${groupPurchaseId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    try {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    } catch (e) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  }
+
+  return response.json();
+}

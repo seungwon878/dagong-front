@@ -17,6 +17,7 @@ interface ProductDetail {
   deadline: string;
   createdAt: string;
   price: number;
+  isLiked: boolean;
 }
 
 interface RegisterPagePresentationProps {
@@ -32,6 +33,8 @@ interface RegisterPagePresentationProps {
   onAmountChange?: (amount: number) => void;
   onDescChange?: (desc: string) => void;
   onPriceChange?: (price: number) => void;
+  onLike?: () => void;
+  onParticipate?: () => void;
 }
 
 const RegisterPagePresentation = ({ 
@@ -46,7 +49,9 @@ const RegisterPagePresentation = ({
   onMaxPeopleChange, 
   onAmountChange, 
   onDescChange, 
-  onPriceChange 
+  onPriceChange,
+  onLike,
+  onParticipate,
 }: RegisterPagePresentationProps) => {
   if (!product) {
     return (
@@ -99,7 +104,6 @@ const RegisterPagePresentation = ({
             <span style={{ marginLeft: 8 }}>관심 {product.likes}</span>
           </div>
         </div>
-        <span style={{ fontSize: 22, color: '#bbb' }}>{'>'}</span>
       </div>
       {/* 위치 */}
       <input style={{ width: 'calc(100% - 32px)', margin: '0 16px', padding: '10px 12px', border: '1px solid #eee', borderRadius: 8, fontSize: 15, background: '#fafafa', color: '#444', cursor: 'pointer', marginBottom: 8 }} type="text" value={product.place ?? ''} readOnly />
@@ -227,9 +231,33 @@ const RegisterPagePresentation = ({
           ))}
         </div>
       ) : (
-        <button style={{ position: 'fixed', left: '50%', bottom: 18, transform: 'translateX(-50%)', width: 'calc(100% - 32px)', maxWidth: 430, background: '#444', color: '#fff', border: 'none', borderRadius: 12, padding: '16px 0', fontSize: 17, fontWeight: 500, cursor: 'pointer', zIndex: 100 }}>
-          공구 신청하기!
-        </button>
+        <div style={{ position: 'fixed', left: '50%', bottom: 18, transform: 'translateX(-50%)', width: 'calc(100% - 32px)', maxWidth: 430, display: 'flex', gap: 12, zIndex: 100 }}>
+          <button
+            onClick={onLike}
+            style={{
+              flex: 1,
+              background: '#fff',
+              color: product.isLiked ? '#e89cae' : '#bbb',
+              border: `1.5px solid ${product.isLiked ? '#e89cae' : '#bbb'}`,
+              borderRadius: 12,
+              padding: '16px 0',
+              fontSize: 22,
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {product.isLiked ? '❤️' : '🤍'}
+          </button>
+          <button
+            style={{ flex: 4, background: '#444', color: '#fff', border: 'none', borderRadius: 12, padding: '16px 0', fontSize: 17, fontWeight: 500, cursor: 'pointer' }}
+            onClick={onParticipate}
+          >
+            공구 신청하기!
+          </button>
+        </div>
       )}
     </div>
   );
