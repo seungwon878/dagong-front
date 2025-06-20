@@ -4,7 +4,6 @@ import LandingPagePresentation from './LandingPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
 import { getAllProducts } from '../../Apis/groupPurchaseApi';
 import { useAuth } from '../../contexts/AuthContext';
-import { useAppContext } from '../../AppContext';
 
 // 상품 타입 정의
 interface Product {

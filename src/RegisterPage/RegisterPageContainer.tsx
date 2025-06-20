@@ -1,24 +1,27 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import RegisterPagePresentation from './RegisterPagePresentation';
 
-// 임시 mock 데이터
-const mockProducts = [
-  {
-    id: 1,
-    image: '',
-    title: '프로틴 공구',
-    productName: '마이프로틴',
-    location: '서울특별시 동작구 상도동 전체',
-    currentPeople: 3,
-    maxPeople: 7,
-    amount: 30,
-    desc: '이건 프로틴이고 어쩌구 저쩌구 (상품 등록할 때 들어간 설명 문구 그대로.)',
-    price: 10000,
-    joinedAmount: 2, // 참여 시 구매 희망 개수
-  },
-  // 필요시 추가 상품
-];
+interface Product {
+  id: number;
+  title: string;
+  content: string;
+  place: string;
+  status: string;
+  name: string;
+  quantity: number;
+  imageUrls: string[];
+  maxParticipants: number;
+  currentParticipants: number;
+  writerName: string;
+  category1: string;
+  category2: string;
+  views: number;
+  likes: number;
+  deadline: string;
+  createdAt: string;
+  price: number;
+}
 
 interface RegisterPageContainerProps {
   bottomButtons?: { text: string; onClick: () => void }[];
@@ -29,10 +32,32 @@ const RegisterPageContainer = ({ bottomButtons, isJoinedMode }: RegisterPageCont
   const navigate = useNavigate();
   const { id } = useParams();
   const [wishAmount, setWishAmount] = useState(1);
-  const [product, setProduct] = useState(mockProducts[0]); // 실제로는 id에 따라 상품 정보를 가져와야 함
+  const [product, setProduct] = useState<Product | null>(null);
 
   const isEditMode = window.location.pathname.startsWith('/mypro/');
   const isNormalMode = !isEditMode && !isJoinedMode;
+
+  const getProduct = async () => {
+    const authToken = localStorage.getItem('authToken');
+    const response = await fetch(`http://13.209.95.208:8080/purchases/detail/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+    });
+    const data = await response.json();
+    console.log('getProduct 데이터', data);
+    if (data && data.result) {
+      setProduct(data.result);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      getProduct();
+    }
+  }, [id]);
 
   const handleWishAmountChange = (delta: number) => {
     if (isJoinedMode || isNormalMode) {
@@ -45,33 +70,31 @@ const RegisterPageContainer = ({ bottomButtons, isJoinedMode }: RegisterPageCont
   };
 
   const handleTitleChange = (title: string) => {
-    setProduct(prev => ({ ...prev, title }));
+    setProduct(prev => prev ? { ...prev, title } : prev);
   };
 
   const handleMaxPeopleChange = (maxPeople: number) => {
-    setProduct(prev => ({ ...prev, maxPeople }));
+    setProduct(prev => prev ? { ...prev, maxParticipants: maxPeople } : prev);
   };
 
   const handleAmountChange = (amount: number) => {
-    setProduct(prev => ({ ...prev, amount }));
+    setProduct(prev => prev ? { ...prev, quantity: amount } : prev);
   };
 
   const handleDescChange = (desc: string) => {
-    setProduct(prev => ({ ...prev, desc }));
+    setProduct(prev => prev ? { ...prev, content: desc } : prev);
   };
 
   const handlePriceChange = (price: number) => {
-    setProduct(prev => ({ ...prev, price }));
+    setProduct(prev => prev ? { ...prev, price } : prev);
   };
 
   const handleUpdateAmount = () => {
-    // TODO: API 호출하여 구매 희망 개수 업데이트
     alert('구매 희망 개수가 수정되었습니다.');
     navigate(-1);
   };
 
   const handleLeaveGroup = () => {
-    // TODO: API 호출하여 공구에서 나가기
     alert('공구에서 나갔습니다.');
     navigate(-1);
   };
@@ -84,7 +107,7 @@ const RegisterPageContainer = ({ bottomButtons, isJoinedMode }: RegisterPageCont
   return (
     <RegisterPagePresentation
       product={product}
-      wishAmount={isJoinedMode ? wishAmount : (isEditMode ? product.amount : wishAmount)}
+      wishAmount={isJoinedMode ? wishAmount : (isEditMode ? (product?.quantity ?? 1) : wishAmount)}
       onWishAmountChange={handleWishAmountChange}
       onCancel={handleCancel}
       bottomButtons={isJoinedMode ? joinedModeButtons : bottomButtons}

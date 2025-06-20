@@ -1,20 +1,26 @@
-import React from 'react';
-
 interface ProductDetail {
   id: number;
-  image?: string;
   title: string;
-  productName: string;
-  location: string;
-  currentPeople: number;
-  maxPeople: number;
-  amount: number;
-  desc: string;
+  content: string;
+  place: string;
+  status: string;
+  name: string;
+  quantity: number;
+  imageUrls: string[];
+  maxParticipants: number;
+  currentParticipants: number;
+  writerName: string;
+  category1: string;
+  category2: string;
+  views: number;
+  likes: number;
+  deadline: string;
+  createdAt: string;
   price: number;
 }
 
 interface RegisterPagePresentationProps {
-  product: ProductDetail;
+  product: ProductDetail | null;
   wishAmount: number;
   onWishAmountChange: (delta: number) => void;
   onCancel: () => void;
@@ -42,6 +48,13 @@ const RegisterPagePresentation = ({
   onDescChange, 
   onPriceChange 
 }: RegisterPagePresentationProps) => {
+  if (!product) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: 18 }}>
+        상품 정보를 불러오는 중...
+      </div>
+    );
+  }
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
       {/* 상단바 */}
@@ -54,8 +67,8 @@ const RegisterPagePresentation = ({
       {/* 상품 정보 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 16px 8px 16px' }}>
         <div style={{ width: 64, height: 64, background: '#ededed', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {product.image ? (
-            <img src={product.image} alt="preview" style={{ width: 64, height: 64, borderRadius: 12, objectFit: 'cover' }} />
+          {product.imageUrls && product.imageUrls.length > 0 ? (
+            <img src={product.imageUrls[0]} alt="preview" style={{ width: 64, height: 64, borderRadius: 12, objectFit: 'cover' }} />
           ) : (
             <span role="img" aria-label="camera" style={{ fontSize: 32 }}>📷</span>
           )}
@@ -64,7 +77,7 @@ const RegisterPagePresentation = ({
           {isEditMode ? (
             <input 
               type="text"
-              value={product.title}
+              value={product.title ?? ''}
               onChange={(e) => onTitleChange?.(e.target.value)}
               style={{ 
                 fontSize: 16, 
@@ -80,19 +93,23 @@ const RegisterPagePresentation = ({
           ) : (
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 2 }}>{product.title}</div>
           )}
-          <div style={{ fontSize: 13, color: '#888' }}>상품명 <b>{product.productName}</b></div>
+          <div style={{ fontSize: 13, color: '#888' }}>상품명 <b>{product.name}</b></div>
+          <div style={{ fontSize: 12, color: '#aaa', marginTop: 4 }}>
+            <span>조회 {product.views}</span>
+            <span style={{ marginLeft: 8 }}>관심 {product.likes}</span>
+          </div>
         </div>
         <span style={{ fontSize: 22, color: '#bbb' }}>{'>'}</span>
       </div>
       {/* 위치 */}
-      <input style={{ width: 'calc(100% - 32px)', margin: '0 16px', padding: '10px 12px', border: '1px solid #eee', borderRadius: 8, fontSize: 15, background: '#fafafa', color: '#444', cursor: 'pointer', marginBottom: 8 }} type="text" value={product.location} readOnly />
+      <input style={{ width: 'calc(100% - 32px)', margin: '0 16px', padding: '10px 12px', border: '1px solid #eee', borderRadius: 8, fontSize: 15, background: '#fafafa', color: '#444', cursor: 'pointer', marginBottom: 8 }} type="text" value={product.place ?? ''} readOnly />
       {/* 마감 인원 수정 */}
       <div style={{ margin: '18px 0 6px 16px', fontSize: 14, fontWeight: 500 }}>{isEditMode ? '마감 인원 수정' : '현재 참여 인원'}</div>
       <div style={{ margin: '0 16px 8px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
         {isEditMode ? (
           <input 
             type="number"
-            value={product.maxPeople}
+            value={product.maxParticipants ?? ''}
             onChange={(e) => onMaxPeopleChange?.(parseInt(e.target.value))}
             style={{ 
               background: '#f8e6eb', 
@@ -106,7 +123,7 @@ const RegisterPagePresentation = ({
             }}
           />
         ) : (
-          <span style={{ background: '#f8e6eb', color: '#e89cae', borderRadius: 8, padding: '6px 18px', fontSize: 16, fontWeight: 600 }}>{product.currentPeople}/{product.maxPeople}명</span>
+          <span style={{ background: '#f8e6eb', color: '#e89cae', borderRadius: 8, padding: '6px 18px', fontSize: 16, fontWeight: 600 }}>{product.currentParticipants}/{product.maxParticipants}명</span>
         )}
       </div>
       {/* 구매 마감 개수 */}
@@ -115,7 +132,7 @@ const RegisterPagePresentation = ({
         {isEditMode ? (
           <input 
             type="number"
-            value={product.amount}
+            value={product.quantity ?? ''}
             onChange={(e) => onAmountChange?.(parseInt(e.target.value))}
             style={{ 
               background: '#f8e6eb', 
@@ -150,7 +167,7 @@ const RegisterPagePresentation = ({
       <div style={{ margin: '18px 0 6px 16px', fontSize: 14, fontWeight: 500 }}>설명</div>
       {isEditMode ? (
         <textarea 
-          value={product.desc}
+          value={product.content ?? ''}
           onChange={(e) => onDescChange?.(e.target.value)}
           style={{ 
             width: 'calc(100% - 32px)', 
@@ -166,7 +183,7 @@ const RegisterPagePresentation = ({
           }}
         />
       ) : (
-        <textarea style={{ width: 'calc(100% - 32px)', margin: '0 16px', minHeight: 80, border: '1px solid #eee', borderRadius: 8, padding: '10px 12px', fontSize: 14, background: '#fafafa', color: '#888', resize: 'none' }} value={product.desc} readOnly />
+        <textarea style={{ width: 'calc(100% - 32px)', margin: '0 16px', minHeight: 80, border: '1px solid #eee', borderRadius: 8, padding: '10px 12px', fontSize: 14, background: '#fafafa', color: '#888', resize: 'none' }} value={product.content ?? ''} readOnly />
       )}
       {/* 개당 가격 */}
       {isEditMode ? (
@@ -174,7 +191,7 @@ const RegisterPagePresentation = ({
           <div style={{ margin: '18px 0 6px 16px', fontSize: 14, fontWeight: 500 }}>개당 가격</div>
           <input 
             type="number"
-            value={product.price}
+            value={product.price ?? ''}
             onChange={(e) => onPriceChange?.(parseInt(e.target.value))}
             style={{ 
               width: 'calc(100% - 32px)', 
@@ -191,7 +208,9 @@ const RegisterPagePresentation = ({
       ) : (
         <>
           <div style={{ margin: '18px 0 6px 16px', fontSize: 14, fontWeight: 500 }}>개당 가격</div>
-          <div style={{ margin: '0 16px 8px 16px', fontSize: 16, fontWeight: 600, color: '#444' }}>{product.price.toLocaleString()}원</div>
+          <div style={{ margin: '0 16px 8px 16px', fontSize: 16, fontWeight: 600, color: '#444' }}>
+            {typeof product.price === 'number' ? product.price.toLocaleString() : '가격 정보 없음'}원
+          </div>
         </>
       )}
       {/* 하단 버튼 */}

@@ -53,6 +53,36 @@ const UploadPageContainer = () => {
       const reader = new FileReader();
       reader.onload = () => setManualImage(reader.result as string);
       reader.readAsDataURL(file);
+      uploadImage(file);
+    }
+  };
+
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      console.log('%c[API Request] 이미지 업로드 시작', 'color: blue; font-weight: bold;', { file });
+      const response = await fetch('https://dagong-ai.onrender.com/image/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('%c[API Response] 이미지 업로드 성공:', 'color: green; font-weight: bold;', data);
+      
+      if (data && data.description) {
+        setDesc(data.description);
+      }
+
+    } catch (error) {
+      console.error('이미지 업로드 중 에러 발생:', error);
+      alert('이미지 업로드에 실패했습니다.');
     }
   };
 
