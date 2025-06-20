@@ -8,7 +8,7 @@ const peopleOptions = [1, 2, 3, 4, 5, 6];
 
 // 상품 정보 타입
 interface ProductInfo {
-  image: string | null;
+  image: string;
   name: string;
   title: string;
 }
@@ -112,9 +112,9 @@ const UploadPageContainer = () => {
   };
 
   const handleLocationClick = () => {
-    // 위치 설정 페이지로 이동 (기존 로직)
-    alert('위치 설정 기능은 추후 구현됩니다!');
+    alert('위치 설정 기능은 준비중입니다.');
   };
+
   const handleRegister = async () => {
     if (!selectedProduct && !manualName) {
       alert('상품을 선택하거나 직접 등록해주세요.');
@@ -169,7 +169,7 @@ const UploadPageContainer = () => {
   // 모달 등록
   const handleManualSubmit = () => {
     setSelectedProduct({
-      image: manualImage,
+      image: manualImage || '',
       name: manualName,
       title: manualName,
     });
@@ -185,7 +185,7 @@ const UploadPageContainer = () => {
   }
 
   const handleCancel = () => { 
-    navigate(-1); 
+    navigate('/landing'); 
   };
 
   // 네이버 상품 검색에서 돌아왔을 때 상품 정보 자동 반영
