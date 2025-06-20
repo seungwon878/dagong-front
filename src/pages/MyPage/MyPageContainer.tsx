@@ -16,7 +16,6 @@ const MyPageContainer = () => {
   const handleMyProducts = () => navigate('/mypage/myproducts');
   const handleMyJoined = () => navigate('/mypage/myjoined');
   const handleMyLiked = () => navigate('/mypage/myliked');
-  const handleDelivery = () => alert('배송 조회 기능은 준비중입니다.');
   const handleNavigate = (path: string) => navigate(path);
 
   const handleLogout = () => {
@@ -51,7 +50,6 @@ const MyPageContainer = () => {
       onMyProducts={handleMyProducts}
       onMyJoined={handleMyJoined}
       onMyLiked={handleMyLiked}
-      onDelivery={handleDelivery}
       onNavigate={handleNavigate}
       onLogout={handleLogout}
       onDeleteAccount={handleDeleteAccount}

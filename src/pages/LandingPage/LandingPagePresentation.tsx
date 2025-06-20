@@ -1,5 +1,4 @@
 import './LandingPagePresentation.css';
-import { FadeTextSlider } from '../../components/FadeTextSlider';
 import { useNavigate } from 'react-router-dom';
 
 interface Product {
