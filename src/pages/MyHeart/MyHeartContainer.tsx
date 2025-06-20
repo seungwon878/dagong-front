@@ -44,13 +44,7 @@ const MyHeartContainer = () => {
     navigate(`/register/${id}`);
   };
 
-  const handleHome = () => navigate('/');
-  const handleChat = () => navigate('/chat');
-  const handleMyPage = () => navigate('/mypage');
   const handleCancel = () => navigate(-1);
-  const handleCategory = () => {
-    navigate('/category');
-  };
 
   if (loading) return <div>로딩 중...</div>
   if (error) return <div>에러: {error}</div>
@@ -59,11 +53,7 @@ const MyHeartContainer = () => {
     <MyHeartPresentation
       products={products}
       onProductClick={handleProductClick}
-      onHome={handleHome}
-      onChat={handleChat}
-      onMyPage={handleMyPage}
       onCancel={handleCancel}
-      onCategory={handleCategory}
     />
   );
 };

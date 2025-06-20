@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import MyProPagePresentation from './MyProPagePresentation';
 
@@ -13,27 +12,16 @@ const MyProPageContainer = () => {
   const handleProductClick = (id: number) => {
     navigate(`/mypro/${id}`);
   };
-  const handleHome = () => navigate('/');
-  const handleChat = () => navigate('/chat');
-  const handleMyPage = () => navigate('/mypage');
-  const handleCategory = () => {
-    navigate('/category');
-  };
-  const handleCancel = () => {
-    navigate(-1);
-  };
+  const handleCancel = () => navigate(-1);
   const handleDeleteProduct = (id: number) => {
-    alert(`공구 ID ${id} 삭제 기능은 추후 구현됩니다.`);
+    // TODO: 공구 삭제 API 연동
+    console.log("Delete product", id);
   };
 
   return (
     <MyProPagePresentation
       products={products}
       onProductClick={handleProductClick}
-      onHome={handleHome}
-      onChat={handleChat}
-      onMyPage={handleMyPage}
-      onCategory={handleCategory}
       onCancel={handleCancel}
       onDeleteProduct={handleDeleteProduct}
     />

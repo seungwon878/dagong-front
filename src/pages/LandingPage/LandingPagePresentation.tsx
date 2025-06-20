@@ -49,7 +49,7 @@ interface LandingPagePresentationProps {
 }
 
 const LandingPagePresentation = ({
-  onGoToUpload,  onProductClick,onChat, onMyPage, onCategory, onProductListClick,
+  onGoToUpload,  onProductClick,onChat, onMyPage, onCategory,
   products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose,
   showAddressPopup, setShowAddressPopup, city, district, town
 }: LandingPagePresentationProps) => {
@@ -185,7 +185,5 @@ const LandingPagePresentation = ({
     </div>
   );
 };
-
-const styles: { [key: string]: React.CSSProperties } = {};
 
 export default LandingPagePresentation; 

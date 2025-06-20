@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import MyInPagePresentation from './MyInPagePresentation';
 
@@ -14,25 +13,15 @@ const MyInPageContainer = () => {
   // 참여한 공구만 필터
   const products = allProducts.filter((p) => p.joined && !p.mine);
   const handleProductClick = (id: number) => {
-    navigate(`/myjoined/${id}`);
+    navigate(`/register/${id}`);
   };
-  const handleHome = () => navigate('/');
-  const handleChat = () => navigate('/chat');
-  const handleMyPage = () => navigate('/mypage');
   const handleCancel = () => navigate(-1);
-  const handleCategory = () => {
-    navigate('/category');
-  };
 
   return (
     <MyInPagePresentation
       products={products}
       onProductClick={handleProductClick}
-      onHome={handleHome}
-      onChat={handleChat}
-      onMyPage={handleMyPage}
       onCancel={handleCancel}
-      onCategory={handleCategory}
     />
   );
 };

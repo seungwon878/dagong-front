@@ -1,23 +1,16 @@
 import type { LikedItem } from './MyHeartContainer';
+import BottomNavBar from '../../components/BottomNavBar';
 
 interface MyHeartPresentationProps {
   products: LikedItem[];
   onProductClick: (id: number) => void;
-  onHome: () => void;
-  onChat: () => void;
-  onMyPage: () => void;
   onCancel: () => void;
-  onCategory: () => void;
 }
 
 const MyHeartPresentation = ({ 
   products, 
   onProductClick, 
-  onHome, 
-  onChat, 
-  onMyPage, 
   onCancel, 
-  onCategory
 }: MyHeartPresentationProps) => {
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
@@ -47,20 +40,7 @@ const MyHeartPresentation = ({
         )}
       </div>
       {/* 하단 네비게이션 */}
-      <div style={{ position: 'fixed', left: '50%', bottom: 0, transform: 'translateX(-50%)', width: '100%', maxWidth: 430, background: '#fff', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-around', padding: '6px 0 2px 0', zIndex: 100 }}>
-        <button onClick={onHome} style={{ flex: 1, background: 'none', border: 'none', color: '#e89cae', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
-          🏠<br />홈
-        </button>
-        <button onClick={onCategory} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
-          📂<br />카테고리
-        </button>
-        <button onClick={onChat} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
-          💬<br />채팅
-        </button>
-        <button onClick={onMyPage} style={{ flex: 1, background: 'none', border: 'none', color: '#bbb', fontWeight: 500, fontSize: 13, textAlign: 'center', lineHeight: 1.2, cursor: 'pointer' }}>
-          👤<br />마이페이지
-        </button>
-      </div>
+      <BottomNavBar activeTab="mypage" />
     </div>
   );
 };
