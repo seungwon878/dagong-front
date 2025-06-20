@@ -1,62 +1,97 @@
+import React from 'react';
 import './MapPagePresentation.css';
 
-interface MapPagePresentationProps {
-  neighborhoods: { name: string; selected: boolean }[];
-  onRemoveNeighborhood: (name: string) => void;
-  radius: number;
-  onRadiusChange: (value: number) => void;
+interface Props {
   onClose: () => void;
+  /** 검색창 값 */
+  address: string;
+  /** 입력 값 변경 핸들러 */
+  onAddressChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /** 변환(검색) 버튼 제출 */
+  onSubmit: (e: React.FormEvent) => void;
+  /** 지도를 그릴 div 엘리먼트 ref */
+  mapRef: React.RefObject<HTMLDivElement | null>;
+  isLoading: boolean;
+  isMapLoading: boolean;
+  coords: { lat: number; lng: number } | null;
+  memberid: string;
+  postLocation: (memberId: number, latitude: number, longitude: number) => Promise<void>;
+  showSaveBtn: boolean;
+  onSaveLocation: () => void;
 }
 
-const MapPagePresentation = ({
-  neighborhoods,
-  onRemoveNeighborhood,
-  radius,
-  onRadiusChange,
+const MapPagePresentation: React.FC<Props> = ({
   onClose,
-}: MapPagePresentationProps) => {
-  return (
-    <div className="map-root">
-      {/* 상단바 */}
-      <div className="map-topbar">
-        <button className="map-close" onClick={onClose}>✕</button>
-        <span className="map-title">내 동네 설정</span>
-        <button className="map-help">❓</button>
-      </div>
-      {/* 지도 영역 (더미) */}
-      <div className="map-area">
-        {/* 실제 지도 대신 더미 SVG/박스 */}
-        <div className="map-dummy">
-          <svg width="100%" height="100%" viewBox="0 0 300 220">
-            <polygon points="30,40 270,40 290,120 250,200 50,200 10,120" fill="#f8e6eb" stroke="#e89cae" strokeWidth="3" />
-            <circle cx="150" cy="120" r="10" fill="#3a8fff" />
-          </svg>
-        </div>
-      </div>
-      {/* 내 동네 태그 */}
-      <div className="map-label">내 동네</div>
-      <div className="map-neighborhoods">
-        {neighborhoods.map((n, i) => (
-          <span key={n.name} className={`map-neighborhood${i === neighborhoods.length - 1 ? ' selected' : ''}`}>
-            {n.name} <button className="map-neighborhood-remove" onClick={() => onRemoveNeighborhood(n.name)}>X</button>
-          </span>
-        ))}
-      </div>
-      {/* 반경 슬라이더 */}
-      <div className="map-slider-box">
-        <span className="map-slider-label">가까운 동네</span>
+  address,
+  onAddressChange,
+  onSubmit,
+  mapRef,
+  isLoading,
+  isMapLoading,
+  coords,
+  showSaveBtn,
+  onSaveLocation,
+}) => (
+  <div className="map-root">
+    {/* 상단바 */}
+    <div className="map-topbar">
+      <button className="map-close" onClick={onClose}>✕</button>
+      <span className="map-title">내 동네 설정</span>
+      <button className="map-help">❓</button>
+    </div>
+    
+    {/* 주소 검색 영역 */}
+    <div className="map-search-section">
+      <form onSubmit={onSubmit} className="map-search-box">
         <input
-          type="range"
-          min={1}
-          max={3}
-          value={radius}
-          onChange={e => onRadiusChange(Number(e.target.value))}
-          className="map-slider"
+          type="text"
+          placeholder="도로명 주소를 입력하세요"
+          value={address}
+          onChange={onAddressChange}
+          className="map-search-input"
+          disabled={isLoading || isMapLoading}
         />
-        <span className="map-slider-label">먼 동네</span>
+        <button 
+          type="submit"
+          disabled={isLoading || isMapLoading || !address.trim()}
+          className="map-search-button"
+        >
+          {isLoading ? '검색 중...' : '검색'}
+        </button>
+      </form>
+      <div className="map-search-examples">
+        <small>예시: 서울특별시 강남구 테헤란로 152</small>
       </div>
     </div>
-  );
-};
+
+    {/* 지도 영역 */}
+    <div className="map-area">
+      <div ref={mapRef} className="map-kakao" style={{ visibility: isMapLoading ? 'hidden' : 'visible' }} />
+      {isMapLoading && (
+        <div className="map-loading-overlay">
+          <span>지도 로딩 중...</span>
+        </div>
+      )}
+    </div>
+
+    {showSaveBtn && (
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+        <button onClick={onSaveLocation} style={{ padding: '10px 24px', fontSize: 16, borderRadius: 8, background: '#e89cae', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          위치 저장
+        </button>
+      </div>
+    )}
+
+    {/* 위도/경도 정보 표시 */}
+    {coords && (
+      <div className="map-location-info">
+        <h4>위치 정보</h4>
+        <p>위도: {coords.lat}</p>
+        <p>경도: {coords.lng}</p>
+      </div>
+    )}
+
+  </div>
+);
 
 export default MapPagePresentation;
