@@ -241,8 +241,8 @@ const UploadPagePresentation = ({
           <span className="upload-arrow">&gt;</span>
         </div> */}
         {/* 위치 */}
-        <div className="upload-label">위치</div>
-        <input className="upload-input" type="text" value="서울 특별시 상도동 전체" readOnly onClick={onLocationClick} />
+        {/* <div className="upload-label">위치</div>
+        <input className="upload-input" type="text" value="서울 특별시 상도동 전체" readOnly onClick={onLocationClick} /> */}
         {/* 인원 */}
         <div className="upload-label">인원</div>
         <div className="upload-people-options">
