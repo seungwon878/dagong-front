@@ -160,7 +160,7 @@ const LandingPageContainer = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getAllProducts(Number(memberId), 0, 10);
+      const response = await getAllProducts(Number(memberId), 1, 10);
       if (response.isSuccess && response.result.content) {
         // API 응답 구조에 맞게 데이터 가공
         const fetchedProducts = response.result.content.map((p: any) => ({

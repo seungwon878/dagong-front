@@ -116,7 +116,7 @@ export const getCategoryProducts = async (category1: string, category2: string, 
 };
 
 // 전체 상품 목록 조회
-export const getAllProducts = async (memberId: number, page: number = 0, size: number = 10) => {
+export const getAllProducts = async (memberId: number, page: number = 1, size: number = 10) => {
   const token = localStorage.getItem('authToken');
   console.log("토큰", token);
   try {

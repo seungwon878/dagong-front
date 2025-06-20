@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ChatRoom } from '../../Apis/chatApi';
 
 interface ChatPagePresentationProps {
@@ -34,10 +34,16 @@ const ChatPagePresentation: React.FC<ChatPagePresentationProps> = ({
   loading,
   error,
 }) => {
+  const [hoveredRoomId, setHoveredRoomId] = useState<number | null>(null);
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <button onClick={onBackClick} style={styles.backButton}>←</button>
+        <button onClick={onBackClick} style={styles.iconButton}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18L9 12L15 6" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
         <h1 style={styles.title}>채팅</h1>
       </header>
 
@@ -50,14 +56,28 @@ const ChatPagePresentation: React.FC<ChatPagePresentationProps> = ({
 
       <main style={styles.chatList}>
         {chatRooms.map((room) => (
-          <div key={room.chatRoomId} style={styles.chatRoomItem} onClick={() => onChatRoomClick(room.chatRoomId)}>
+          <div 
+            key={room.chatRoomId} 
+            style={{
+              ...styles.chatRoomItem,
+              backgroundColor: hoveredRoomId === room.chatRoomId ? '#f0f0f0' : '#fff'
+            }} 
+            onClick={() => onChatRoomClick(room.chatRoomId)}
+            onMouseEnter={() => setHoveredRoomId(room.chatRoomId)}
+            onMouseLeave={() => setHoveredRoomId(null)}
+          >
+            <div style={styles.profileImageContainer}>
+              <img src={'/img/dagong.png'} alt={room.roomName} style={styles.profileImage} />
+            </div>
             <div style={styles.roomInfo}>
-              <h2 style={styles.roomName}>{room.roomName}</h2>
+              <div style={styles.roomNameContainer}>
+                <h2 style={styles.roomName}>{room.roomName}</h2>
+              </div>
               <p style={styles.lastMessage}>{room.lastMessage || '메시지가 없습니다.'}</p>
             </div>
             <div style={styles.metaInfo}>
               <span style={styles.timeAgo}>{formatTimeAgo(room.lastSentAt)}</span>
-              {room.unread && <span style={styles.unreadBadge}>N</span>}
+              {room.unread && <div style={styles.unreadDot} />}
             </div>
           </div>
         ))}
@@ -70,7 +90,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     maxWidth: '430px',
     margin: '0 auto',
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f9fa',
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
@@ -79,51 +99,82 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     padding: '12px 16px',
-    borderBottom: '1px solid #f0f0f0',
+    borderBottom: '1px solid #e9ecef',
     position: 'sticky',
     top: 0,
     backgroundColor: '#fff',
     zIndex: 10,
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.03)',
   },
-  backButton: {
+  iconButton: {
     background: 'none',
     border: 'none',
-    fontSize: '24px',
     cursor: 'pointer',
-    marginRight: '10px',
+    padding: '4px',
+    marginRight: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: '20px',
-    fontWeight: '600',
+    fontWeight: 'bold',
     margin: '0',
   },
   messageText: {
     textAlign: 'center',
-    marginTop: '40px',
-    color: '#888',
+    paddingTop: '60px',
+    color: '#868e96',
   },
   chatList: {
     flex: 1,
     overflowY: 'auto',
+    backgroundColor: '#fff',
   },
   chatRoomItem: {
     display: 'flex',
-    justifyContent: 'space-between',
-    padding: '16px',
-    borderBottom: '1px solid #f0f0f0',
+    alignItems: 'center',
+    padding: '12px 16px',
+    borderBottom: '1px solid #f1f3f5',
     cursor: 'pointer',
+    transition: 'background-color 0.15s ease-in-out',
+  },
+  profileImageContainer: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '18px',
+    overflow: 'hidden',
+    marginRight: '16px',
+    flexShrink: 0,
+    backgroundColor: '#e9ecef',
+    border: '1px solid rgba(0, 0, 0, 0.04)',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
   roomInfo: {
     flex: 1,
+    overflow: 'hidden',
+  },
+  roomNameContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '5px',
   },
   roomName: {
     fontSize: '16px',
-    fontWeight: '500',
-    margin: '0 0 4px 0',
+    fontWeight: '600',
+    margin: '0',
+    color: '#212529',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   lastMessage: {
     fontSize: '14px',
-    color: '#888',
+    color: '#868e96',
     margin: '0',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -133,25 +184,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
-    marginLeft: '12px',
+    marginLeft: '16px',
+    textAlign: 'right',
   },
   timeAgo: {
     fontSize: '12px',
-    color: '#aaa',
-    marginBottom: '4px',
+    color: '#adb5bd',
+    marginBottom: '7px',
+    whiteSpace: 'nowrap',
   },
-  unreadBadge: {
-    backgroundColor: '#e89cae',
-    color: 'white',
+  unreadDot: {
+    backgroundColor: '#e1526f',
+    width: '8px',
+    height: '8px',
     borderRadius: '50%',
-    width: '20px',
-    height: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '12px',
-    fontWeight: 'bold',
-  }
+  },
 };
 
 export default ChatPagePresentation;
