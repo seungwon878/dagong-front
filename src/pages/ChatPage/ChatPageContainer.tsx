@@ -1,37 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ChatPagePresentation from './ChatPagePresentation';
+import { getChatRooms, type ChatRoom } from '../../Apis/chatApi';
 
-const chatRooms = [
-  { id: 1, title: '프로틴 공구', location: '상도동', lastMessage: '', timeAgo: '5분 전' },
-  { id: 2, title: '이천 쌀 공구', location: '상도동', lastMessage: '', timeAgo: '일주일 전' },
-  { id: 3, title: '옷걸이 공구', location: '독립', lastMessage: '', timeAgo: '9일 전' },
-  { id: 4, title: '닭가슴살 공구하실 분 구합니다', location: '신사동', lastMessage: '', timeAgo: '9일 전' },
-  { id: 5, title: '코카콜라 싸게 사요!', location: '숭실대', lastMessage: '', timeAgo: '2주일 전' },
-  { id: 6, title: '어린이 집 수업 키트 공구합니다', location: '숭실대', lastMessage: '', timeAgo: '2주일 전' },
-];
-
-const ChatPageContainer = () => {
+const ChatPageContainer: React.FC = () => {
   const navigate = useNavigate();
-  const handleRoomClick = (id: number) => {
-    navigate(`/chat/${id}`);
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      const memberId = localStorage.getItem('memberId');
+      if (!memberId) {
+        setError('로그인이 필요합니다.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await getChatRooms(Number(memberId));
+        if (response.isSuccess) {
+          setChatRooms(response.result);
+        } else {
+          setError(response.message || '채팅방 목록을 불러오지 못했습니다.');
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChatRooms();
+  }, []);
+
+  const handleChatRoomClick = (roomId: number) => {
+    navigate(`/chat/${roomId}`);
   };
-  const handleHomeClick = () => {
-    navigate('/');
+
+  const handleBackClick = () => {
+    navigate(-1);
   };
-  const handleMyPageClick = () => {
-    navigate('/mypage');
-  };
-  const handleCategory = () => {
-    navigate('/category');
-  };
+  
   return (
-    <ChatPagePresentation
+    <ChatPagePresentation 
       chatRooms={chatRooms}
-      onRoomClick={handleRoomClick}
-      onHomeClick={handleHomeClick}
-      onMyPageClick={handleMyPageClick}
-      onCategory={handleCategory}
+      onChatRoomClick={handleChatRoomClick}
+      onBackClick={handleBackClick}
+      loading={loading}
+      error={error}
     />
   );
 };

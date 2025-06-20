@@ -7,8 +7,8 @@
 export async function updateUserInfo(memberId: number, nickname: string) {
   const token = localStorage.getItem('authToken');
 
-  const response = await fetch(`/api/member/${memberId}/nickname`, {
-    method: 'PUT',
+  const response = await fetch(`/api/member/${memberId}`, {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

@@ -56,8 +56,8 @@ const MyPagePresentation = ({
 
       {/* 구분선 및 로그아웃/회원탈퇴 버튼 */}
       <div style={{ margin: '30px 24px 0 24px' }}>
-        <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0' }} />
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px', paddingBottom: '100px' }}>
+        
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '100px', paddingBottom: '50px' }}>
           <button onClick={onLogout} style={actionButtonStyle}>로그아웃</button>
           <button onClick={onDeleteAccount} style={{...actionButtonStyle, color: '#d32f2f'}}>회원탈퇴</button>
         </div>
