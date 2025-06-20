@@ -3,9 +3,9 @@ import type { ChatRoom } from '../../Apis/chatApi';
 
 interface ChatPagePresentationProps {
   chatRooms: ChatRoom[];
+  isLoading: boolean;
   onChatRoomClick: (roomId: number) => void;
   onBackClick: () => void;
-  loading: boolean;
   error: string | null;
 }
 
@@ -26,12 +26,11 @@ const formatTimeAgo = (dateString: string | null): string => {
   return `${diffDays}일 전`;
 };
 
-
 const ChatPagePresentation: React.FC<ChatPagePresentationProps> = ({
   chatRooms,
+  isLoading,
   onChatRoomClick,
   onBackClick,
-  loading,
   error,
 }) => {
   const [hoveredRoomId, setHoveredRoomId] = useState<number | null>(null);
@@ -47,10 +46,10 @@ const ChatPagePresentation: React.FC<ChatPagePresentationProps> = ({
         <h1 style={styles.title}>채팅</h1>
       </header>
 
-      {loading && <p style={styles.messageText}>채팅 목록을 불러오는 중...</p>}
+      {isLoading && <p style={styles.messageText}>채팅 목록을 불러오는 중...</p>}
       {error && <p style={{ ...styles.messageText, color: 'red' }}>{error}</p>}
       
-      {!loading && !error && chatRooms.length === 0 && (
+      {!isLoading && !error && chatRooms.length === 0 && (
         <p style={styles.messageText}>채팅방이 없습니다.</p>
       )}
 
@@ -198,6 +197,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '8px',
     height: '8px',
     borderRadius: '50%',
+  },
+  roomDetails: {
+    textAlign: 'right',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    minWidth: 80,
+    justifyContent: 'space-between'
   },
 };
 
