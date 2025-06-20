@@ -94,11 +94,13 @@ export async function registerGroupPurchase(
 
 // 카테고리별 상품 목록 조회
 export const getCategoryProducts = async (category1: string, category2: string, page: number = 1, size: number = 10) => {
+  const token = localStorage.getItem('authToken');
   try {
     const response = await fetch(`/api/purchases/category?category1=${encodeURIComponent(category1)}&category2=${encodeURIComponent(category2)}&page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
     
@@ -115,11 +117,13 @@ export const getCategoryProducts = async (category1: string, category2: string, 
 
 // 전체 상품 목록 조회
 export const getAllProducts = async (page: number = 1, size: number = 10) => {
+  const token = localStorage.getItem('authToken');
   try {
     const response = await fetch(`/api/purchases?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
     

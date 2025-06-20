@@ -15,6 +15,7 @@ export default defineConfig({
       '/api': {
         target: 'http://13.209.95.208:8080',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       // 검색 API 요청 프록시 설정
       '/search': {

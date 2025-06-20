@@ -8,7 +8,7 @@ interface UploadPagePresentationProps {
   people: number;
   onPeopleSelect: (num: number) => void;
   amount: number;
-  onAmountChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onAmountChange: (delta: number) => void;
   price: string;
   onPriceChange: (e: ChangeEvent<HTMLInputElement>) => void;
   desc: string;
@@ -259,9 +259,9 @@ const UploadPagePresentation = ({
         {/* 마감 개수 */}
         <div className="upload-label">마감 개수</div>
         <div className="upload-amount-box">
-          <button className="upload-amount-btn" onClick={() => onAmountChange({ target: { value: String(amount - 1) } } as any)}>-</button>
+          <button className="upload-amount-btn" onClick={() => onAmountChange(-1)}>-</button>
           <span className="upload-amount">{amount}개</span>
-          <button className="upload-amount-btn" onClick={() => onAmountChange({ target: { value: String(amount + 1) } } as any)}>+</button>
+          <button className="upload-amount-btn" onClick={() => onAmountChange(1)}>+</button>
         </div>
         {/* 설명 */}
         <div className="upload-label">설명</div>
