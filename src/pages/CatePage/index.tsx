@@ -1,4 +1,3 @@
-import React from 'react';
 import CatePageContainer from './CatePageContainer';
 import BottomNavBar from '../../components/BottomNavBar';
 

@@ -16,8 +16,8 @@ interface UserInfo {
 
 const MyPageContainer = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -80,6 +80,8 @@ const MyPageContainer = () => {
   return (
     <MyPagePresentation
       userInfo={userInfo}
+      loading={loading}
+      error={error}
       onEditProfile={handleEditProfile}
       onMyProducts={handleMyProducts}
       onMyJoined={handleMyJoined}

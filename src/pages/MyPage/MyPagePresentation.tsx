@@ -13,6 +13,8 @@ interface UserInfo {
 
 interface MyPagePresentationProps {
   userInfo: UserInfo | null;
+  loading: boolean;
+  error: string | null;
   onEditProfile: () => void;
   onMyProducts: () => void;
   onMyJoined: () => void;
@@ -24,6 +26,8 @@ interface MyPagePresentationProps {
 
 const MyPagePresentation = ({
   userInfo,
+  loading,
+  error,
   onEditProfile,
   onMyProducts,
   onMyJoined,
@@ -32,6 +36,51 @@ const MyPagePresentation = ({
   onLogout,
   onDeleteAccount,
 }: MyPagePresentationProps) => {
+  // 로딩 중일 때
+  if (loading) {
+    return (
+      <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
+        <div style={{ padding: '18px 0 8px 0', fontSize: 18, fontWeight: 600, borderBottom: '1px solid #eee', textAlign: 'left', paddingLeft: 20 }}></div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 16, color: '#666', marginBottom: 10 }}>정보를 불러오는 중...</div>
+          </div>
+        </div>
+        <BottomNavBar activeTab="mypage" />
+      </div>
+    );
+  }
+
+  // 에러가 발생했을 때
+  if (error) {
+    return (
+      <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
+        <div style={{ padding: '18px 0 8px 0', fontSize: 18, fontWeight: 600, borderBottom: '1px solid #eee', textAlign: 'left', paddingLeft: 20 }}></div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 16, color: '#d32f2f', marginBottom: 10 }}>오류가 발생했습니다</div>
+            <div style={{ fontSize: 14, color: '#666', marginBottom: 20 }}>{error}</div>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{
+                background: '#007AFF',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                fontSize: 14,
+                cursor: 'pointer'
+              }}
+            >
+              다시 시도
+            </button>
+          </div>
+        </div>
+        <BottomNavBar activeTab="mypage" />
+      </div>
+    );
+  }
+
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80 }}>
       {/* 상단바 */}

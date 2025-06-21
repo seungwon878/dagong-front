@@ -15,7 +15,7 @@ interface ProductInfo {
 const mainCategories = Object.keys(categoryData);
 
 const UploadPageContainer = () => {
-  const [image, setImage] = useState<string | null>(null);
+  const [_image, setImage] = useState<string | null>(null);
   const [people, setPeople] = useState(3);
   const [amount, setAmount] = useState(30);
   const [price, setPrice] = useState<string>('5000');
@@ -36,15 +36,6 @@ const UploadPageContainer = () => {
   
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setImage(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
 
   // 수동 등록 모달에서 이미지 파일 처리
   const handleManualImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -109,10 +100,6 @@ const UploadPageContainer = () => {
     setShowCategory2Modal(false);
   };
 
-  const handleLocationClick = () => {
-    alert('위치 설정 기능은 준비중입니다.');
-  };
-
   const handleRegister = async () => {
     if (!selectedProduct && !manualName) {
       alert('상품을 선택하거나 직접 등록해주세요.');
@@ -174,14 +161,7 @@ const UploadPageContainer = () => {
     if (manualPrice) setPrice(manualPrice);
     setShowManualModal(false);
   };
-  // 네이버 상품 선택 시 호출될 함수(실제 연동 시 props로 넘기거나 location.state 등 활용)
-  function handleNaverProductSelect(product: { image: string; name: string; title: string }) {
-    setSelectedProduct(product);
-    setImage(product.image);
-    setDesc(product.title);
-    navigate('/upload', { state: { selectedProduct: product } });
-  }
-
+  
   const handleCancel = () => { 
     navigate('/landing'); 
   };
@@ -213,9 +193,6 @@ const UploadPageContainer = () => {
 
   return (
     <UploadPagePresentation
-      mode="manual"
-      image={image}
-      onImageChange={handleImageChange}
       people={people}
       onPeopleSelect={handlePeopleSelect}
       amount={amount}
@@ -224,7 +201,6 @@ const UploadPageContainer = () => {
       onPriceChange={handlePriceChange}
       desc={desc}
       onDescChange={handleDescChange}
-      onLocationClick={handleLocationClick}
       onRegister={handleRegister}
       onNaverSearch={handleNaverSearch}
       onManualRegister={handleManualRegister}
@@ -234,7 +210,6 @@ const UploadPageContainer = () => {
       manualPrice={manualPrice}
       setManualPrice={setManualPrice}
       manualImage={manualImage}
-      setManualImage={setManualImage}
       onManualCancel={handleManualCancel}
       onManualSubmit={handleManualSubmit}
       selectedProduct={safeSelectedProduct}

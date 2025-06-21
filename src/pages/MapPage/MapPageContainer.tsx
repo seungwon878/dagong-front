@@ -134,13 +134,13 @@ const MapPageContainer: React.FC = () => {
     },
     [address, geocode],
   );
-
   return (
     <MapPagePresentation
       onClose={() => navigate(-1)} // 닫기 버튼도 navigate 사용
       address={address}
       onAddressChange={(e) => setAddress(e.target.value)}
       onSubmit={onSubmit}
+      postLocation={handleSaveLocation}
       mapRef={mapDivRef}
       isLoading={isGeocoding}
       isMapLoading={isMapLoading}
