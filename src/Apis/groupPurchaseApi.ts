@@ -141,6 +141,41 @@ export const getAllProducts = async (memberId: number, page: number = 1, size: n
 };
 
 /**
+ * 인기 공구 목록을 조회합니다. (조회수 또는 찜 수 기준)
+ * @param sort 정렬 기준 ('views' 또는 'likes')
+ * @param page 페이지 번호
+ * @param size 페이지 당 항목 수
+ * @returns 정렬된 공구 목록
+ */
+export const getRankedProducts = async (
+  sort: 'views' | 'likes',
+  page: number = 1,
+  size: number = 10
+) => {
+  const token = localStorage.getItem('authToken');
+  const query = new URLSearchParams({
+    sort,
+    page: page.toString(),
+    size: size.toString(),
+  }).toString();
+
+  const response = await fetch(`/api/purchases/ranking?${query}`, {
+    method: 'GET',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ message: '응답 본문이 없거나 JSON 형식이 아닙니다.' }));
+    console.error('인기 상품 목록 조회 실패:', response.status, errorBody);
+    throw new Error(errorBody.message || '인기 상품 목록을 가져오는데 실패했습니다.');
+  }
+
+  return await response.json();
+};
+
+/**
  * 상품명으로 공구 상품을 검색합니다.
  * @param itemName 검색할 상품명
  * @param sort 정렬 기준 ('views', 'likes', 'latest')
@@ -182,6 +217,97 @@ export const searchProducts = async (
   }
 
   return await response.json();
+};
+
+/**
+ * 최신 공구 목록을 조회합니다. (회원의 동네 기준)
+ * @param memberId 회원 ID
+ * @param page 페이지 번호
+ * @param size 페이지 당 항목 수
+ * @returns 최신 공구 목록
+ */
+export const getLatestProducts = async (
+    memberId: number,
+    page: number = 1,
+    size: number = 10
+) => {
+    const token = localStorage.getItem('authToken');
+    const query = new URLSearchParams({
+        page: page.toString(),
+        size: size.toString(),
+    }).toString();
+
+    const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
+        method: 'GET',
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({ message: '응답 본문이 없거나 JSON 형식이 아닙니다.' }));
+        console.error('최신 상품 목록 조회 실패:', response.status, errorBody);
+        throw new Error(errorBody.message || '최신 상품 목록을 가져오는데 실패했습니다.');
+    }
+
+    return await response.json();
+};
+
+/**
+ * 사용자가 등록한 공구 목록을 최신순으로 조회합니다.
+ * @param memberId 회원 ID
+ * @param page 페이지 번호
+ * @param size 페이지 당 항목 수
+ * @returns 사용자가 등록한 공구 목록
+ */
+export const getMyProducts = async (
+    memberId: number,
+    page: number = 1,
+    size: number = 20
+) => {
+    const token = localStorage.getItem('authToken');
+    const query = new URLSearchParams({
+        page: page.toString(),
+        size: size.toString(),
+    }).toString();
+
+    const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
+        method: 'GET',
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({ message: '응답 본문이 없거나 JSON 형식이 아닙니다.' }));
+        console.error('내가 올린 공구 목록 조회 실패:', response.status, errorBody);
+        throw new Error(errorBody.message || '내가 올린 공구 목록을 가져오는데 실패했습니다.');
+    }
+
+    return await response.json();
+};
+
+/**
+ * ID로 특정 공구 상품을 삭제합니다.
+ * @param groupPurchaseId 삭제할 공구 상품의 ID
+ */
+export const deleteProduct = async (groupPurchaseId: number) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`/api/purchases/${groupPurchaseId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: '응답 본문이 없거나 JSON 형식이 아닙니다.' }));
+        console.error('공구 삭제 실패:', response.status, errorData);
+        throw new Error(errorData.message || '공구 삭제에 실패했습니다.');
+    }
+
+    return response.json();
 };
 
 

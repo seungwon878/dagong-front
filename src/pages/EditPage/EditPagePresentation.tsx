@@ -112,16 +112,18 @@ const SaveButton = styled(ActionButton)`
 `;
 
 const BackButton = styled.button`
+  width: 100%;
+  margin-top: 1.5rem;
   background: #ecf0f1;
   color: #7f8c8d;
-  padding: 0.8rem 1.5rem;
+  padding: 1rem 1.5rem;
   border: none;
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
-  
+
   &:hover {
     background: #e0e6e8;
   }
@@ -135,19 +137,42 @@ const ErrorMessage = styled.p`
   min-height: 1.2em;
 `;
 
-const AddressItem = styled.div`
+const AddressItem = styled.div<{ isCurrent: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f8f9fa;
-  padding: 0.8rem 1.2rem;
+  background-color: ${props => (props.isCurrent ? '#fdf5f7' : '#f8f9fa')};
+  padding: 1rem 1.25rem;
   border-radius: 12px;
-  border: 1px solid #e9ecef;
+  border: 1px solid ${props => (props.isCurrent ? '#e89cae' : '#e9ecef')};
+  cursor: ${props => (props.isCurrent ? 'default' : 'pointer')};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: ${props => (props.isCurrent ? '#fdf5f7' : '#f1f3f5')};
+    border-color: ${props => (props.isCurrent ? '#e89cae' : '#dee2e6')};
+  }
 `;
 
 const AddressText = styled.span`
   font-size: 0.95rem;
+  font-weight: 500;
   color: #495057;
+`;
+
+const AddressActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const CurrentBadge = styled.span`
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e89cae;
+  background-color: #fdf5f7;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
 `;
 
 const DeleteButton = styled.button`
@@ -189,23 +214,25 @@ const AddAddressButton = styled.button`
 interface EditPagePresentationProps {
   nickname: string;
   locations: Location[];
+  currentTownId: number | null;
   onNicknameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onUpdateNickname: () => void;
   onDeleteAddress: (locationId: number) => void;
   onAddAddress: () => void;
-  onCancel: () => void;
-  error: string | null;
+  onSetCurrentLocation: (townId: number) => void;
+  onGoToMyPage: () => void;
 }
 
 const EditPagePresentation: React.FC<EditPagePresentationProps> = ({
   nickname,
   locations,
+  currentTownId,
   onNicknameChange,
   onUpdateNickname,
   onDeleteAddress,
   onAddAddress,
-  onCancel,
-  error,
+  onSetCurrentLocation,
+  onGoToMyPage,
 }) => {
   return (
     <Container>
@@ -237,12 +264,38 @@ const EditPagePresentation: React.FC<EditPagePresentationProps> = ({
             <InputGroup>
               <Label>내 주소 목록</Label>
               {locations.length > 0 ? (
-                locations.map(loc => (
-                  <AddressItem key={loc.townId}>
-                    <AddressText>{`${loc.city} ${loc.district} ${loc.town}`}</AddressText>
-                    <DeleteButton onClick={() => onDeleteAddress(loc.townId)}>×</DeleteButton>
-                  </AddressItem>
-                ))
+                locations.map(loc => {
+                  const isCurrent = loc.townId === currentTownId;
+                  return (
+                    <AddressItem
+                      key={loc.townId}
+                      isCurrent={isCurrent}
+                      onClick={() =>
+                        !isCurrent &&
+                        onSetCurrentLocation(loc.townId)
+                      }
+                    >
+                      <AddressText>{`${loc.city} ${loc.district} ${loc.town}`}</AddressText>
+                      <AddressActions>
+                        {isCurrent && (
+                          <CurrentBadge>
+                            사용 중
+                          </CurrentBadge>
+                        )}
+                        <DeleteButton
+                          onClick={e => {
+                            e.stopPropagation(); // 부모 클릭 이벤트 전파 방지
+                            onDeleteAddress(
+                              loc.townId
+                            );
+                          }}
+                        >
+                          ×
+                        </DeleteButton>
+                      </AddressActions>
+                    </AddressItem>
+                  );
+                })
               ) : (
                 <AddressText style={{ textAlign: 'center', color: '#868e96' }}>등록된 주소가 없습니다.</AddressText>
               )}
@@ -250,15 +303,15 @@ const EditPagePresentation: React.FC<EditPagePresentationProps> = ({
 
             {locations.length < 2 && (
               <AddAddressButton onClick={onAddAddress}>
-                <span>+</span> 새 주소 추가하기
+                + 새 주소 추가
               </AddAddressButton>
             )}
           </Form>
         </EditCard>
         
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-
-        <BackButton onClick={onCancel}>마이페이지로 돌아가기</BackButton>
+        <BackButton onClick={onGoToMyPage}>
+            마이페이지로 돌아가기
+        </BackButton>
 
       </Wrapper>
     </Container>

@@ -1,6 +1,8 @@
-import './LandingPagePresentation.css';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import './LandingPagePresentation.css';
+import AddressPopup from '../../components/AddressForm';
 
 interface Product {
   id: number;
@@ -19,21 +21,11 @@ type SortType = 'views' | 'likes';
 
 interface LandingPagePresentationProps {
   onGoToUpload: () => void;
-  onLocationClick: () => void;
-  onSearch: (query: string) => void;
   onProductClick: (id: number) => void;
-  selectedCategories: string[];
-  categoryPanelOpen: boolean;
-  tempSelectedCategories: string[];
-  onCategoryNavClick: () => void;
-  onCategoryToggle: (cat: string) => void;
-  onCategoryApply: () => void;
-  onCategoryPanelClose: () => void;
-  allCategories: string[];
   onChat: () => void;
   onMyPage: () => void;
   onCategory: () => void;
-  onProductListClick: () => void;
+  onSearch: (query: string) => void;
   products: Product[];
   loading: boolean;
   error: string | null;
@@ -44,15 +36,33 @@ interface LandingPagePresentationProps {
   onSortPanelClose: () => void;
   showAddressPopup?: boolean;
   setShowAddressPopup?: (show: boolean) => void;
-  city?: string | null;
-  district?: string | null;
-  town?: string | null;
+  city: string | null;
+  district: string | null;
+  town: string | null;
+  onLocationClick: () => void;
 }
 
 const LandingPagePresentation = ({
-  onGoToUpload,  onProductClick,onChat, onMyPage, onCategory, onSearch,
-  products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose,
-  showAddressPopup, setShowAddressPopup, city, district, town
+  onGoToUpload,
+  onProductClick,
+  onChat,
+  onMyPage,
+  onCategory,
+  onSearch,
+  products,
+  loading,
+  error,
+  sortType,
+  sortPanelOpen,
+  onSortClick,
+  onSortChange,
+  onSortPanelClose,
+  showAddressPopup,
+  setShowAddressPopup,
+  city,
+  district,
+  town,
+  onLocationClick,
 }: LandingPagePresentationProps) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -131,7 +141,7 @@ const LandingPagePresentation = ({
         </div>
         
         <div className="header-row">
-          <div className="location-display">
+          <div className="location-display" onClick={onLocationClick}>
             📍 {city} {district} {town}
           </div>
           {/* --- 정렬 버튼 및 드롭다운 컨테이너 --- */}
@@ -139,17 +149,25 @@ const LandingPagePresentation = ({
             <button className="sort-button" onClick={onSortClick}>
               {sortType === 'views' ? '인기순' : '찜 많은순'} ▼
             </button>
-            
             {sortPanelOpen && (
-              <div className="sort-dropdown" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="sort-dropdown"
+                onClick={e => e.stopPropagation()}
+              >
                 {[
                   { key: 'views', label: '인기순' },
                   { key: 'likes', label: '찜 많은순' },
-                ].map((option) => (
-                  <div 
+                ].map(option => (
+                  <div
                     key={option.key}
-                    className={`sort-option ${sortType === option.key ? 'active' : ''}`}
-                    onClick={() => onSortChange(option.key as SortType)}
+                    className={`sort-option ${
+                      sortType === option.key
+                        ? 'active'
+                        : ''
+                    }`}
+                    onClick={() =>
+                      onSortChange(option.key as SortType)
+                    }
                   >
                     {option.label}
                   </div>
@@ -159,6 +177,9 @@ const LandingPagePresentation = ({
           </div>
         </div>
       </header>
+      {sortPanelOpen && (
+        <div className="dropdown-overlay" onClick={onSortPanelClose} />
+      )}
 
       {/* --- 액션 버튼 영역 --- */}
       <div className="action-button-container">
@@ -181,14 +202,6 @@ const LandingPagePresentation = ({
           </div>
         )}
       </main>
-
-      {/* 정렬 기준 선택 패널 (기존 모달 방식은 삭제) */}
-      {sortPanelOpen && (
-        <div 
-          className="dropdown-overlay"
-          onClick={onSortPanelClose}
-        />
-      )}
 
       {/* 하단 네비게이션 */}
       <div className="landing-bottomnav">

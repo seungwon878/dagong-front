@@ -3,6 +3,7 @@ export interface Location {
   city: string;
   district: string;
   town: string;
+  isCurrent?: boolean;
 }
 
 /**
@@ -51,6 +52,60 @@ export const addUserLocation = async (memberId: number, latitude: number, longit
     }
     return response.json();
 }
+
+/**
+ * 회원의 현재 설정된 주소 하나를 조회합니다.
+ * @param memberId 조회할 회원의 ID
+ * @returns 현재 설정된 주소 정보
+ */
+export const getCurrentLocation = async (memberId: number): Promise<{ isSuccess: boolean; result: Location | null }> => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`/api/location/${memberId}/current`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+
+    if (!response.ok) {
+        // 200번대 응답이 아닐 경우, 응답 본문이 없을 수 있으므로 에러를 다르게 처리
+        if (response.status === 404) { // 현재 주소가 설정되지 않은 경우
+             return { isSuccess: true, result: null };
+        }
+        const errorData = await response.json().catch(() => ({ message: '현재 주소 조회에 실패했습니다.' }));
+        throw new Error(errorData.message);
+    }
+    // 응답 본문이 비어있는 성공 케이스 처리
+    const text = await response.text();
+    if (!text) {
+        return { isSuccess: true, result: null };
+    }
+    return JSON.parse(text);
+};
+
+
+/**
+ * 현재 사용할 주소를 변경합니다.
+ * @param memberId 회원의 ID
+ * @param townId 현재 사용할 주소(town)의 ID
+ */
+export const setCurrentLocation = async (memberId: number, townId: number) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`/api/location/${memberId}/current/${townId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: '현재 주소 설정에 실패했습니다.' }));
+        throw new Error(errorData.message);
+    }
+    return response.json();
+};
 
 /**
  * 회원의 주소를 삭제합니다.
