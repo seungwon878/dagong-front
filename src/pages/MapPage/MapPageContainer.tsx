@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MapPagePresentation from './MapPagePresentation';
 import useGeocode from '../../hooks/useGeocode';
 import { useAppContext } from '../../AppContext';
+import { addUserLocation } from '../../Apis/locationApi';
 
 declare global {
   interface Window {
@@ -24,7 +26,8 @@ const loadKakaoScript = () =>
   });
 
 const MapPageContainer: React.FC = () => {
-  const { memberid, authToken } = useAppContext();
+  const navigate = useNavigate();
+  const { memberid } = useAppContext();
   const [address, setAddress] = useState('');
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [isGeocoding, setIsGeocoding] = useState(false);
@@ -87,46 +90,31 @@ const MapPageContainer: React.FC = () => {
     }, 100);
   }, [coords]);
   
-  const handleClose = () => {
-    window.history.back();
-  };
+  const handleSaveLocation = async () => {
+    const memberIdRaw = localStorage.getItem('memberId');
+    const memberId = memberIdRaw ? Number(memberIdRaw) : NaN;
+    if (!lastCoords) return;
+    const { lat, lng } = lastCoords;
 
-  const postLocation = async (memberId: number, latitude: number, longitude: number) => {
+    if (isNaN(memberId) || isNaN(lat) || isNaN(lng)) {
+      alert('사용자 정보 또는 좌표 값이 올바르지 않습니다.');
+      return;
+    }
+    
     try {
-      const res = await fetch('http://13.209.95.208:8080/location', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({
-          memberId: Number(memberId),
-          latitude: Number(latitude),
-          longitude: Number(longitude)
-        }),
-      });
-      if (!res.ok) throw new Error('서버 저장 실패');
-      alert('위치 정보가 서버에 저장되었습니다.');
+      const response = await addUserLocation(memberId, lat, lng);
+      if (response.isSuccess) {
+        alert('위치 정보가 성공적으로 저장되었습니다.');
+        navigate(-1); // 이전 페이지로 돌아가기
+      } else {
+        throw new Error(response.message || '주소 저장에 실패했습니다.');
+      }
     } catch (e: any) {
-      alert('위치 저장 실패: ' + e.message);
+      alert(`주소 저장 실패: ${e.message}`);
     }
   };
   
  
-  const handleSaveLocation = () => {
-    const memberIdRaw = localStorage.getItem('memberId');
-    const memberId = memberIdRaw ? Number(memberIdRaw) : NaN;
-    if (!lastCoords) return;
-    const lat = Number(lastCoords.lat);
-    const lng = Number(lastCoords.lng);
-
-    if (isNaN(memberId) || isNaN(lat) || isNaN(lng)) {
-      alert('memberId 또는 좌표 값이 올바르지 않습니다.');
-      return;
-    }
-    postLocation(memberId, lat, lng);
-  };
-
   /* 3) 주소→좌표 변환 & 상태 갱신 */
   const onSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -149,7 +137,7 @@ const MapPageContainer: React.FC = () => {
 
   return (
     <MapPagePresentation
-      onClose={handleClose}
+      onClose={() => navigate(-1)} // 닫기 버튼도 navigate 사용
       address={address}
       onAddressChange={(e) => setAddress(e.target.value)}
       onSubmit={onSubmit}
@@ -158,7 +146,6 @@ const MapPageContainer: React.FC = () => {
       isMapLoading={isMapLoading}
       coords={coords}
       memberid={memberid}
-      postLocation={postLocation}
       showSaveBtn={showSaveBtn}
       onSaveLocation={handleSaveLocation}
     />
