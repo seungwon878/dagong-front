@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LandingPagePresentation from './LandingPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
-import { getAllProducts, searchProducts } from '../../Apis/groupPurchaseApi';
+import { getAllProducts, searchProducts, getRankedProducts } from '../../Apis/groupPurchaseApi';
 import { useAuth } from '../../contexts/AuthContext';
 
 // 상품 타입 정의
@@ -156,28 +156,19 @@ const LandingPageContainer = () => {
       
       let response;
       if (searchQuery) {
-        response = await searchProducts(searchQuery, 'latest', 1, 20); // 검색 API 호출
+        response = await searchProducts(searchQuery, 'latest', 1, 20);
       } else {
-        response = await getAllProducts(Number(memberId), 1, 10); // 기존 전체 상품 조회
+        // '인기순' 또는 '찜 많은순' 정렬 기준에 따라 랭킹 API 호출
+        response = await getRankedProducts(sortType, 1, 10); 
       }
 
       if (response.isSuccess && response.result.content) {
-        // API 응답 구조에 맞게 데이터 가공
         const fetchedProducts = response.result.content.map((p: any) => ({
           ...p,
-          // 혹시 모를 필드 부재에 대한 기본값 처리
           views: p.views ?? 0,
           likes: p.likes ?? 0,
         }));
-
-        // 정렬 적용
-        const sortedProducts = [...fetchedProducts].sort((a, b) => {
-          if (sortType === 'views') {
-            return b.views - a.views;
-          }
-          return b.likes - a.likes;
-        });
-        setProducts(sortedProducts);
+        setProducts(fetchedProducts); // API가 이미 정렬된 데이터를 주므로, 프론트 정렬 제거
       } else {
         setError(response.message || '상품 목록을 불러오는데 실패했습니다.');
         setProducts([]);
