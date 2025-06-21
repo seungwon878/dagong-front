@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './LandingPagePresentation.css';
-import AddressPopup from '../../components/AddressForm';
 
 interface Product {
   id: number;
@@ -40,6 +39,8 @@ interface LandingPagePresentationProps {
   district: string | null;
   town: string | null;
   onLocationClick: () => void;
+  isAuthenticated: boolean;
+  onLogin: () => void;
 }
 
 const LandingPagePresentation = ({
@@ -63,6 +64,8 @@ const LandingPagePresentation = ({
   district,
   town,
   onLocationClick,
+  isAuthenticated,
+  onLogin,
 }: LandingPagePresentationProps) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -183,14 +186,44 @@ const LandingPagePresentation = ({
 
       {/* --- 액션 버튼 영역 --- */}
       <div className="action-button-container">
-        <button className="landing-upload-btn" onClick={onGoToUpload}>
-          + 새로운 공동구매 등록하기
-        </button>
+        {isAuthenticated ? (
+          <button className="landing-upload-btn" onClick={onGoToUpload}>
+            + 새로운 공동구매 등록하기
+          </button>
+        ) : (
+          <button className="landing-upload-btn" onClick={onLogin} style={{ background: '#e89cae' }}>
+            로그인하고 공동구매 시작하기
+          </button>
+        )}
       </div>
 
       {/* 상품 목록 영역 */}
       <main className="product-list-container">
-        {loading ? (
+        {!isAuthenticated ? (
+          <div className="message-box" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#333' }}>
+              로그인이 필요합니다
+            </div>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
+              공동구매를 이용하려면 로그인해주세요
+            </div>
+            <button 
+              onClick={onLogin}
+              style={{
+                padding: '12px 24px',
+                borderRadius: '8px',
+                background: '#e89cae',
+                color: '#fff',
+                border: 'none',
+                fontWeight: '600',
+                fontSize: '16px',
+                cursor: 'pointer'
+              }}
+            >
+              로그인하기
+            </button>
+          </div>
+        ) : loading ? (
           <div className="message-box">로딩 중...</div>
         ) : error ? (
           <div className="message-box error">{error}</div>
