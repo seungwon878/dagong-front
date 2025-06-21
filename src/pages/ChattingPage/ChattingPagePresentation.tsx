@@ -177,7 +177,7 @@ const ChattingPagePresentation = ({
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
         }}>
-          <span>{roomTitle}</span>
+          {/* 제목을 비워달라는 요청에 따라 제거 */}
         </div>
         <div style={{ width: 40, textAlign: 'right' }}>
           <button onClick={() => setUserListOpen(true)} style={{ background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer', padding: 0 }}>⋮</button>
@@ -192,16 +192,25 @@ const ChattingPagePresentation = ({
       />
       {/* 상단 상품 정보 */}
       <div style={{ margin: '18px 16px 0 16px', border: '1px solid #eee', borderRadius: 8, display: 'flex', alignItems: 'center', padding: 12, background: '#fafafa' }}>
-        <div style={{ width: 48, height: 48, background: '#ededed', borderRadius: 8, marginRight: 14 }} />
+
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>공구품</div>
           <div style={{ fontSize: 15, fontWeight: 600 }}>{productName}</div>
         </div>
         <div style={{ fontSize: 15, color: '#888', fontWeight: 500 }}>{currentPeople}명</div>
       </div>
       {/* 채팅 메시지 영역 */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '18px 0 0 0', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ textAlign: 'center', color: '#bbb', fontSize: 13, marginBottom: 12 }}>오늘 오전 9:36</div>
+        <div style={{ textAlign: 'center', color: '#bbb', fontSize: 13, marginBottom: 12 }}>
+          {(() => {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? '오후' : '오전';
+            const displayHours = hours % 12 || 12;
+            const displayMinutes = minutes.toString().padStart(2, '0');
+            return `오늘 ${ampm} ${displayHours}:${displayMinutes}`;
+          })()}
+        </div>
         {messages.map((msg) =>
           msg.type === 'notice' ? (
             <div key={msg.id} style={{ textAlign: 'center', margin: '8px 0' }}>

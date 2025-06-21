@@ -21,8 +21,8 @@ const mockRoom = {
 
 // 현재 사용자 정보를 가정합니다. 실제로는 로그인 정보 등에서 가져와야 합니다.
 const currentUser = {
-  id: 1,
-  nickname: '나',
+  id: localStorage.getItem('memberId') || '',
+  nickname: localStorage.getItem('nickname') || '',
 };
 
 const ChattingPageContainer = () => {
@@ -70,7 +70,7 @@ const ChattingPageContainer = () => {
 
         const fetchedMessages: Message[] = talkMessages.map((msg) => ({
           id: msg.messageId,
-          type: msg.senderId === currentUser.id ? 'me' : 'other',
+          type: msg.senderId === parseInt(currentUser.id) ? 'me' : 'other',
           text: msg.content,
           user: msg.senderNick,
         }));
@@ -146,7 +146,7 @@ const ChattingPageContainer = () => {
         if (payload.messageType === 'TALK') {
           const newMessage: Message = {
             id: generateMessageId(),
-            type: payload.senderId === currentUser.id ? 'me' : 'other',
+            type: payload.senderId === parseInt(currentUser.id) ? 'me' : 'other',
             text: payload.content,
             user: payload.senderNick || '사용자',
           };
@@ -252,7 +252,7 @@ const ChattingPageContainer = () => {
   return (
     <ChattingPagePresentation
       roomTitle={roomInfo?.roomName || mockRoom.roomTitle}
-      productName={mockRoom.productName}
+      productName={roomInfo?.roomName || mockRoom.productName}
       currentPeople={roomInfo?.participants || 0}
       messages={messages}
       onBack={handleBack}

@@ -70,7 +70,7 @@ export interface ChatMessagesResponse {
 export const getChatMessages = async (
   roomId: string,
   lastId: string | null,
-  size: number = 20,
+  size: number = 30,
 ): Promise<ChatMessagesResponse> => {
   const token = localStorage.getItem('authToken');
   const query = new URLSearchParams({
