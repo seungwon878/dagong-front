@@ -1,4 +1,3 @@
-import React from 'react';
 import LandingPageContainer from './LandingPageContainer';
 import BottomNavBar from '../../components/BottomNavBar';
 

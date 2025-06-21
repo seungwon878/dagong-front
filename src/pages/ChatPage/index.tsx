@@ -1,4 +1,4 @@
-import React from 'react';
+
 import ChatPageContainer from './ChatPageContainer';
 import BottomNavBar from '../../components/BottomNavBar';
 
