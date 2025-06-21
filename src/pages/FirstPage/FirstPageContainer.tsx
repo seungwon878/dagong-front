@@ -41,7 +41,7 @@ const FirstPageContainer: React.FC = () => {
   const handleKakaoLogin = () => {
     const state = Date.now().toString();
   //  const redirectUri = 'http://13.209.95.208:8080/auth/login/kakao';
-    const redirectUri = 'http://localhost:5173/landing';
+    const redirectUri = 'https://splendorous-entremet-55d2d5.netlify.app/landing';
     const kakaoAuthUrl =
       `http://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}` +
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
