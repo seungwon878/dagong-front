@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { Client } from '@stomp/stompjs';
-import { getChatRooms, getChatMessages, type ChatRoom } from '../Apis/chatApi';
+import { getChatRooms, getChatMessages } from '../Apis/chatApi';
 
 interface Message {
   id: string;
@@ -324,7 +324,7 @@ export const ChatSubscriptionProvider: React.FC<ChatSubscriptionProviderProps> =
       
       // 이미 구독된 채팅방들에 대해 메시지 수신 구독
       subscribedRooms.current.forEach(roomId => {
-        const subscription = client.subscribe(`/topic/room/${roomId}`, (msg) => {
+        client.subscribe(`/topic/room/${roomId}`, (msg) => {
           const payload = JSON.parse(msg.body);
           console.log('[RECV]', payload);
           
@@ -411,7 +411,7 @@ export const ChatSubscriptionProvider: React.FC<ChatSubscriptionProviderProps> =
 
     // STOMP 클라이언트가 연결되어 있다면 즉시 구독
     if (clientRef.current && isConnected) {
-      const subscription = clientRef.current.subscribe(`/topic/room/${roomId}`, (msg) => {
+      clientRef.current.subscribe(`/topic/room/${roomId}`, (msg) => {
         const payload = JSON.parse(msg.body);
         console.log('[RECV]', payload);
         

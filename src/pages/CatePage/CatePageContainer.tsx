@@ -13,6 +13,9 @@ interface Product {
   price: number;
   quantity: number;
   maxParticipants: number;
+  currentParticipants: number; // 현재 참여 인원
+  likes: number; // 찜 수
+  status: string; // 공구 상태
   category1: string;
   category2: string;
 }
@@ -98,10 +101,18 @@ const CatePageContainer = () => {
       setLoading(true);
       setError(null);
       const response = await getCategoryProducts(category1, category2);
-      if (response.isSuccess) {
-        setProducts(response.result.content || []);
+      if (response.isSuccess && Array.isArray(response.result.content)) {
+        // API 응답에 likes, status 등이 없을 경우를 대비해 기본값 설정
+        const formattedProducts = response.result.content.map((p: any) => ({
+          ...p,
+          likes: p.likes ?? 0,
+          status: p.status || 'ACTIVE',
+          currentParticipants: p.currentParticipants ?? 0,
+        }));
+        setProducts(formattedProducts);
       } else {
         setError(response.message || '상품 목록을 불러오는데 실패했습니다.');
+        setProducts([]);
       }
     } catch (err) {
       setError('상품 목록을 불러오는데 실패했습니다.');
@@ -115,6 +126,11 @@ const CatePageContainer = () => {
   const handleDetailCategoryClick = async (detail: string) => {
     setSelectedDetail(detail);
     await fetchProducts(selectedMain, detail);
+  };
+
+  // 상품 클릭 시 상세 페이지로 이동
+  const handleProductClick = (id: number) => {
+    navigate(`/register/${id}`);
   };
 
   return (
@@ -132,6 +148,7 @@ const CatePageContainer = () => {
       products={products}
       loading={loading}
       error={error}
+      onProductClick={handleProductClick} // prop으로 전달
     />
   );
 };

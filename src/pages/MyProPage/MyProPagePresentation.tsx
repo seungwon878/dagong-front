@@ -52,7 +52,7 @@ const MyProPagePresentation = ({
         <ProductList>
           {products.map(p => (
             <ProductCard key={p.id} onClick={() => onProductClick(p.id)}>
-              <ProductImage src={p.imageUrl} alt={p.name} />
+              <ProductImage src="/img/dagong.png" alt={p.name} />
               <ProductInfo>
                 <StatusTag>{p.status}</StatusTag>
                 <ProductTitle>{p.name}</ProductTitle>

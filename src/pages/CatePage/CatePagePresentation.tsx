@@ -1,4 +1,6 @@
 import React from 'react';
+import styled from 'styled-components';
+import { FaHeart, FaUserFriends } from 'react-icons/fa';
 
 interface Product {
   id: number;
@@ -9,6 +11,9 @@ interface Product {
   price: number;
   quantity: number;
   maxParticipants: number;
+  currentParticipants: number;
+  likes: number;
+  status: string;
   category1: string;
   category2: string;
 }
@@ -27,6 +32,7 @@ interface CatePagePresentationProps {
   products: Product[];
   loading: boolean;
   error: string | null;
+  onProductClick: (id: number) => void; // onProductClick prop 타입 추가
 }
 
 const CatePagePresentation = ({ 
@@ -42,46 +48,32 @@ const CatePagePresentation = ({
   selectedDetail,
   products,
   loading,
-  error
+  error,
+  onProductClick // onProductClick prop 받기
 }: CatePagePresentationProps) => {
   const detail = categoryDetails[selectedMain];
+  const formatPrice = (price: number) => new Intl.NumberFormat('ko-KR').format(price);
 
   // 상품 카드 렌더링 함수
   const renderProductCard = (product: Product) => (
-    <div key={product.id} style={{ 
-      border: '1px solid #eee',
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 16,
-      cursor: 'pointer',
-      transition: 'transform 0.2s',
-    }}>
-      <div style={{ display: 'flex', gap: 16 }}>
-        <div style={{ width: 100, height: 100, borderRadius: 8, overflow: 'hidden' }}>
-          <img 
-            src={product.imageUrl} 
-            alt={product.title} 
-            style={{ 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover' 
-            }} 
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: 16, fontWeight: 600 }}>{product.title}</h3>
-          <p style={{ margin: '0 0 8px 0', fontSize: 14, color: '#666' }}>{product.content}</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 16, fontWeight: 600, color: '#e89cae' }}>
-              {product.price.toLocaleString()}원
-            </span>
-            <span style={{ fontSize: 14, color: '#888' }}>
-              {product.maxParticipants}명 모집 중
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ProductCard key={product.id} onClick={() => onProductClick(product.id)}>
+      <ProductImage src={product.imageUrl || '/img/dagong.png'} alt={product.title} />
+      <ProductInfo>
+        <StatusTag status={product.status}>
+          {product.status === 'ACTIVE' ? '모집중' : '모집완료'}
+        </StatusTag>
+        <ProductTitle>{product.title}</ProductTitle>
+        <Price>{formatPrice(product.price)}원</Price>
+        <Footer>
+          <FooterInfo>
+            <FaHeart color="#ff7f7f" /> {product.likes}
+          </FooterInfo>
+          <FooterInfo>
+            <FaUserFriends color="#5a67d8" /> {product.currentParticipants}/{product.maxParticipants}
+          </FooterInfo>
+        </Footer>
+      </ProductInfo>
+    </ProductCard>
   );
 
   return (
@@ -160,21 +152,15 @@ const CatePagePresentation = ({
               </div>
               
               {loading ? (
-                <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
-                  로딩 중...
-                </div>
+                <StatusMessage>로딩 중...</StatusMessage>
               ) : error ? (
-                <div style={{ textAlign: 'center', padding: '40px 0', color: '#e89cae' }}>
-                  {error}
-                </div>
+                <StatusMessage error>{error}</StatusMessage>
               ) : products.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px 0', color: '#888' }}>
-                  등록된 상품이 없습니다.
-                </div>
+                <StatusMessage>등록된 상품이 없습니다.</StatusMessage>
               ) : (
-                <div>
+                <ProductList>
                   {products.map(renderProductCard)}
-                </div>
+                </ProductList>
               )}
             </div>
           )}
@@ -200,3 +186,86 @@ const CatePagePresentation = ({
 };
 
 export default CatePagePresentation;
+
+// --- Styled Components ---
+
+const ProductList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const ProductCard = styled.div`
+  display: flex;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  padding: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+`;
+
+const ProductImage = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 12px;
+  background-color: #f0f0f0;
+`;
+
+const ProductInfo = styled.div`
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+const StatusTag = styled.div<{ status: string }>`
+  background-color: ${({ status }) => status === 'ACTIVE' ? '#e3f2fd' : '#fce4ec'};
+  color: ${({ status }) => status === 'ACTIVE' ? '#1e88e5' : '#c2185b'};
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  align-self: flex-start;
+  margin-bottom: 8px;
+`;
+
+const ProductTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  line-height: 1.4;
+  color: #333;
+`;
+
+const Price = styled.div`
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: auto;
+  color: #111;
+`;
+
+const Footer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+`;
+
+const FooterInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #555;
+`;
+
+const StatusMessage = styled.div<{ error?: boolean }>`
+  text-align: center;
+  padding: 40px 0;
+  color: ${({ error }) => error ? '#e89cae' : '#888'};
+`;
