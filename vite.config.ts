@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  base: "/",
   server: {
     proxy: {
       // "/auth" 로 시작하는 요청은 실제 백엔드 서버로 포워딩
