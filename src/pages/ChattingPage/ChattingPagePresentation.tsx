@@ -11,13 +11,6 @@ interface ChattingPagePresentationProps {
   onSend: () => void;
 }
 
-const dummyUsers = [
-  { id: 1, nickname: '홍길동', img: '' },
-  { id: 2, nickname: '이순신', img: '' },
-  { id: 3, nickname: '김철수', img: '' },
-  { id: 4, nickname: '박영희', img: '' },
-];
-
 const UserListModal = ({ open, onClose, users, roomTitle, currentPeople }: { 
   open: boolean; 
   onClose: () => void; 
@@ -186,7 +179,7 @@ const ChattingPagePresentation = ({
       <UserListModal 
         open={userListOpen} 
         onClose={() => setUserListOpen(false)} 
-        users={dummyUsers}
+        users={[]}
         roomTitle={roomTitle}
         currentPeople={currentPeople}
       />

@@ -12,13 +12,6 @@ interface Message {
   user?: string; // 메시지를 보낸 사용자 닉네임
 }
 
-const mockRoom = {
-  roomTitle: '프로틴 공구',
-  productName: '마이프로틴',
-  currentPeople: 9,
-  maxPeople: 15,
-};
-
 // 현재 사용자 정보를 가정합니다. 실제로는 로그인 정보 등에서 가져와야 합니다.
 const currentUser = {
   id: localStorage.getItem('memberId') || '',
@@ -251,8 +244,8 @@ const ChattingPageContainer = () => {
 
   return (
     <ChattingPagePresentation
-      roomTitle={roomInfo?.roomName || mockRoom.roomTitle}
-      productName={roomInfo?.roomName || mockRoom.productName}
+      roomTitle={roomInfo?.roomName || ''}
+      productName={roomInfo?.roomName || ''}
       currentPeople={roomInfo?.participants || 0}
       messages={messages}
       onBack={handleBack}
