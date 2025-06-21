@@ -101,16 +101,6 @@ const ActionButton = styled.button`
   }
 `;
 
-const SaveButton = styled(ActionButton)`
-  width: 100%;
-  margin-top: 0.5rem;
-  background-color: #e89cae;
-
-  &:hover {
-    background-color: #e18a9f;
-  }
-`;
-
 const BackButton = styled.button`
   width: 100%;
   margin-top: 1.5rem;
@@ -127,14 +117,6 @@ const BackButton = styled.button`
   &:hover {
     background: #e0e6e8;
   }
-`;
-
-const ErrorMessage = styled.p`
-  color: #e74c3c;
-  font-size: 0.9rem;
-  text-align: center;
-  margin-top: 1rem;
-  min-height: 1.2em;
 `;
 
 const AddressItem = styled.div<{ isCurrent: boolean }>`

@@ -2,9 +2,6 @@ import './UploadPagePresentation.css';
 import type { ChangeEvent } from 'react';
 
 interface UploadPagePresentationProps {
-  mode: 'manual';
-  image: string | null;
-  onImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
   people: number;
   onPeopleSelect: (num: number) => void;
   amount: number;
@@ -13,7 +10,6 @@ interface UploadPagePresentationProps {
   onPriceChange: (e: ChangeEvent<HTMLInputElement>) => void;
   desc: string;
   onDescChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  onLocationClick: () => void;
   onRegister: () => void;
   onNaverSearch: () => void;
   onManualRegister: () => void;
@@ -23,7 +19,6 @@ interface UploadPagePresentationProps {
   manualPrice: string;
   setManualPrice: (price: string) => void;
   manualImage: string | null;
-  setManualImage: (image: string | null) => void;
   onManualCancel: () => void;
   onManualSubmit: () => void;
   selectedProduct: { image: string; name: string; title: string } | null;
@@ -44,8 +39,6 @@ interface UploadPagePresentationProps {
 const peopleOptions = [1, 2, 3, 4, 5, 6];
 
 const UploadPagePresentation = ({
-  image,
-  onImageChange,
   people,
   onPeopleSelect,
   amount,
@@ -54,9 +47,7 @@ const UploadPagePresentation = ({
   onPriceChange,
   desc,
   onDescChange,
-  onLocationClick,
   onRegister,
-  mode,
   onNaverSearch,
   onManualRegister,
   showManualModal,
@@ -65,7 +56,6 @@ const UploadPagePresentation = ({
   manualPrice,
   setManualPrice,
   manualImage,
-  setManualImage,
   onManualCancel,
   onManualSubmit,
   selectedProduct,
@@ -238,25 +228,6 @@ const UploadPagePresentation = ({
       )}
       {/* 메인 폼(항상 노출) */}
       <div style={{ opacity: showManualModal ? 0.3 : 1, pointerEvents: showManualModal ? 'none' : 'auto' }}>
-        {/* 이미지 업로드 */}
-        {/* <div className="upload-image-box">
-          <label className="upload-image-placeholder" style={{ cursor: 'pointer' }}>
-            {image ? (
-              <img src={image} alt="preview" style={{ width: 64, height: 64, borderRadius: 12, objectFit: 'cover' }} />
-            ) : (
-              <span role="img" aria-label="camera" style={{ fontSize: 32 }}>📷</span>
-            )}
-            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={onImageChange} />
-          </label>
-          <div className="upload-product-info">
-            <div className="upload-product-title">프로틴 공구</div>
-            <div className="upload-product-name">상품명 <b>마이프로틴</b></div>
-          </div>
-          <span className="upload-arrow">&gt;</span>
-        </div> */}
-        {/* 위치 */}
-        {/* <div className="upload-label">위치</div>
-        <input className="upload-input" type="text" value="서울 특별시 상도동 전체" readOnly onClick={onLocationClick} /> */}
         {/* 인원 */}
         <div className="upload-section">
           <div className="upload-label">인원</div>

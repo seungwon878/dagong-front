@@ -7,7 +7,7 @@ const SignupPageContainer: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>();
 
-  const handleCheckEmail = async (email: string): Promise<void> => {
+  const handleCheckEmail = async (_email: string): Promise<void> => {
     try {
       // TODO: API 연동
       // 임시로 중복 체크 로직 구현
@@ -25,7 +25,7 @@ const SignupPageContainer: React.FC = () => {
     }
   };
 
-  const handleCheckNickname = async (nickname: string): Promise<void> => {
+  const handleCheckNickname = async (_nickname: string): Promise<void> => {
     try {
       // TODO: API 연동
       // 임시로 중복 체크 로직 구현
@@ -43,7 +43,7 @@ const SignupPageContainer: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (data: {
+  const handleSubmit = async (_data: {
     email: string;
     username: string;
     nickname: string;

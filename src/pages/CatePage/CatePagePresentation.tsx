@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { FaHeart, FaUserFriends } from 'react-icons/fa';
 
@@ -109,7 +108,7 @@ const CatePagePresentation = ({
             // 상세 카테고리 목록
             detail ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {detail.details.map((d, idx) => (
+                {detail.details.map((d) => (
                   <button 
                     key={d} 
                     onClick={() => onDetailCategoryClick(d)} 

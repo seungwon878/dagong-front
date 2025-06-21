@@ -1,4 +1,3 @@
-import React from 'react';
 import BottomNavBar from '../../components/BottomNavBar';
 import styled from 'styled-components';
 import { FaHeart, FaUserFriends } from 'react-icons/fa';
