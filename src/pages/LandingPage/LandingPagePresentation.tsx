@@ -1,5 +1,7 @@
-import './LandingPagePresentation.css';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import './LandingPagePresentation.css';
 
 interface Product {
   id: number;
@@ -18,21 +20,11 @@ type SortType = 'views' | 'likes';
 
 interface LandingPagePresentationProps {
   onGoToUpload: () => void;
-  onLocationClick: () => void;
-  onSearchClick: () => void;
   onProductClick: (id: number) => void;
-  selectedCategories: string[];
-  categoryPanelOpen: boolean;
-  tempSelectedCategories: string[];
-  onCategoryNavClick: () => void;
-  onCategoryToggle: (cat: string) => void;
-  onCategoryApply: () => void;
-  onCategoryPanelClose: () => void;
-  allCategories: string[];
   onChat: () => void;
   onMyPage: () => void;
   onCategory: () => void;
-  onProductListClick: () => void;
+  onSearch: (query: string) => void;
   products: Product[];
   loading: boolean;
   error: string | null;
@@ -43,17 +35,46 @@ interface LandingPagePresentationProps {
   onSortPanelClose: () => void;
   showAddressPopup?: boolean;
   setShowAddressPopup?: (show: boolean) => void;
-  city?: string | null;
-  district?: string | null;
-  town?: string | null;
+  city: string | null;
+  district: string | null;
+  town: string | null;
+  onLocationClick: () => void;
+  isAuthenticated: boolean;
+  onLogin: () => void;
 }
 
 const LandingPagePresentation = ({
-  onGoToUpload,  onProductClick,onChat, onMyPage, onCategory,
-  products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose,
-  showAddressPopup, setShowAddressPopup, city, district, town
+  onGoToUpload,
+  onProductClick,
+  onChat,
+  onMyPage,
+  onCategory,
+  onSearch,
+  products,
+  loading,
+  error,
+  sortType,
+  sortPanelOpen,
+  onSortClick,
+  onSortChange,
+  onSortPanelClose,
+  showAddressPopup,
+  setShowAddressPopup,
+  city,
+  district,
+  town,
+  onLocationClick,
+  isAuthenticated,
+  onLogin,
 }: LandingPagePresentationProps) => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSearch(searchQuery);
+    }
+  };
 
   const renderProductCard = (product: Product) => (
     <div 
@@ -112,11 +133,18 @@ const LandingPagePresentation = ({
               <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </span>
-          <input type="text" placeholder="상품명 혹은 브랜드명을 입력해주세요." className="search-input" />
+          <input 
+            type="text" 
+            placeholder="상품명 혹은 브랜드명을 입력해주세요." 
+            className="search-input" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
         </div>
         
         <div className="header-row">
-          <div className="location-display">
+          <div className="location-display" onClick={onLocationClick}>
             📍 {city} {district} {town}
           </div>
           {/* --- 정렬 버튼 및 드롭다운 컨테이너 --- */}
@@ -124,17 +152,25 @@ const LandingPagePresentation = ({
             <button className="sort-button" onClick={onSortClick}>
               {sortType === 'views' ? '인기순' : '찜 많은순'} ▼
             </button>
-            
             {sortPanelOpen && (
-              <div className="sort-dropdown" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="sort-dropdown"
+                onClick={e => e.stopPropagation()}
+              >
                 {[
                   { key: 'views', label: '인기순' },
                   { key: 'likes', label: '찜 많은순' },
-                ].map((option) => (
-                  <div 
+                ].map(option => (
+                  <div
                     key={option.key}
-                    className={`sort-option ${sortType === option.key ? 'active' : ''}`}
-                    onClick={() => onSortChange(option.key as SortType)}
+                    className={`sort-option ${
+                      sortType === option.key
+                        ? 'active'
+                        : ''
+                    }`}
+                    onClick={() =>
+                      onSortChange(option.key as SortType)
+                    }
                   >
                     {option.label}
                   </div>
@@ -144,17 +180,50 @@ const LandingPagePresentation = ({
           </div>
         </div>
       </header>
+      {sortPanelOpen && (
+        <div className="dropdown-overlay" onClick={onSortPanelClose} />
+      )}
 
       {/* --- 액션 버튼 영역 --- */}
       <div className="action-button-container">
-        <button className="landing-upload-btn" onClick={onGoToUpload}>
-          + 새로운 공동구매 등록하기
-        </button>
+        {isAuthenticated ? (
+          <button className="landing-upload-btn" onClick={onGoToUpload}>
+            + 새로운 공동구매 등록하기
+          </button>
+        ) : (
+          <button className="landing-upload-btn" onClick={onLogin} style={{ background: '#e89cae' }}>
+            로그인하고 공동구매 시작하기
+          </button>
+        )}
       </div>
 
       {/* 상품 목록 영역 */}
       <main className="product-list-container">
-        {loading ? (
+        {!isAuthenticated ? (
+          <div className="message-box" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#333' }}>
+              로그인이 필요합니다
+            </div>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
+              공동구매를 이용하려면 로그인해주세요
+            </div>
+            <button 
+              onClick={onLogin}
+              style={{
+                padding: '12px 24px',
+                borderRadius: '8px',
+                background: '#e89cae',
+                color: '#fff',
+                border: 'none',
+                fontWeight: '600',
+                fontSize: '16px',
+                cursor: 'pointer'
+              }}
+            >
+              로그인하기
+            </button>
+          </div>
+        ) : loading ? (
           <div className="message-box">로딩 중...</div>
         ) : error ? (
           <div className="message-box error">{error}</div>
@@ -166,14 +235,6 @@ const LandingPagePresentation = ({
           </div>
         )}
       </main>
-
-      {/* 정렬 기준 선택 패널 (기존 모달 방식은 삭제) */}
-      {sortPanelOpen && (
-        <div 
-          className="dropdown-overlay"
-          onClick={onSortPanelClose}
-        />
-      )}
 
       {/* 하단 네비게이션 */}
       <div className="landing-bottomnav">

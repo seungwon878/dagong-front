@@ -1,52 +1,108 @@
 /**
- * 사용자 정보를 업데이트하기 위한 API 요청 함수
+ * 사용자 닉네임을 업데이트하기 위한 API 요청 함수 (닉네임 전용)
  * @param memberId 수정할 사용자의 ID
  * @param nickname 새로운 닉네임
  * @returns API 응답
  */
-export async function updateUserInfo(memberId: number, nickname: string) {
+export const updateNickname = async (memberId: number, nickname: string) => {
   const token = localStorage.getItem('authToken');
-
-  const response = await fetch(`/api/member/${memberId}`, {
+  const res = await fetch(`/api/member/${memberId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({ nickname }),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || '닉네임 변경에 실패했습니다.');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || '닉네임 수정에 실패했습니다.');
   }
+  return res.json();
+};
 
-  return response.json();
-}
+/**
+ * 사용자 주소를 업데이트하기 위한 API 요청 함수 (주소 전용)
+ * @param memberId 수정할 사용자의 ID
+ * @param address 새로운 주소
+ * @param detailAddress 새로운 상세주소
+ * @returns API 응답
+ */
+export const updateAddress = async (
+  memberId: number,
+  address: string,
+  detailAddress: string
+) => {
+  const token = localStorage.getItem('authToken');
+  // 주소 변경을 위한 API 엔드포인트가 닉네임 변경과 동일하다고 가정합니다.
+  // 백엔드에서 body의 필드를 보고 부분 업데이트를 지원해야 합니다.
+  const res = await fetch(`/api/member/${memberId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ address, detailAddress }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || '주소 수정에 실패했습니다.');
+  }
+  return res.json();
+};
+
+/**
+ * @deprecated updateNickname과 updateAddress로 분리되었습니다.
+ */
+export const updateUserInfo = async (
+  memberId: number, 
+  nickname: string, 
+  address: string, 
+  detailAddress: string
+) => {
+  // 이 함수는 이제 사용되지 않지만, 다른 곳에서 참조할 경우를 대비해 남겨둡니다.
+  // 실제로는 updateNickname과 updateAddress를 각각 사용해야 합니다.
+  console.warn('updateUserInfo is deprecated. Use updateNickname or updateAddress instead.');
+  const token = localStorage.getItem('authToken');
+  const res = await fetch(`/api/member/${memberId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ nickname, address, detailAddress }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || '정보 수정에 실패했습니다.');
+  }
+  return res.json();
+};
 
 /**
  * 사용자 정보를 가져오기 위한 API 요청 함수
  * @param memberId 조회할 사용자의 ID
  * @returns API 응답 (사용자 정보 포함)
  */
-export async function getUserInfo(memberId: number) {
+export const getUserInfo = async (memberId: number): Promise<{ 
+  isSuccess: boolean;
+  result: { 
+    nickname: string;
+  } 
+}> => {
   const token = localStorage.getItem('authToken');
-
   const response = await fetch(`/api/member/${memberId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Authorization: `Bearer ${token}`,
     },
   });
-
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || '사용자 정보 조회에 실패했습니다.');
+    throw new Error('사용자 정보 조회 실패');
   }
-
   return response.json();
-}
+};
 
 /**
  * 사용자 관심 카테고리를 업데이트하기 위한 API 요청 함수
