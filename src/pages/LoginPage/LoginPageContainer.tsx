@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginPagePresentation from './LoginPagePresentation';
 import { useAuth } from '../../contexts/AuthContext';
@@ -28,9 +28,8 @@ const LoginPageContainer: React.FC = () => {
       if (!response.ok) {
         throw new Error(data.message || '로그인에 실패했습니다');
       }
-
       // 로그인 성공 시 토큰 저장 및 상태 업데이트
-      login();
+      login(data.token, data.user.email, data.user.name, data.user.role);
       navigate('/');
     } catch (err) {
       if (err instanceof Error) {

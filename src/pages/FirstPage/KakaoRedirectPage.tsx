@@ -36,9 +36,9 @@ const KakaoRedirectPage: React.FC = () => {
           if (data.isSuccess && data.result) {
             localStorage.setItem('isSuccess', "true");
             localStorage.setItem('authToken', data.result.token);
-            localStorage.setItem('memberId', data.result.id.toString());
-            localStorage.setItem('nickname', data.result.nickname);
-            localStorage.setItem('email', data.result.email);
+            localStorage.setItem('memberId', data.result.user.id.toString());
+            localStorage.setItem('nickname', data.result.user.nickname);
+            localStorage.setItem('email', data.result.user.email);
             navigate('/upload', { replace: true });
           } else {
             alert('카카오 로그인에 실패했습니다.');
