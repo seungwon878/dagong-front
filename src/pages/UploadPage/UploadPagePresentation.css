@@ -1,0 +1,170 @@
+.upload-root {
+  max-width: 430px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: 'Apple SD Gothic Neo', 'sans-serif';
+}
+.upload-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 18px 16px 8px 16px;
+  font-size: 18px;
+  border-bottom: 1px solid #eee;
+}
+.upload-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+.upload-cancel {
+  position: absolute;
+  right: 16px;
+  top: 18px;
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 15px;
+  cursor: pointer;
+}
+.upload-image-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 16px 8px 16px;
+}
+.upload-image-placeholder {
+  width: 64px;
+  height: 64px;
+  background: #ededed;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload-product-info {
+  flex: 1;
+}
+.upload-product-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.upload-product-name {
+  font-size: 13px;
+  color: #888;
+}
+.upload-arrow {
+  font-size: 22px;
+  color: #bbb;
+}
+.upload-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 18px 0 6px 16px;
+}
+.upload-input {
+  width: calc(100% - 32px);
+  margin: 0 16px;
+  padding: 10px 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #fafafa;
+  color: #444;
+  cursor: pointer;
+}
+.upload-people-options {
+  display: flex;
+  gap: 8px;
+  margin: 0 16px;
+}
+.upload-people-btn {
+  flex: 1;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 10px 0;
+  font-size: 15px;
+  color: #444;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.upload-people-btn.selected {
+  background: #f8e6eb;
+  color: #e89cae;
+  border: 1.5px solid #e89cae;
+}
+.upload-amount-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px;
+  margin-bottom: 8px;
+}
+.upload-amount-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #f8e6eb;
+  color: #e89cae;
+  font-size: 22px;
+  cursor: pointer;
+}
+.upload-amount {
+  background: #f8e6eb;
+  color: #e89cae;
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.upload-desc {
+  width: calc(100% - 32px);
+  margin: 0 16px;
+  min-height: 80px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #fafafa;
+  color: #888;
+  resize: none;
+}
+.upload-price {
+  margin: 18px 0 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.upload-register-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 430px;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 0;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 100;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
