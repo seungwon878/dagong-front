@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LandingPagePresentation from './LandingPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
-import { getAllProducts } from '../../Apis/groupPurchaseApi';
+import { getAllProducts, searchProducts } from '../../Apis/groupPurchaseApi';
 import { useAuth } from '../../contexts/AuthContext';
 
 // 상품 타입 정의
@@ -52,6 +52,11 @@ const LandingPageContainer = () => {
   const [district, setDistrict] = useState<string | null>(null);
   const [town, setTown] = useState<string | null>(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query.trim());
+  };
 
   const getLocation = async (memberId: number) => {
     try {
@@ -96,9 +101,6 @@ const LandingPageContainer = () => {
   };
   const handleLocationClick = () => {
     navigate('/map');
-  };
-  const handleSearchClick = () => {
-    alert('검색 기능은 추후 구현됩니다!');
   };
   const handleProductClick = (id: number) => {
     navigate(`/register/${id}`);
@@ -151,7 +153,14 @@ const LandingPageContainer = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getAllProducts(Number(memberId), 1, 10);
+      
+      let response;
+      if (searchQuery) {
+        response = await searchProducts(searchQuery, 'latest', 1, 20); // 검색 API 호출
+      } else {
+        response = await getAllProducts(Number(memberId), 1, 10); // 기존 전체 상품 조회
+      }
+
       if (response.isSuccess && response.result.content) {
         // API 응답 구조에 맞게 데이터 가공
         const fetchedProducts = response.result.content.map((p: any) => ({
@@ -171,9 +180,11 @@ const LandingPageContainer = () => {
         setProducts(sortedProducts);
       } else {
         setError(response.message || '상품 목록을 불러오는데 실패했습니다.');
+        setProducts([]);
       }
     } catch (err: any) {
       setError(err.message || '상품 목록을 불러오는데 실패했습니다.');
+      setProducts([]);
       console.error(err);
     } finally {
       setLoading(false);
@@ -187,7 +198,7 @@ const LandingPageContainer = () => {
     if (isAuthenticated) {
       fetchProducts();
     }
-  }, [sortType, isAuthenticated]);
+  }, [sortType, isAuthenticated, searchQuery]);
 
   // 정렬 기준 변경 핸들러
   const handleSortChange = (newSortType: SortType) => {
@@ -277,7 +288,7 @@ const LandingPageContainer = () => {
     <LandingPagePresentation
       onGoToUpload={handleGoToUpload}
       onLocationClick={handleLocationClick}
-      onSearchClick={handleSearchClick}
+      onSearch={handleSearch}
       onProductClick={handleProductClick}
       selectedCategories={selectedCategories}
       categoryPanelOpen={categoryPanelOpen}

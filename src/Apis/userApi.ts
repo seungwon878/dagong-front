@@ -4,49 +4,54 @@
  * @param nickname 새로운 닉네임
  * @returns API 응답
  */
-export async function updateUserInfo(memberId: number, nickname: string) {
+export const updateUserInfo = async (
+  memberId: number, 
+  nickname: string, 
+  address: string, 
+  detailAddress: string
+) => {
   const token = localStorage.getItem('authToken');
-
-  const response = await fetch(`/api/member/${memberId}`, {
+  const res = await fetch(`/api/members/${memberId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify({ nickname }),
+    body: JSON.stringify({ nickname, address, detailAddress }),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || '닉네임 변경에 실패했습니다.');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || '정보 수정에 실패했습니다.');
   }
-
-  return response.json();
-}
+  return res.json();
+};
 
 /**
  * 사용자 정보를 가져오기 위한 API 요청 함수
  * @param memberId 조회할 사용자의 ID
  * @returns API 응답 (사용자 정보 포함)
  */
-export async function getUserInfo(memberId: number) {
+export const getUserInfo = async (memberId: number): Promise<{ 
+  isSuccess: boolean;
+  result: { 
+    nickname: string;
+    address?: string;
+    detailAddress?: string;
+  } 
+}> => {
   const token = localStorage.getItem('authToken');
-
-  const response = await fetch(`/api/member/${memberId}`, {
+  const response = await fetch(`/api/members/${memberId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Authorization: `Bearer ${token}`,
     },
   });
-
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || '사용자 정보 조회에 실패했습니다.');
+    throw new Error('사용자 정보 조회 실패');
   }
-
   return response.json();
-}
+};
 
 /**
  * 사용자 관심 카테고리를 업데이트하기 위한 API 요청 함수

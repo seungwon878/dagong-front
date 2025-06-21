@@ -1,5 +1,6 @@
 import './LandingPagePresentation.css';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 interface Product {
   id: number;
@@ -19,7 +20,7 @@ type SortType = 'views' | 'likes';
 interface LandingPagePresentationProps {
   onGoToUpload: () => void;
   onLocationClick: () => void;
-  onSearchClick: () => void;
+  onSearch: (query: string) => void;
   onProductClick: (id: number) => void;
   selectedCategories: string[];
   categoryPanelOpen: boolean;
@@ -49,11 +50,18 @@ interface LandingPagePresentationProps {
 }
 
 const LandingPagePresentation = ({
-  onGoToUpload,  onProductClick,onChat, onMyPage, onCategory,
+  onGoToUpload,  onProductClick,onChat, onMyPage, onCategory, onSearch,
   products, loading, error, sortType, sortPanelOpen, onSortClick, onSortChange, onSortPanelClose,
   showAddressPopup, setShowAddressPopup, city, district, town
 }: LandingPagePresentationProps) => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSearch(searchQuery);
+    }
+  };
 
   const renderProductCard = (product: Product) => (
     <div 
@@ -112,7 +120,14 @@ const LandingPagePresentation = ({
               <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </span>
-          <input type="text" placeholder="상품명 혹은 브랜드명을 입력해주세요." className="search-input" />
+          <input 
+            type="text" 
+            placeholder="상품명 혹은 브랜드명을 입력해주세요." 
+            className="search-input" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
         </div>
         
         <div className="header-row">

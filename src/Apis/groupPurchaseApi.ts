@@ -141,6 +141,51 @@ export const getAllProducts = async (memberId: number, page: number = 1, size: n
 };
 
 /**
+ * 상품명으로 공구 상품을 검색합니다.
+ * @param itemName 검색할 상품명
+ * @param sort 정렬 기준 ('views', 'likes', 'latest')
+ * @param page 페이지 번호
+ * @param size 페이지 당 상품 수
+ * @returns 검색된 상품 목록
+ */
+export const searchProducts = async (
+  itemName: string,
+  sort: 'views' | 'likes' | 'latest' = 'latest',
+  page: number = 1,
+  size: number = 10
+) => {
+  const memberId = localStorage.getItem('memberId');
+  if (!memberId) {
+    throw new Error('로그인이 필요합니다.');
+  }
+
+  const token = localStorage.getItem('authToken');
+  const query = new URLSearchParams({
+    memberId,
+    itemName,
+    sort,
+    page: page.toString(),
+    size: size.toString(),
+  }).toString();
+
+  const response = await fetch(`/api/purchases/search/items?${query}`, {
+    method: 'GET',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ message: '응답 본문이 없거나 JSON 형식이 아닙니다.' }));
+    console.error('상품 검색 실패:', response.status, errorBody);
+    throw new Error(errorBody.message || '상품을 검색하는데 실패했습니다.');
+  }
+
+  return await response.json();
+};
+
+
+/**
  * ID로 특정 공구 상품의 상세 정보를 조회합니다.
  * @param groupPurchaseId 조회할 공구 상품의 ID
  * @returns 공구 상품의 상세 정보
