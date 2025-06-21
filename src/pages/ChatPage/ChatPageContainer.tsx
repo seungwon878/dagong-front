@@ -1,34 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ChatPagePresentation from './ChatPagePresentation';
 import { getChatRooms, type ChatRoom } from '../../Apis/chatApi';
 
-const ChatPageContainer: React.FC = () => {
+const ChatPageContainer = () => {
   const navigate = useNavigate();
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchChatRooms = async () => {
-      const memberId = localStorage.getItem('memberId');
-      if (!memberId) {
-        setError('로그인이 필요합니다.');
-        setLoading(false);
-        return;
-      }
-
+      // TODO: memberId를 실제 로그인한 사용자 ID로 변경해야 합니다.
+      const memberId = 1;
       try {
-        const response = await getChatRooms(Number(memberId));
+        const response = await getChatRooms(memberId);
         if (response.isSuccess) {
           setChatRooms(response.result);
-        } else {
-          setError(response.message || '채팅방 목록을 불러오지 못했습니다.');
         }
       } catch (err: any) {
+        console.error('Failed to fetch chat rooms:', err);
         setError(err.message);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -40,16 +34,16 @@ const ChatPageContainer: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate(-1); // 이전 페이지로 이동
   };
-  
+
   return (
-    <ChatPagePresentation 
+    <ChatPagePresentation
       chatRooms={chatRooms}
+      isLoading={isLoading}
+      error={error}
       onChatRoomClick={handleChatRoomClick}
       onBackClick={handleBackClick}
-      loading={loading}
-      error={error}
     />
   );
 };

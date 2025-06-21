@@ -4,8 +4,7 @@ interface ChattingPagePresentationProps {
   roomTitle: string;
   productName: string;
   currentPeople: number;
-  maxPeople: number;
-  messages: { id: number; type: 'notice' | 'me' | 'other'; text: string; user?: string }[];
+  messages: { id: string; type: 'notice' | 'me' | 'other'; text: string; user?: string }[];
   onBack: () => void;
   input: string;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -19,13 +18,12 @@ const dummyUsers = [
   { id: 4, nickname: '박영희', img: '' },
 ];
 
-const UserListModal = ({ open, onClose, users, roomTitle, currentPeople, maxPeople }: { 
+const UserListModal = ({ open, onClose, users, roomTitle, currentPeople }: { 
   open: boolean; 
   onClose: () => void; 
   users: { id: number; nickname: string; img: string }[];
   roomTitle: string;
   currentPeople: number;
-  maxPeople: number;
 }) => {
   if (!open) return null;
   return (
@@ -149,7 +147,6 @@ const ChattingPagePresentation = ({
   roomTitle,
   productName,
   currentPeople,
-  maxPeople,
   messages,
   onBack,
   input,
@@ -160,10 +157,31 @@ const ChattingPagePresentation = ({
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', background: '#fff', minHeight: '100vh', fontFamily: 'Apple SD Gothic Neo, sans-serif', paddingBottom: 80, display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* 상단바 */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '18px 0 8px 0', fontSize: 18, fontWeight: 600, borderBottom: '1px solid #eee' }}>
-        <button onClick={onBack} style={{ position: 'absolute', left: 16, top: 18, background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer' }}>←</button>
-        <span>{roomTitle}</span>
-        <button onClick={() => setUserListOpen(true)} style={{ position: 'absolute', right: 16, top: 18, background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer' }}>⋮</button>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 16px',
+        height: 60,
+        fontSize: 18,
+        fontWeight: 600,
+        borderBottom: '1px solid #eee'
+      }}>
+        <div style={{ width: 40, textAlign: 'left' }}>
+          <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer', padding: 0 }}>←</button>
+        </div>
+        <div style={{
+          flex: 1,
+          textAlign: 'center',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
+          {/* 제목을 비워달라는 요청에 따라 제거 */}
+        </div>
+        <div style={{ width: 40, textAlign: 'right' }}>
+          <button onClick={() => setUserListOpen(true)} style={{ background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer', padding: 0 }}>⋮</button>
+        </div>
       </div>
       <UserListModal 
         open={userListOpen} 
@@ -171,20 +189,28 @@ const ChattingPagePresentation = ({
         users={dummyUsers}
         roomTitle={roomTitle}
         currentPeople={currentPeople}
-        maxPeople={maxPeople}
       />
       {/* 상단 상품 정보 */}
       <div style={{ margin: '18px 16px 0 16px', border: '1px solid #eee', borderRadius: 8, display: 'flex', alignItems: 'center', padding: 12, background: '#fafafa' }}>
-        <div style={{ width: 48, height: 48, background: '#ededed', borderRadius: 8, marginRight: 14 }} />
+
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>공구품</div>
           <div style={{ fontSize: 15, fontWeight: 600 }}>{productName}</div>
         </div>
-        <div style={{ fontSize: 15, color: '#888', fontWeight: 500 }}>{currentPeople}명 / {maxPeople}명</div>
+        <div style={{ fontSize: 15, color: '#888', fontWeight: 500 }}>{currentPeople}명</div>
       </div>
       {/* 채팅 메시지 영역 */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '18px 0 0 0', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ textAlign: 'center', color: '#bbb', fontSize: 13, marginBottom: 12 }}>오늘 오전 9:36</div>
+        <div style={{ textAlign: 'center', color: '#bbb', fontSize: 13, marginBottom: 12 }}>
+          {(() => {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? '오후' : '오전';
+            const displayHours = hours % 12 || 12;
+            const displayMinutes = minutes.toString().padStart(2, '0');
+            return `오늘 ${ampm} ${displayHours}:${displayMinutes}`;
+          })()}
+        </div>
         {messages.map((msg) =>
           msg.type === 'notice' ? (
             <div key={msg.id} style={{ textAlign: 'center', margin: '8px 0' }}>
