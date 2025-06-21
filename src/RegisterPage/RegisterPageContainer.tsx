@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import RegisterPagePresentation from './RegisterPagePresentation';
+import { cancelParticipation } from '../Apis/groupPurchaseApi'; // 최종 경로 수정
 
 interface Product {
   id: number;
@@ -219,9 +220,27 @@ const RegisterPageContainer = ({ bottomButtons, isJoinedMode }: RegisterPageCont
     navigate(-1);
   };
 
-  const handleLeaveGroup = () => {
-    alert('공구에서 나갔습니다.');
-    navigate(-1);
+  const handleLeaveGroup = async () => {
+    if (!id) return;
+    const memberId = localStorage.getItem('memberId');
+    if (!memberId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    if (window.confirm('정말로 공구 참여를 취소하시겠습니까?')) {
+      try {
+        const response = await cancelParticipation(Number(id), Number(memberId));
+        if (response.isSuccess) {
+          alert('공구 참여가 취소되었습니다.');
+          navigate(-1); // 이전 페이지로 이동
+        } else {
+          throw new Error(response.message || '공구 참여 취소에 실패했습니다.');
+        }
+      } catch (error: any) {
+        alert(error.message || '오류가 발생했습니다.');
+      }
+    }
   };
 
   const joinedModeButtons = [
