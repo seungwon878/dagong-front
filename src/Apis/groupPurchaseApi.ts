@@ -287,6 +287,62 @@ export const getMyProducts = async (
     return await response.json();
 };
 
+// 내가 참여한 공구 목록 조회
+export const getMyJoinedProducts = async (memberId: number) => {
+  try {
+    const response = await fetch(
+      `/api/purchases/participate/${memberId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('내가 참여한 공구 목록 조회 실패:', error);
+    throw error;
+  }
+};
+
+// 공구 참여 취소
+export const cancelParticipation = async (groupPurchaseId: number, memberId: number) => {
+  try {
+    const response = await fetch(
+      `/api/purchases/participate/${groupPurchaseId}/${memberId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('공구 참여 취소 실패:', error);
+    throw error;
+  }
+};
+
 /**
  * ID로 특정 공구 상품을 삭제합니다.
  * @param groupPurchaseId 삭제할 공구 상품의 ID
