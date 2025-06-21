@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LandingPagePresentation from './LandingPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
-import { getAllProducts, searchProducts, getRankedProducts } from '../../Apis/groupPurchaseApi';
+import { searchProducts, getRankedProducts } from '../../Apis/groupPurchaseApi';
 import { useAuth } from '../../contexts/AuthContext';
 
 // 상품 타입 정의
@@ -22,18 +22,12 @@ interface Product {
   deadline: string;
 }
 
-const defaultCategories = ['식제품', '전자제품'];
-const allCategories = ['식제품', '전자제품', '운동 용품', '작업 공구', 'test'];
-
 type SortType = 'views' | 'likes';
 
 const LandingPageContainer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, login } = useAuth();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(defaultCategories);
-  const [categoryPanelOpen, setCategoryPanelOpen] = useState(false);
-  const [tempSelectedCategories, setTempSelectedCategories] = useState<string[]>(selectedCategories);
   const [isProcessingLogin, setIsProcessingLogin] = useState(false);
   const processedCodeRef = useRef<string | null>(null);
   // const { memberid, authToken, isSuccess } = useAppContext();
@@ -61,7 +55,7 @@ const LandingPageContainer = () => {
   const getLocation = async (memberId: number) => {
     try {
       setLoadingLocation(true);
-      const res = await fetch(`http://13.209.95.208:8080/location/${memberId}`, {
+      const res = await fetch(`http://13.209.95.208:8080/location/${memberId}/current`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -72,15 +66,12 @@ const LandingPageContainer = () => {
       // result가 빈 배열이면 팝업 오픈
       if (Array.isArray(data.result) && data.result.length === 0) {
         setShowAddressPopup(true);
-      } else if (Array.isArray(data.result) && data.result.length > 0) {
-        setCity(data.result[0].city);
-        setDistrict(data.result[0].district);
-        setTown(data.result[0].town);
-      } else {
-        setCity(null);
-        setDistrict(null);
-        setTown(null);
+      } else if (data.result && typeof data.result === 'object') {
+        setCity(data.result.city);
+        setDistrict(data.result.district);
+        setTown(data.result.town);
       }
+      console.log(city, district, town);
     } catch (e: any) {
       alert('위치 저장 실패: ' + e.message);
     } finally {
@@ -92,9 +83,7 @@ const LandingPageContainer = () => {
     if (isSuccess) {
       getLocation(Number(memberid));
     }
-  }, [isSuccess]);
-
-
+  }, [isSuccess, city, district, town]);
 
   const handleGoToUpload = () => {
     navigate('/upload');
@@ -109,36 +98,12 @@ const LandingPageContainer = () => {
   const handleChat = () => navigate('/chat');
   const handleMyPage = () => navigate('/mypage');
 
-  // 네비게이션 버튼 클릭 시 패널 오픈
-  const handleCategoryNavClick = () => {
-    setTempSelectedCategories(selectedCategories);
-    setCategoryPanelOpen(true);
-  };
-
-  // 카테고리 토글
-  const handleCategoryToggle = (cat: string) => {
-    setTempSelectedCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
-  };
-
-  // 카테고리 반영
-  const handleCategoryApply = () => {
-    setSelectedCategories(tempSelectedCategories.length > 0 ? tempSelectedCategories : defaultCategories);
-    setCategoryPanelOpen(false);
-  };
-
-  // 카테고리 패널 닫기
-  const handleCategoryPanelClose = () => {
-    setCategoryPanelOpen(false);
-  };
-
   const handleCategory = () => {
     navigate('/category');
   };
 
-  const handleProductListClick = () => {
-    navigate('/category');
+  const handleLogin = () => {
+    navigate('/first');
   };
 
   // 상품 목록 조회
@@ -181,7 +146,6 @@ const LandingPageContainer = () => {
       setLoading(false);
     }
   };
-
 
   // 정렬 기준 변경 시 상품 목록 다시 조회
   useEffect(() => {
@@ -259,7 +223,7 @@ const LandingPageContainer = () => {
   }, [location, navigate, isProcessingLogin, login]);
 
   // 로딩 중일 때 로딩 화면 표시
-  if (isProcessingLogin || loadingLocation) {
+  if (isProcessingLogin || (isAuthenticated && loadingLocation)) {
     return (
       <div style={{ 
         display: 'flex', 
@@ -281,18 +245,11 @@ const LandingPageContainer = () => {
       onLocationClick={handleLocationClick}
       onSearch={handleSearch}
       onProductClick={handleProductClick}
-      selectedCategories={selectedCategories}
-      categoryPanelOpen={categoryPanelOpen}
-      tempSelectedCategories={tempSelectedCategories}
-      onCategoryNavClick={handleCategoryNavClick}
-      onCategoryToggle={handleCategoryToggle}
-      onCategoryApply={handleCategoryApply}
-      onCategoryPanelClose={handleCategoryPanelClose}
-      allCategories={allCategories}
       onChat={handleChat}
       onMyPage={handleMyPage}
       onCategory={handleCategory}
-      onProductListClick={handleProductListClick}
+      onLogin={handleLogin}
+      isAuthenticated={isAuthenticated}
       products={products}
       loading={loading}
       error={error}
