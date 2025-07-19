@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChattingPagePresentation from './ChattingPagePresentation';
 import { Client } from '@stomp/stompjs';
-import { getChatMessages, getChatRooms, type ChatRoom } from '../../Apis/chatApi';
+import { getChatMessages, getChatRooms, getChatRoomCoordinates, getRecommendedStation, type ChatRoom } from '../../Apis/chatApi';
 
 // 메시지 타입을 정의합니다.
 interface Message {
@@ -102,8 +102,30 @@ const ChattingPageContainer = () => {
         console.error('Failed to fetch room info:', error);
       }
     };
+
+    // 채팅방 좌표 정보 불러오기
+    const fetchRoomCoordinates = async () => {
+      if (!roomId) return;
+      try {
+        const coordinatesResponse = await getChatRoomCoordinates(roomId);
+        console.log('채팅방 좌표 정보:', coordinatesResponse);
+        
+        // 좌표 정보가 있으면 추천 지하철역 찾기
+        if (coordinatesResponse.isSuccess && coordinatesResponse.result && coordinatesResponse.result.users) {
+          const users = coordinatesResponse.result.users;
+          console.log('사용자 위치 정보:', users);
+          
+          // 추천 지하철역 API 호출
+          const stationResponse = await getRecommendedStation(users);
+          console.log('추천 지하철역:', stationResponse);
+        }
+      } catch (error) {
+        console.error('Failed to fetch room coordinates:', error);
+      }
+    };
     
     fetchRoomInfo();
+    fetchRoomCoordinates();
     fetchPreviousMessages();
     
     // 이미 연결된 경우 새로운 연결을 생성하지 않음
@@ -116,7 +138,7 @@ const ChattingPageContainer = () => {
     
     // STOMP 클라이언트 생성
     const client = new Client({
-      brokerURL: 'ws://13.209.95.208:8080/ws',
+      brokerURL: 'ws://3.39.43.178:8080/ws',
       reconnectDelay: 3000,
     });
 

@@ -34,6 +34,7 @@ const MapPageContainer: React.FC = () => {
   const [isMapLoading, setIsMapLoading] = useState(true);
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [lastCoords, setLastCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [isSaving, setIsSaving] = useState(false); // 저장 중 상태 추가
 
     
   /* ---- refs ---- */
@@ -100,7 +101,7 @@ const MapPageContainer: React.FC = () => {
       alert('사용자 정보 또는 좌표 값이 올바르지 않습니다.');
       return;
     }
-    
+    setIsSaving(true); // 저장 시작
     try {
       const response = await addUserLocation(memberId, lat, lng);
       if (response.isSuccess) {
@@ -111,6 +112,8 @@ const MapPageContainer: React.FC = () => {
       }
     } catch (e: any) {
       alert(`주소 저장 실패: ${e.message}`);
+    } finally {
+      setIsSaving(false); // 저장 끝
     }
   };
   
@@ -148,6 +151,7 @@ const MapPageContainer: React.FC = () => {
       memberid={memberid}
       showSaveBtn={showSaveBtn}
       onSaveLocation={handleSaveLocation}
+      isSaving={isSaving} // 저장 중 상태 전달
     />
   );
 };

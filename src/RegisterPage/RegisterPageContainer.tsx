@@ -51,14 +51,14 @@ const RegisterPageContainer = ({ bottomButtons, isJoinedMode }: RegisterPageCont
     try {
       // 상품 상세 정보와 찜 목록을 동시에 호출
       const [productDetailResponse, likedItemsResponse] = await Promise.all([
-        fetch(`http://13.209.95.208:8080/purchases/detail/${id}`, {
+        fetch(`http://3.39.43.178:8080/purchases/detail/${id}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`,
             'Cache-Control': 'no-cache',
           },
         }),
-        fetch(`http://13.209.95.208:8080/member/members/${memberId}/likes`, {
+        fetch(`http://3.39.43.178:8080/member/members/${memberId}/likes`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`,
@@ -163,7 +163,7 @@ const RegisterPageContainer = ({ bottomButtons, isJoinedMode }: RegisterPageCont
     const method = product.isLiked ? 'DELETE' : 'POST';
 
     try {
-        const response = await fetch(`http://13.209.95.208:8080/member/${id}/likes?memberId=${memberId}`, {
+        const response = await fetch(`http://3.39.43.178:8080/member/${id}/likes?memberId=${memberId}`, {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ const RegisterPageContainer = ({ bottomButtons, isJoinedMode }: RegisterPageCont
       return;
     }
     try {
-      const response = await fetch(`http://13.209.95.208:8080/purchases/participate/${id}/${memberId}`, {
+      const response = await fetch(`http://3.39.43.178:8080/purchases/participate/${id}/${memberId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

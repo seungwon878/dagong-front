@@ -53,15 +53,30 @@ const LandingPageContainer = () => {
   };
 
   const getLocation = async (memberId: number) => {
+    if (!isAuthenticated) return; // 로그인 안 했으면 실행하지 않음
     try {
       setLoadingLocation(true);
-      const res = await fetch(`http://13.209.95.208:8080/location/${memberId}/current`, {
+      const res = await fetch(`/api/location/${memberId}/current`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`
         },
       });
+      if (!res.ok) {
+        // 500 에러면 로그인 상태일 때만 /map으로 이동
+        if (res.status === 500) {
+          if (isAuthenticated) {
+            navigate('/map');
+          } else {
+            alert('로그인 후 주소를 등록할 수 있습니다.');
+            navigate('/first');
+          }
+          return;
+        }
+        // 그 외 에러는 기존대로 처리
+        throw new Error('위치 정보 조회 실패');
+      }
       const data = await res.json();
       // result가 빈 배열이면 팝업 오픈
       if (Array.isArray(data.result) && data.result.length === 0) {
@@ -80,10 +95,10 @@ const LandingPageContainer = () => {
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isAuthenticated && isSuccess) {
       getLocation(Number(memberid));
     }
-  }, [isSuccess, city, district, town]);
+  }, [isAuthenticated, isSuccess, memberid]);
 
   const handleGoToUpload = () => {
     navigate('/upload');

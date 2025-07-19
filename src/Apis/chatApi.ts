@@ -94,4 +94,49 @@ export const getChatMessages = async (
   }
 
   return response.json();
+};
+
+/**
+ * 특정 채팅방의 좌표 정보를 조회합니다.
+ * @param chatRoomId 채팅방 ID
+ * @returns 좌표 정보를 포함하는 API 응답
+ */
+export const getChatRoomCoordinates = async (chatRoomId: string): Promise<any> => {
+  const token = localStorage.getItem('authToken');
+  const response = await fetch(`/api/chat/rooms/${chatRoomId}/coordinates`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: '좌표 정보를 불러오는데 실패했습니다.' }));
+    throw new Error(errorData.message);
+  }
+
+  return response.json();
+};
+
+/**
+ * 사용자들의 위치를 기반으로 추천 지하철역을 조회합니다.
+ * @param users 사용자들의 위치 정보 배열
+ * @returns 추천 지하철역 정보를 포함하는 API 응답
+ */
+export const getRecommendedStation = async (users: Array<{latitude: number, longitude: number}>): Promise<any> => {
+  const response = await fetch('https://dagong-ai.onrender.com/station/recommend', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ users }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: '추천 지하철역을 불러오는데 실패했습니다.' }));
+    throw new Error(errorData.message);
+  }
+
+  return response.json();
 }; 
