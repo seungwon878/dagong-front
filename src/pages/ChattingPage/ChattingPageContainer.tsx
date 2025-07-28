@@ -22,8 +22,8 @@ const ChattingPageContainer = () => {
   const [lastMessageId, setLastMessageId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [roomInfo, setRoomInfo] = useState<ChatRoom | null>(null);
-  const [recommendedStation, setRecommendedStation] = useState<any>(null); // 추천 지하철역 정보
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false); // 위치 정보 로딩 상태
+  const [, setRecommendedStation] = useState<any>(null); // 추천 지하철역 정보
+  const [, setIsLoadingLocation] = useState(false); // 위치 정보 로딩 상태
   
   const clientRef = useRef<Client | null>(null);
   const messageIdCounter = useRef(0);
