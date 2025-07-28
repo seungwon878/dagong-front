@@ -9,6 +9,7 @@ interface ChattingPagePresentationProps {
   input: string;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSend: () => void;
+  onSendLocation: () => void; // 추천 위치 전송 함수 추가
 }
 
 const UserListModal = ({ open, onClose, users, roomTitle, currentPeople }: { 
@@ -145,6 +146,7 @@ const ChattingPagePresentation = ({
   input,
   onInputChange,
   onSend,
+  onSendLocation,
 }: ChattingPagePresentationProps) => {
   const [userListOpen, setUserListOpen] = useState(false);
   return (
@@ -172,7 +174,27 @@ const ChattingPagePresentation = ({
         }}>
           {/* 제목을 비워달라는 요청에 따라 제거 */}
         </div>
-        <div style={{ width: 40, textAlign: 'right' }}>
+        <div style={{ width: 80, textAlign: 'right', display: 'flex', gap: 8 }}>
+          <button 
+            onClick={onSendLocation} 
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              fontSize: 20, 
+              color: '#444', 
+              cursor: 'pointer', 
+              padding: 4,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32
+            }}
+            title="추천 위치 전송"
+          >
+            📍
+          </button>
           <button onClick={() => setUserListOpen(true)} style={{ background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer', padding: 0 }}>⋮</button>
         </div>
       </div>

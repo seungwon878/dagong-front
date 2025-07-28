@@ -12,12 +12,6 @@ interface Message {
   user?: string; // 메시지를 보낸 사용자 닉네임
 }
 
-// 현재 사용자 정보를 가정합니다. 실제로는 로그인 정보 등에서 가져와야 합니다.
-const currentUser = {
-  id: localStorage.getItem('memberId') || '',
-  nickname: localStorage.getItem('nickname') || '',
-};
-
 const ChattingPageContainer = () => {
   const navigate = useNavigate();
   const { id: roomId } = useParams<{ id: string }>();
@@ -28,10 +22,29 @@ const ChattingPageContainer = () => {
   const [lastMessageId, setLastMessageId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [roomInfo, setRoomInfo] = useState<ChatRoom | null>(null);
+  const [recommendedStation, setRecommendedStation] = useState<any>(null); // 추천 지하철역 정보
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false); // 위치 정보 로딩 상태
   
   const clientRef = useRef<Client | null>(null);
   const messageIdCounter = useRef(0);
   const receivedMessages = useRef<Set<string>>(new Set()); // 중복 메시지 방지용
+
+  // 현재 사용자 정보를 올바르게 가져오기
+  const getCurrentUser = () => {
+    const memberId = localStorage.getItem('memberId');
+    const nickname = localStorage.getItem('nickname');
+    
+    if (!memberId || !nickname) {
+      console.error('로그인 정보가 없습니다.');
+      navigate('/first');
+      return null;
+    }
+    
+    return {
+      id: memberId,
+      nickname: nickname,
+    };
+  };
 
   // 고유한 메시지 ID 생성 함수
   const generateMessageId = () => {
@@ -49,6 +62,61 @@ const ChattingPageContainer = () => {
     return false;
   };
 
+  // 추천 위치 정보를 채팅으로 전송하는 함수
+  const handleSendLocation = async () => {
+    const currentUser = getCurrentUser();
+    if (!currentUser || !clientRef.current || !isConnected) {
+      alert('연결 상태를 확인해주세요.');
+      return;
+    }
+
+    setIsLoadingLocation(true);
+    try {
+      // 채팅방 좌표 정보 다시 조회
+      const coordinatesResponse = await getChatRoomCoordinates(roomId!);
+      console.log('채팅방 좌표 정보:', coordinatesResponse);
+      
+      if (coordinatesResponse.isSuccess && coordinatesResponse.result && coordinatesResponse.result.length > 0) {
+        const coordinates = coordinatesResponse.result[0].coordinates;
+        console.log('사용자 위치 정보:', coordinates);
+        
+        if (coordinates && coordinates.length > 0) {
+          // 추천 지하철역 API 호출
+          const stationResponse = await getRecommendedStation(coordinates);
+          console.log('추천 지하철역:', stationResponse);
+          
+          if (stationResponse.recommended_station) {
+            const stationInfo = stationResponse.recommended_station;
+            setRecommendedStation(stationInfo);
+            
+            // 추천 위치 정보를 채팅으로 전송
+            const locationMessage = `추천 🚇 지하철역: ${stationInfo.name || '정보 없음'}\n📍 호선: ${stationInfo.line || '정보 없음'}`;
+            
+            clientRef.current.publish({
+              destination: '/app/chat/send',
+              headers: { memberId: currentUser.id },
+              body: JSON.stringify({ 
+                chatRoomId: parseInt(roomId || '1'), 
+                content: locationMessage 
+              }),
+            });
+          } else {
+            alert('추천 위치 정보를 가져올 수 없습니다.');
+          }
+        } else {
+          alert('참여자들의 위치 정보가 없어 추천 위치를 계산할 수 없습니다.');
+        }
+      } else {
+        alert('참여자들의 위치 정보가 없어 추천 위치를 계산할 수 없습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to send location:', error);
+      alert('위치 정보 전송에 실패했습니다.');
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
   const fetchPreviousMessages = useCallback(async () => {
     if (!hasNextPage || isLoading || !roomId) return;
 
@@ -60,6 +128,9 @@ const ChattingPageContainer = () => {
         const talkMessages = response.result.messages.filter(
           (msg) => msg.messageType === 'TALK'
         );
+
+        const currentUser = getCurrentUser();
+        if (!currentUser) return;
 
         const fetchedMessages: Message[] = talkMessages.map((msg) => ({
           id: msg.messageId,
@@ -80,16 +151,17 @@ const ChattingPageContainer = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [roomId, hasNextPage, isLoading, lastMessageId]);
+  }, [roomId, hasNextPage, isLoading, lastMessageId, navigate]);
 
   useEffect(() => {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+
     // 채팅방 정보 불러오기
     const fetchRoomInfo = async () => {
       if (!roomId) return;
-      // TODO: memberId를 실제 로그인한 사용자 ID로 변경해야 합니다.
-      const memberId = 1;
       try {
-        const response = await getChatRooms(memberId);
+        const response = await getChatRooms(parseInt(currentUser.id));
         if (response.isSuccess) {
           const currentRoom = response.result.find(
             (room) => room.chatRoomId === parseInt(roomId, 10)
@@ -111,13 +183,19 @@ const ChattingPageContainer = () => {
         console.log('채팅방 좌표 정보:', coordinatesResponse);
         
         // 좌표 정보가 있으면 추천 지하철역 찾기
-        if (coordinatesResponse.isSuccess && coordinatesResponse.result && coordinatesResponse.result.users) {
-          const users = coordinatesResponse.result.users;
-          console.log('사용자 위치 정보:', users);
+        if (coordinatesResponse.isSuccess && coordinatesResponse.result && coordinatesResponse.result.length > 0) {
+          const coordinates = coordinatesResponse.result[0].coordinates;
+          console.log('사용자 위치 정보:', coordinates);
           
-          // 추천 지하철역 API 호출
-          const stationResponse = await getRecommendedStation(users);
-          console.log('추천 지하철역:', stationResponse);
+          if (coordinates && coordinates.length > 0) {
+            // 추천 지하철역 API 호출
+            const stationResponse = await getRecommendedStation(coordinates);
+            console.log('추천 지하철역:', stationResponse);
+            
+            if (stationResponse.recommended_station) {
+              setRecommendedStation(stationResponse.recommended_station);
+            }
+          }
         }
       } catch (error) {
         console.error('Failed to fetch room coordinates:', error);
@@ -136,9 +214,10 @@ const ChattingPageContainer = () => {
 
     console.log('Creating new STOMP connection...');
     
-    // STOMP 클라이언트 생성
+    // STOMP 클라이언트 생성 - 환경변수 사용
+    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://3.39.43.178:8080/ws';
     const client = new Client({
-      brokerURL: 'ws://3.39.43.178:8080/ws',
+      brokerURL: wsUrl,
       reconnectDelay: 3000,
     });
 
@@ -179,7 +258,7 @@ const ChattingPageContainer = () => {
       // 2) 채팅방 입장
       client.publish({
         destination: '/app/chat/enter',
-        headers: { memberId: currentUser.id.toString() },
+        headers: { memberId: currentUser.id },
         body: JSON.stringify({ chatRoomId: parseInt(roomId || '1') }),
       });
     };
@@ -216,7 +295,7 @@ const ChattingPageContainer = () => {
           // 채팅방 퇴장 메시지 전송
           clientRef.current.publish({
             destination: '/app/chat/leave',
-            headers: { memberId: currentUser.id.toString() },
+            headers: { memberId: currentUser.id },
             body: JSON.stringify({ chatRoomId: parseInt(roomId || '1') }),
           });
         }
@@ -228,7 +307,7 @@ const ChattingPageContainer = () => {
         console.log('STOMP WebSocket disconnected.');
       }
     };
-  }, [roomId]);
+  }, [roomId, navigate]);
 
   const handleBack = () => {
     navigate('/chat');
@@ -241,6 +320,9 @@ const ChattingPageContainer = () => {
   const handleSend = () => {
     if (input.trim() === '') return;
     
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
     if (!isConnected || !clientRef.current) {
       console.log('STOMP connection not ready. Please wait...');
       return;
@@ -250,7 +332,7 @@ const ChattingPageContainer = () => {
       // STOMP를 통해 메시지 전송
       clientRef.current.publish({
         destination: '/app/chat/send',
-        headers: { memberId: currentUser.id.toString() },
+        headers: { memberId: currentUser.id },
         body: JSON.stringify({ 
           chatRoomId: parseInt(roomId || '1'), 
           content: input 
@@ -274,6 +356,7 @@ const ChattingPageContainer = () => {
       input={input}
       onInputChange={handleInputChange}
       onSend={handleSend}
+      onSendLocation={handleSendLocation}
     />
   );
 };
