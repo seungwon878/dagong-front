@@ -34,15 +34,13 @@ export async function checkBackendHealth(): Promise<boolean> {
 
 export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
   try {
-    const url = `/auth/login/kakao?code=${encodeURIComponent(code)}`;
+    const url = `/auth/login/kakao-test?code=${encodeURIComponent(code)}`;
     
     const res = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      // credentials 등 필요하다면 여기에 추가
-      // credentials: 'include'
     });
     
     if (!res.ok) {
