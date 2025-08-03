@@ -188,13 +188,27 @@ const LandingPageContainer = () => {
     const params = new URLSearchParams(location.search);
     const code = params.get('code');
     
+    // 디버그: URL 파라미터 확인
+    console.log('=== 카카오 로그인 디버그 ===');
+    console.log('현재 URL:', window.location.href);
+    console.log('location.search:', location.search);
+    console.log('전체 URL 파라미터:', Object.fromEntries(params.entries()));
+    console.log('추출된 code:', code);
+    console.log('code 타입:', typeof code);
+    console.log('code 길이:', code?.length);
+    console.log('processedCodeRef.current:', processedCodeRef.current);
+    console.log('isProcessingLogin:', isProcessingLogin);
+    console.log('========================');
+    
     if (code && processedCodeRef.current !== code && !isProcessingLogin) {
+      console.log('✅ 카카오 로그인 조건 만족 - 로그인 진행');
       processedCodeRef.current = code;
       setIsProcessingLogin(true);
       
       // 바로 카카오 로그인 진행
       getKakaoLogin(code)
         .then(data => {
+          console.log('카카오 로그인 성공 응답:', data);
           if (data.isSuccess && data.result && data.result.user && typeof data.result.user.id === 'number' && data.result.token) {
             // AuthContext의 login 함수를 사용하여 로그인 상태 업데이트
             login(
@@ -234,6 +248,11 @@ const LandingPageContainer = () => {
         .finally(() => {
           setIsProcessingLogin(false);
         });
+    } else {
+      console.log('❌ 카카오 로그인 조건 불만족:');
+      console.log('- code 존재:', !!code);
+      console.log('- 이전 code와 다름:', processedCodeRef.current !== code);
+      console.log('- 로그인 처리 중 아님:', !isProcessingLogin);
     }
   }, [location, navigate, isProcessingLogin, login]);
 
