@@ -200,7 +200,7 @@ const LandingPageContainer = () => {
     console.log('isProcessingLogin:', isProcessingLogin);
     console.log('========================');
     
-    if (code && processedCodeRef.current !== code && !isProcessingLogin) {
+    if (code && !isProcessingLogin) {
       console.log('✅ 카카오 로그인 조건 만족 - 로그인 진행');
       processedCodeRef.current = code;
       setIsProcessingLogin(true);
@@ -247,11 +247,12 @@ const LandingPageContainer = () => {
         })
         .finally(() => {
           setIsProcessingLogin(false);
+          // 처리 완료 후 processedCodeRef 초기화
+          processedCodeRef.current = null;
         });
     } else {
       console.log('❌ 카카오 로그인 조건 불만족:');
       console.log('- code 존재:', !!code);
-      console.log('- 이전 code와 다름:', processedCodeRef.current !== code);
       console.log('- 로그인 처리 중 아님:', !isProcessingLogin);
     }
   }, [location, navigate, isProcessingLogin, login]);

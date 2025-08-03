@@ -1,8 +1,3 @@
-// 
-
-
-// src/pages/KakaoRedirectPage.tsx
-
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getKakaoLogin, checkBackendHealth } from '../../Apis/kakaoLoginApi';
@@ -13,8 +8,6 @@ const KakaoRedirectPage: React.FC = () => {
   const handledRef = useRef(false);
 
   useEffect(() => {
-    if (handledRef.current) return;
-
     const params = new URLSearchParams(location.search);
     const code = params.get('code');
     
@@ -31,6 +24,11 @@ const KakaoRedirectPage: React.FC = () => {
     
     if (!code) {
       console.log('❌ code 파라미터가 없습니다.');
+      return;
+    }
+
+    if (handledRef.current) {
+      console.log('❌ 이미 처리된 요청입니다.');
       return;
     }
 
@@ -68,6 +66,10 @@ const KakaoRedirectPage: React.FC = () => {
           console.error('카카오 로그인 에러 상세:', err);
           alert('카카오 로그인 중 오류가 발생했습니다.');
           navigate('/', { replace: true });
+        })
+        .finally(() => {
+          // 처리 완료 후 handledRef 초기화
+          handledRef.current = false;
         });
     });
   }, [location, navigate]);
