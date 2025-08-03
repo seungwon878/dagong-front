@@ -1,8 +1,3 @@
-// 
-
-
-// src/Apis/kakaoLoginApi.ts
-
 export interface KakaoLoginResponse {
   isSuccess: boolean;
   code: string;
@@ -54,6 +49,14 @@ export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
       const errorText = await res.text();
       console.error('서버 에러 응답:', errorText);
       throw new Error(`HTTP ${res.status}: ${errorText}`);
+    }
+    
+    // Content-Type 확인
+    const contentType = res.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const responseText = await res.text();
+      console.error('서버가 JSON이 아닌 응답을 보냄:', responseText);
+      throw new Error(`서버가 JSON이 아닌 응답을 보냈습니다. Content-Type: ${contentType}`);
     }
     
     const data = await res.json();
