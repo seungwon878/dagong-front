@@ -246,6 +246,7 @@ const LandingPageContainer = () => {
           navigate('/landing', { replace: true });
         })
         .finally(() => {
+          console.log('카카오 로그인 처리 완료 - 상태 초기화');
           setIsProcessingLogin(false);
           // 처리 완료 후 processedCodeRef 초기화
           processedCodeRef.current = null;

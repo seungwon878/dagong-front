@@ -68,6 +68,7 @@ const KakaoRedirectPage: React.FC = () => {
           navigate('/', { replace: true });
         })
         .finally(() => {
+          console.log('KakaoRedirectPage 로그인 처리 완료 - 상태 초기화');
           // 처리 완료 후 handledRef 초기화
           handledRef.current = false;
         });
