@@ -40,6 +40,15 @@ export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
   try {
     const url = `/auth/login/kakao?code=${encodeURIComponent(code)}`;
     console.log('카카오 로그인 요청 URL:', url);
+    console.log('원본 code:', code);
+    console.log('인코딩된 code:', encodeURIComponent(code));
+    console.log('전체 요청 정보:', {
+      method: 'GET',
+      url: url,
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
     
     const res = await fetch(url, {
       method: 'GET',
@@ -54,6 +63,12 @@ export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
     if (!res.ok) {
       const errorText = await res.text();
       console.error('서버 에러 응답:', errorText);
+      console.error('400 에러 상세 정보:', {
+        status: res.status,
+        statusText: res.statusText,
+        errorText: errorText,
+        requestUrl: url
+      });
       throw new Error(`HTTP ${res.status}: ${errorText}`);
     }
     
