@@ -1,3 +1,5 @@
+import { createApiUrl } from '../config/api';
+
 export interface KakaoLoginResponse {
   isSuccess: boolean;
   code: string;
@@ -17,8 +19,10 @@ export async function checkBackendHealth(): Promise<boolean> {
   try {
     console.log('백엔드 서버 상태 확인 중...');
     
+    const url = createApiUrl('/auth/login/kakao');
+    
     // 간단한 HEAD 요청으로 서버 응답 확인
-    const res = await fetch('/auth/login/kakao', {
+    const res = await fetch(url, {
       method: 'HEAD',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +42,7 @@ export async function checkBackendHealth(): Promise<boolean> {
 
 export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
   try {
-    const url = `/auth/login/kakao?code=${encodeURIComponent(code)}`;
+    const url = createApiUrl(`/auth/login/kakao?code=${encodeURIComponent(code)}`);
     console.log('카카오 로그인 요청 URL:', url);
     console.log('원본 code:', code);
     console.log('인코딩된 code:', encodeURIComponent(code));
@@ -82,26 +86,8 @@ export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
       
       // 백엔드 서버 연결 실패인지 확인
       if (responseText.includes('<!doctype html>') || responseText.includes('<html')) {
-        console.warn('백엔드 서버에 연결할 수 없습니다. 개발 모드에서 모의 응답을 사용합니다.');
-        
-        // 개발 환경에서 모의 응답 반환 (테스트용)
-        if (import.meta.env.DEV) {
-          return {
-            isSuccess: true,
-            code: '200',
-            message: '개발 모드 - 모의 로그인 성공',
-            result: {
-              token: 'mock-token-' + Date.now(),
-              user: {
-                id: 1,
-                nickname: '테스트 사용자',
-                email: 'test@example.com'
-              }
-            }
-          };
-        }
-        
-        throw new Error('백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.');
+        console.error('백엔드 서버에 연결할 수 없습니다. HTML 응답을 받았습니다.');
+        throw new Error('백엔드 서버 연결 실패: 서버가 HTML 응답을 보냈습니다.');
       }
       
       throw new Error(`서버가 JSON이 아닌 응답을 보냈습니다. Content-Type: ${contentType}`);
