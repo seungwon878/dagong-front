@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import FirstPagePresentation from './FirstPagePresentation';
 import { getKakaoLogin } from '../../Apis/kakaoLoginApi';
-import { API_CONFIG, getKakaoRedirectUri } from '../../config/api';
+import { API_CONFIG } from '../../config/api';
 
 const FirstPageContainer: React.FC = () => {
   const navigate = useNavigate();
