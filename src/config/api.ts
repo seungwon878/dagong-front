@@ -1,7 +1,7 @@
 // API 설정 중앙화
 export const API_CONFIG = {
-  // 백엔드 기본 URL
-  BASE_URL: import.meta.env.DEV ? '' : 'http://3.39.43.178:8080',
+  // 백엔드 기본 URL (Netlify 프록시 사용)
+  BASE_URL: '',
   
   // 카카오 API 설정
   KAKAO: {
