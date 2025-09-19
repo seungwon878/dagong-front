@@ -9,7 +9,16 @@ export const API_CONFIG = {
     REDIRECT_URI: {
       DEV: 'http://localhost:5173/landing',
       PROD: 'https://dagong.netlify.app/landing'
-    }
+    },
+    // 카카오 개발자 콘솔에 등록해야 할 모든 URI 목록
+    ALL_REDIRECT_URIS: [
+      'http://localhost:5173/landing',
+      'https://dagong.netlify.app/landing',
+      'http://localhost:5173/',
+      'https://dagong.netlify.app/',
+      'http://localhost:5173/kakao',
+      'https://dagong.netlify.app/kakao'
+    ]
   }
 } as const;
 

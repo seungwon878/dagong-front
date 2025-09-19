@@ -58,11 +58,15 @@ const FirstPageContainer: React.FC = () => {
     
     const redirectUri = getKakaoRedirectUri();
     
-    console.log('카카오 로그인 설정:', {
+    console.log('🔗 카카오 로그인 설정:', {
       redirectUri,
       isDev: import.meta.env.DEV,
-      currentUrl: window.location.href
+      currentUrl: window.location.href,
+      mode: import.meta.env.MODE,
+      environment: import.meta.env.NODE_ENV
     });
+    
+    console.log('📋 카카오 개발자 콘솔에 등록해야 할 URI들:', API_CONFIG.KAKAO.ALL_REDIRECT_URIS);
     
     const kakaoAuthUrl =
       `https://kauth.kakao.com/oauth/authorize?client_id=${API_CONFIG.KAKAO.REST_API_KEY}` +
