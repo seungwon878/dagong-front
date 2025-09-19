@@ -1,4 +1,4 @@
-import { createApiUrl } from '../config/api';
+import { createApiUrl, createKakaoLoginUrl } from '../config/api';
 
 export interface KakaoLoginResponse {
   isSuccess: boolean;
@@ -42,10 +42,21 @@ export async function checkBackendHealth(): Promise<boolean> {
 
 export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
   try {
-    const url = createApiUrl(`/auth/login/kakao?code=${encodeURIComponent(code)}`);
-    console.log('카카오 로그인 요청 URL:', url);
-    console.log('원본 code:', code);
-    console.log('인코딩된 code:', encodeURIComponent(code));
+    // 코드 유효성 검증
+    if (!code || code.trim() === '') {
+      throw new Error('카카오 인증 코드가 비어있습니다.');
+    }
+    
+    if (code.length < 10) {
+      console.warn('⚠️ 카카오 인증 코드가 너무 짧습니다:', code);
+    }
+    
+    const url = createKakaoLoginUrl(code);
+    console.log('🚀 카카오 로그인 요청 URL:', url);
+    console.log('🔒 환경:', import.meta.env.DEV ? '개발(Vite 프록시)' : '프로덕션(Netlify Functions)');
+    console.log('📝 원본 code:', code);
+    console.log('🔒 인코딩된 code:', encodeURIComponent(code));
+    console.log('📏 코드 길이:', code.length);
     console.log('전체 요청 정보:', {
       method: 'GET',
       url: url,
@@ -66,13 +77,32 @@ export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
     
     if (!res.ok) {
       const errorText = await res.text();
-      console.error('서버 에러 응답:', errorText);
-      console.error('400 에러 상세 정보:', {
+      console.error('❌ 서버 에러 응답:', errorText);
+      console.error('🔍 에러 상세 정보:', {
         status: res.status,
         statusText: res.statusText,
         errorText: errorText,
-        requestUrl: url
+        requestUrl: url,
+        headers: Object.fromEntries(res.headers.entries()),
+        timestamp: new Date().toISOString()
       });
+      
+      // 에러 텍스트를 JSON으로 파싱 시도
+      try {
+        const errorJson = JSON.parse(errorText);
+        console.error('📋 파싱된 에러 JSON:', errorJson);
+        
+        // 카카오 에러 코드 확인
+        if (errorJson.result && typeof errorJson.result === 'string') {
+          const kakaoErrorMatch = errorJson.result.match(/error_code":"([^"]+)"/);
+          if (kakaoErrorMatch) {
+            console.error('🔑 카카오 에러 코드:', kakaoErrorMatch[1]);
+          }
+        }
+      } catch (parseError) {
+        console.error('⚠️ 에러 응답 JSON 파싱 실패:', parseError);
+      }
+      
       throw new Error(`HTTP ${res.status}: ${errorText}`);
     }
     

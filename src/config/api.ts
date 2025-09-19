@@ -1,7 +1,10 @@
 // API 설정 중앙화
 export const API_CONFIG = {
-  // 백엔드 기본 URL (Netlify 프록시 사용)
-  BASE_URL: '',
+  // 백엔드 기본 URL 
+  BASE_URL: import.meta.env.DEV ? '' : '',
+  
+  // Netlify Functions URL (HTTPS 보장)
+  NETLIFY_FUNCTIONS_URL: '/.netlify/functions',
   
   // 카카오 API 설정
   KAKAO: {
@@ -32,4 +35,15 @@ export const getKakaoRedirectUri = () => {
 // API URL 생성 헬퍼
 export const createApiUrl = (endpoint: string) => {
   return `${API_CONFIG.BASE_URL}${endpoint}`;
+};
+
+// 카카오 로그인 전용 URL (Netlify Functions 사용)
+export const createKakaoLoginUrl = (code: string) => {
+  if (import.meta.env.DEV) {
+    // 개발환경: 기존 프록시 사용
+    return `/auth/login/kakao?code=${encodeURIComponent(code)}`;
+  } else {
+    // 프로덕션: Netlify Functions 사용 (HTTPS 보장)
+    return `${API_CONFIG.NETLIFY_FUNCTIONS_URL}/kakao-login?code=${encodeURIComponent(code)}`;
+  }
 };

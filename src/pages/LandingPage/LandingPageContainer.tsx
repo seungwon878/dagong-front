@@ -190,14 +190,17 @@ const LandingPageContainer = () => {
     
     // 디버그: URL 파라미터 확인
     console.log('=== 카카오 로그인 디버그 ===');
-    console.log('현재 URL:', window.location.href);
-    console.log('location.search:', location.search);
-    console.log('전체 URL 파라미터:', Object.fromEntries(params.entries()));
-    console.log('추출된 code:', code);
-    console.log('code 타입:', typeof code);
-    console.log('code 길이:', code?.length);
-    console.log('processedCodeRef.current:', processedCodeRef.current);
-    console.log('isProcessingLogin:', isProcessingLogin);
+    console.log('🌐 현재 URL:', window.location.href);
+    console.log('🔗 location.search:', location.search);
+    console.log('📋 전체 URL 파라미터:', Object.fromEntries(params.entries()));
+    console.log('🔑 추출된 code:', code);
+    console.log('📝 code 타입:', typeof code);
+    console.log('📏 code 길이:', code?.length);
+    console.log('⚡ code 첫 10글자:', code?.substring(0, 10));
+    console.log('⚡ code 마지막 10글자:', code?.substring(code.length - 10));
+    console.log('🔄 processedCodeRef.current:', processedCodeRef.current);
+    console.log('🔒 isProcessingLogin:', isProcessingLogin);
+    console.log('⏰ 현재 시간:', new Date().toISOString());
     console.log('========================');
     
     if (code && !isProcessingLogin) {
