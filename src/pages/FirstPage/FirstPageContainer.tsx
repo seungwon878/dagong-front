@@ -56,26 +56,20 @@ const FirstPageContainer: React.FC = () => {
   const handleKakaoLogin = () => {
     const state = Date.now().toString();
     
-    const redirectUri = getKakaoRedirectUri();
+    // 하드코딩된 버전으로 테스트
+    const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${API_CONFIG.KAKAO.REST_API_KEY}&redirect_uri=https://dagong.netlify.app/landing&state=${state}`;
     
-    console.log('🔗 카카오 로그인 설정:', {
-      redirectUri,
+    console.log('🔗 하드코딩된 카카오 로그인 설정:', {
+      url: KAKAO_AUTH_URL,
       isDev: import.meta.env.DEV,
       currentUrl: window.location.href,
-      mode: import.meta.env.MODE,
-      environment: import.meta.env.NODE_ENV
+      fixedRedirectUri: 'https://dagong.netlify.app/landing'
     });
     
-    console.log('📋 카카오 개발자 콘솔에 등록해야 할 URI들:', API_CONFIG.KAKAO.ALL_REDIRECT_URIS);
+    console.log('📋 카카오 개발자 콘솔에 등록된 URI:', 'https://dagong.netlify.app/landing');
+    console.log('🚀 하드코딩된 카카오 인증 URL:', KAKAO_AUTH_URL);
     
-    const kakaoAuthUrl =
-      `https://kauth.kakao.com/oauth/authorize?client_id=${API_CONFIG.KAKAO.REST_API_KEY}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&response_type=code` +
-      `&state=${state}`;
-    
-    console.log('카카오 인증 URL:', kakaoAuthUrl);
-    window.location.replace(kakaoAuthUrl);
+    window.location.replace(KAKAO_AUTH_URL);
   };
 
   return <FirstPagePresentation onKakaoLogin={handleKakaoLogin} />;
