@@ -203,8 +203,10 @@ const LandingPageContainer = () => {
     console.log('⏰ 현재 시간:', new Date().toISOString());
     console.log('========================');
     
-    if (code && !isProcessingLogin) {
+    // 중복 실행 방지 강화
+    if (code && !isProcessingLogin && processedCodeRef.current !== code) {
       console.log('✅ 카카오 로그인 조건 만족 - 로그인 진행');
+      console.log('🔒 코드 중복 검사 통과 - 새로운 코드:', code.substring(0, 10) + '...');
       processedCodeRef.current = code;
       setIsProcessingLogin(true);
       
@@ -258,6 +260,9 @@ const LandingPageContainer = () => {
       console.log('❌ 카카오 로그인 조건 불만족:');
       console.log('- code 존재:', !!code);
       console.log('- 로그인 처리 중 아님:', !isProcessingLogin);
+      console.log('- 코드 중복 체크:', processedCodeRef.current !== code);
+      console.log('- 기존 처리된 코드:', processedCodeRef.current ? processedCodeRef.current.substring(0, 10) + '...' : 'null');
+      console.log('- 현재 받은 코드:', code ? code.substring(0, 10) + '...' : 'null');
     }
   }, [location, navigate, isProcessingLogin, login]);
 
