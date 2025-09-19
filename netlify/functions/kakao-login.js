@@ -43,17 +43,57 @@ exports.handler = async (event, context) => {
     // 백엔드 서버로 요청 전달
     const backendUrl = `http://3.39.43.178:8080/auth/login/kakao?code=${encodeURIComponent(code)}`;
     
-    const response = await fetch(backendUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    console.log('백엔드 요청 URL:', backendUrl);
+    
+    // Node.js의 https 모듈 사용 (fetch 대신)
+    const https = require('https');
+    const http = require('http');
+    const url = require('url');
+    
+    const parsedUrl = url.parse(backendUrl);
+    const client = parsedUrl.protocol === 'https:' ? https : http;
+    
+    const response = await new Promise((resolve, reject) => {
+      const req = client.request({
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+        path: parsedUrl.path,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // HTTP 요청 허용 설정
+        rejectUnauthorized: false,
+        timeout: 30000
+      }, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        res.on('end', () => {
+          resolve({
+            status: res.statusCode,
+            data: data
+          });
+        });
+      });
+      
+      req.on('error', (error) => {
+        console.error('백엔드 요청 오류:', error);
+        reject(error);
+      });
+      
+      req.on('timeout', () => {
+        console.error('백엔드 요청 타임아웃');
+        req.destroy();
+        reject(new Error('Request timeout'));
+      });
+      
+      req.end();
     });
 
-    const data = await response.text();
-    
     console.log('백엔드 응답 상태:', response.status);
-    console.log('백엔드 응답 데이터:', data.substring(0, 200));
+    console.log('백엔드 응답 데이터:', response.data.substring(0, 200));
 
     return {
       statusCode: response.status,
@@ -61,7 +101,7 @@ exports.handler = async (event, context) => {
         ...headers,
         'Content-Type': 'application/json',
       },
-      body: data,
+      body: response.data,
     };
 
   } catch (error) {

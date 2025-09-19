@@ -44,6 +44,8 @@ export const createKakaoLoginUrl = (code: string) => {
     return `/auth/login/kakao?code=${encodeURIComponent(code)}`;
   } else {
     // 프로덕션: Netlify Functions 사용 (HTTPS 보장)
+    // 만약 Netlify Functions가 실패하면 CORS 프록시 대안 사용 가능
+    // return `https://cors-anywhere.herokuapp.com/http://3.39.43.178:8080/auth/login/kakao?code=${encodeURIComponent(code)}`;
     return `${API_CONFIG.NETLIFY_FUNCTIONS_URL}/kakao-login?code=${encodeURIComponent(code)}`;
   }
 };

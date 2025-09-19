@@ -1,4 +1,4 @@
-import { createApiUrl, createKakaoLoginUrl } from '../config/api';
+import { createApiUrl, createKakaoLoginUrl, getKakaoRedirectUri, API_CONFIG } from '../config/api';
 
 export interface KakaoLoginResponse {
   isSuccess: boolean;
@@ -57,6 +57,13 @@ export async function getKakaoLogin(code: string): Promise<KakaoLoginResponse> {
     console.log('📝 원본 code:', code);
     console.log('🔒 인코딩된 code:', encodeURIComponent(code));
     console.log('📏 코드 길이:', code.length);
+    
+    // 백엔드에 전달해야 할 정보 로그
+    console.log('🔑 백엔드에서 카카오 토큰 요청 시 사용해야 할 정보:');
+    console.log('- client_id:', API_CONFIG.KAKAO.REST_API_KEY);
+    console.log('- redirect_uri:', getKakaoRedirectUri());
+    console.log('- code:', code.substring(0, 10) + '...');
+    console.log('- grant_type: authorization_code');
     console.log('전체 요청 정보:', {
       method: 'GET',
       url: url,
