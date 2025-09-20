@@ -23,7 +23,7 @@ export interface ChatRoomListResponse {
  */
 export const getChatRooms = async (memberId: number): Promise<ChatRoomListResponse> => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/chat/rooms/${memberId}`, {
+  const response = await fetch(`/chat/rooms/${memberId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const getChatMessages = async (
     query.set('lastId', lastId);
   }
 
-  const response = await fetch(`/api/chat/rooms/${roomId}/messages?${query.toString()}`, {
+  const response = await fetch(`/chat/rooms/${roomId}/messages?${query.toString()}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export const getChatMessages = async (
  */
 export const getChatRoomCoordinates = async (chatRoomId: string): Promise<any> => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/chat/rooms/${chatRoomId}/coordinates`, {
+  const response = await fetch(`/chat/rooms/${chatRoomId}/coordinates`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

@@ -4,6 +4,8 @@
 /location/*   http://3.39.43.178:8080/location/:splat   200
 /purchases/*  http://3.39.43.178:8080/purchases/:splat  200
 /member/*     http://3.39.43.178:8080/member/:splat     200
+/chat/*       http://3.39.43.178:8080/chat/:splat       200
+/login        http://3.39.43.178:8080/login             200
 /search/*     http://3.39.43.178:8080/search/:splat     200
 
 # SPA 라우팅 (가장 마지막에 위치)

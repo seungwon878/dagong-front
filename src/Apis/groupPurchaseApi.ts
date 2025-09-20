@@ -10,7 +10,7 @@
 //   maxParticipants: number;
 // }) {
 //   const token = localStorage.getItem('authToken');
-//   const res = await fetch(`/api/purchases/${memberId}`, {
+//   const res = await fetch(`/purchases/${memberId}`, {
 //     method: 'POST',
 //     headers: {
 //       'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export async function registerGroupPurchase(
   const token = localStorage.getItem('authToken');
 
   // 2) API 호출
-  const res = await fetch(`/api/purchases/${memberId}`, {
+  const res = await fetch(`/purchases/${memberId}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export async function registerGroupPurchase(
 export const getCategoryProducts = async (category1: string, category2: string, page: number = 1, size: number = 10) => {
   const token = localStorage.getItem('authToken');
   try {
-    const response = await fetch(`/api/purchases/category?category1=${encodeURIComponent(category1)}&category2=${encodeURIComponent(category2)}&page=${page}&size=${size}`, {
+    const response = await fetch(`/purchases/category?category1=${encodeURIComponent(category1)}&category2=${encodeURIComponent(category2)}&page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export const getCategoryProducts = async (category1: string, category2: string, 
 export const getAllProducts = async (memberId: number, page: number = 1, size: number = 10) => {
   const token = localStorage.getItem('authToken');
   try {
-    const response = await fetch(`/api/purchases/${memberId}?page=${page}&size=${size}`, {
+    const response = await fetch(`/purchases/${memberId}?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ export const getRankedProducts = async (
     size: size.toString(),
   }).toString();
 
-  const response = await fetch(`/api/purchases/ranking?${query}`, {
+  const response = await fetch(`/purchases/ranking?${query}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -205,7 +205,7 @@ export const searchProducts = async (
     size: size.toString(),
   }).toString();
 
-  const response = await fetch(`/api/purchases/search/items?${query}`, {
+  const response = await fetch(`/purchases/search/items?${query}`, {
     method: 'GET',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -239,7 +239,7 @@ export const getLatestProducts = async (
         size: size.toString(),
     }).toString();
 
-    const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
+    const response = await fetch(`/purchases/mine/${memberId}?${query}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -274,7 +274,7 @@ export const getMyProducts = async (
         size: size.toString(),
     }).toString();
 
-    const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
+    const response = await fetch(`/purchases/mine/${memberId}?${query}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -295,7 +295,7 @@ export const getMyProducts = async (
 export const getMyJoinedProducts = async (memberId: number) => {
   try {
     const response = await fetch(
-      `/api/purchases/participate/${memberId}`,
+      `/purchases/participate/${memberId}`,
       {
         method: 'GET',
         headers: {
@@ -323,7 +323,7 @@ export const getMyJoinedProducts = async (memberId: number) => {
 export const cancelParticipation = async (groupPurchaseId: number, memberId: number) => {
   try {
     const response = await fetch(
-      `/api/purchases/participate/${groupPurchaseId}/${memberId}`,
+      `/purchases/participate/${groupPurchaseId}/${memberId}`,
       {
         method: 'DELETE',
         headers: {
@@ -353,7 +353,7 @@ export const cancelParticipation = async (groupPurchaseId: number, memberId: num
  */
 export const deleteProduct = async (groupPurchaseId: number) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`/api/purchases/${groupPurchaseId}`, {
+    const response = await fetch(`/purchases/${groupPurchaseId}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -378,7 +378,7 @@ export const deleteProduct = async (groupPurchaseId: number) => {
  */
 export const getGroupPurchaseDetail = async (groupPurchaseId: number) => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/purchases/detail/${groupPurchaseId}`, {
+  const response = await fetch(`/purchases/detail/${groupPurchaseId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
