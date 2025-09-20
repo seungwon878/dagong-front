@@ -309,7 +309,9 @@ export const ChatSubscriptionProvider: React.FC<ChatSubscriptionProviderProps> =
     console.log('Creating new STOMP connection...');
     
     const client = new Client({
-      brokerURL: 'ws://13.209.95.208:8080/ws',
+      brokerURL: import.meta.env.DEV 
+        ? 'ws://3.39.43.178:8080/ws'  // 개발환경: HTTP WebSocket
+        : 'wss://3.39.43.178:8080/ws', // 프로덕션: HTTPS WebSocket (WSS)
       reconnectDelay: 3000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,

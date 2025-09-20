@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MyInPagePresentation from './MyInPagePresentation';
 import { getMyJoinedProducts } from '../../Apis/groupPurchaseApi';
+import { ensureHttpsImageUrl } from '../../utils/imageUtils';
 
 // API 응답 및 Presentation 컴포넌트를 위한 타입 (MyProPage와 유사할 것으로 가정)
 export interface JoinedProduct {
@@ -38,7 +39,7 @@ const MyInPageContainer = () => {
         const formattedProducts = response.result.content.map((p: any) => ({
           id: p.id,
           name: p.title,
-          imageUrl: p.imageUrl || '/img/dagong.png', // 이미지가 없는 경우 기본 로고
+          imageUrl: ensureHttpsImageUrl(p.imageUrl), // Mixed Content 방지를 위해 HTTPS로 변환
           status: p.status,
           price: p.price,
           likes: p.likes ?? 0,
