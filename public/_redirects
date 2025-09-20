@@ -1,7 +1,11 @@
 # API 프록시 설정 - Mixed Content 오류 해결
-/auth/*   http://3.39.43.178:8080/auth/:splat   200
-/api/*    http://3.39.43.178:8080/api/:splat    200
-/search/* http://3.39.43.178:8080/search/:splat 200
+/auth/*       http://3.39.43.178:8080/auth/:splat       200
+/api/*        http://3.39.43.178:8080/api/:splat         200
+/search/*     http://3.39.43.178:8080/search/:splat     200
 
-# SPA 라우팅
+# 만약 백엔드가 /api 없이 직접 경로를 사용한다면 아래 설정 사용
+# /purchases/*  http://3.39.43.178:8080/purchases/:splat  200
+# /member/*     http://3.39.43.178:8080/member/:splat     200
+
+# SPA 라우팅 (가장 마지막에 위치)
 /*    /index.html   200
