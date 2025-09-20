@@ -227,12 +227,17 @@ const LandingPageContainer = () => {
             localStorage.setItem('memberId', data.result.user.id.toString());
             localStorage.setItem('nickname', data.result.user.nickname);
             localStorage.setItem('email', data.result.user.email);
-            // code 파라미터를 제거하고 새로고침
-            navigate('/landing', { replace: true });
+            
+            console.log('✅ 로그인 성공! URL 파라미터 즉시 제거하여 재시도 방지');
+            // 즉시 URL에서 code 파라미터 제거하여 재시도 방지
+            window.history.replaceState({}, document.title, '/landing');
+            
+            console.log('🔄 로그인 완료 - 재시도 방지 완료');
           } else {
             console.error('카카오 로그인 실패: 백엔드 응답 데이터가 올바르지 않습니다.', data);
             alert('카카오 로그인에 실패했습니다. (서버 응답 데이터 오류)');
-            navigate('/landing', { replace: true });
+            // 실패 시에도 URL 파라미터 제거하여 재시도 방지
+            window.history.replaceState({}, document.title, '/landing');
           }
         })
         .catch((error: Error) => {
@@ -248,7 +253,8 @@ const LandingPageContainer = () => {
             alert('카카오 로그인 중 오류가 발생했습니다.');
           }
           
-          navigate('/landing', { replace: true });
+          // 에러 발생 시에도 URL 파라미터 제거하여 재시도 방지
+          window.history.replaceState({}, document.title, '/landing');
         })
         .finally(() => {
           console.log('카카오 로그인 처리 완료 - 상태 초기화');
