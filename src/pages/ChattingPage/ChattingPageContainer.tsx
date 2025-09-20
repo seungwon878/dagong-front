@@ -214,10 +214,10 @@ const ChattingPageContainer = () => {
 
     console.log('Creating new STOMP connection...');
     
-    // STOMP 클라이언트 생성 - HTTPS 환경에서는 WSS 사용
+    // STOMP 클라이언트 생성 - 프로덕션에서는 Netlify 프록시 사용
     const wsUrl = import.meta.env.DEV 
-      ? 'ws://3.39.43.178:8080/ws'  // 개발환경: HTTP WebSocket
-      : 'wss://3.39.43.178:8080/ws'; // 프로덕션: HTTPS WebSocket (WSS)
+      ? 'ws://3.39.43.178:8080/ws'  // 개발환경: 직접 HTTP WebSocket
+      : 'wss://dagong.netlify.app/ws'; // 프로덕션: Netlify 프록시를 통한 WSS
     const client = new Client({
       brokerURL: wsUrl,
       reconnectDelay: 3000,

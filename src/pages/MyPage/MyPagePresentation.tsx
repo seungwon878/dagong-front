@@ -88,7 +88,9 @@ const MyPagePresentation = ({
       {/* 유저 정보 */}
       <div style={{ display: 'flex', alignItems: 'center', margin: '32px 0 32px 24px' }}>
         <img 
-          src={userInfo?.profileUrl || 'https://via.placeholder.com/44'} 
+          src={userInfo?.profileUrl?.startsWith('http://') 
+            ? userInfo.profileUrl.replace('http://', 'https://') 
+            : (userInfo?.profileUrl || 'https://via.placeholder.com/44')} 
           alt="프로필" 
           style={{ width: 44, height: 44, borderRadius: '50%', marginRight: 16, objectFit: 'cover' }} 
         />
