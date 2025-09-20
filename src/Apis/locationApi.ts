@@ -13,7 +13,7 @@ export interface Location {
  */
 export const getUserLocations = async (memberId: number): Promise<{ isSuccess: boolean; result: Location[] }> => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/location/${memberId}`, {
+  const response = await fetch(`/location/${memberId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export const addUserLocation = async (memberId: number, latitude: number, longit
  */
 export const getCurrentLocation = async (memberId: number): Promise<{ isSuccess: boolean; result: Location | null }> => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`/api/location/${memberId}/current`, {
+    const response = await fetch(`/location/${memberId}/current`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export const getCurrentLocation = async (memberId: number): Promise<{ isSuccess:
  */
 export const setCurrentLocation = async (memberId: number, townId: number) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`/api/location/${memberId}/current/${townId}`, {
+    const response = await fetch(`/location/${memberId}/current/${townId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export const setCurrentLocation = async (memberId: number, townId: number) => {
  */
 export const deleteUserLocation = async (memberId: number, townId: number) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`/api/location/${memberId}/${townId}`, {
+    const response = await fetch(`/location/${memberId}/${townId}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
