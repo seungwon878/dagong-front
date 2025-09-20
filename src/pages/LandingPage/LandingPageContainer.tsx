@@ -239,20 +239,23 @@ const LandingPageContainer = () => {
               localStorage.setItem('email', user.email);
               
               console.log('✅ 로그인 성공! URL 파라미터 즉시 제거하여 재시도 방지');
-              // 즉시 URL에서 code 파라미터 제거하여 재시도 방지
+              // React Router와 브라우저 히스토리 모두에서 파라미터 제거
               window.history.replaceState({}, document.title, '/landing');
+              navigate('/landing', { replace: true });
               
               console.log('🔄 로그인 완료 - 재시도 방지 완료');
             } else {
               console.error('❌ 토큰이 없습니다:', data);
               alert('로그인 토큰을 받지 못했습니다. 다시 시도해주세요.');
               window.history.replaceState({}, document.title, '/landing');
+              navigate('/landing', { replace: true });
             }
           } else {
             console.error('❌ 카카오 로그인 실패: 백엔드 응답 데이터가 올바르지 않습니다.', data);
             alert('카카오 로그인에 실패했습니다. (서버 응답 데이터 오류)');
             // 실패 시에도 URL 파라미터 제거하여 재시도 방지
             window.history.replaceState({}, document.title, '/landing');
+            navigate('/landing', { replace: true });
           }
         })
         .catch((error: Error) => {
@@ -273,6 +276,7 @@ const LandingPageContainer = () => {
           
           // 에러 발생 시에도 URL 파라미터 제거하여 재시도 방지
           window.history.replaceState({}, document.title, '/landing');
+          navigate('/landing', { replace: true });
         })
         .finally(() => {
           console.log('카카오 로그인 처리 완료 - 상태 초기화');
@@ -288,7 +292,7 @@ const LandingPageContainer = () => {
       console.log('- 기존 처리된 코드:', processedCodeRef.current ? processedCodeRef.current.substring(0, 10) + '...' : 'null');
       console.log('- 현재 받은 코드:', code ? code.substring(0, 10) + '...' : 'null');
     }
-  }, [location, navigate, isProcessingLogin, login]);
+  }, [location.search]); // location.search만 의존성으로 설정하여 불필요한 재실행 방지
 
   // 로딩 중일 때 로딩 화면 표시
   if (isProcessingLogin || (isAuthenticated && loadingLocation)) {
