@@ -8,6 +8,29 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // 스크립트 로딩 에러 추적
+      window.addEventListener('error', function(e) {
+        console.error('스크립트 로딩 에러:', {
+          message: e.message,
+          source: e.filename,
+          line: e.lineno,
+          column: e.colno,
+          error: e.error
+        });
+      });
+      
+      // 리소스 로딩 에러 추적
+      window.addEventListener('error', function(e) {
+        if (e.target !== window) {
+          console.error('리소스 로딩 에러:', {
+            type: e.target.tagName,
+            source: e.target.src || e.target.href,
+            message: e.message
+          });
+        }
+      }, true);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
