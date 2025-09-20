@@ -37,7 +37,7 @@ export const getUserLocations = async (memberId: number): Promise<{ isSuccess: b
  */
 export const addUserLocation = async (memberId: number, latitude: number, longitude: number) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`/api/location`, {
+    const response = await fetch(`/location`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
