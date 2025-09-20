@@ -214,17 +214,19 @@ const ChattingPageContainer = () => {
 
     console.log('Creating new STOMP connection...');
     
-    // STOMP 클라이언트 생성 - 프로덕션에서는 Netlify 프록시 사용
-    const wsUrl = import.meta.env.DEV 
-      ? 'ws://3.39.43.178:8080/ws'  // 개발환경: 직접 HTTP WebSocket
-      : 'wss://dagong.netlify.app/ws'; // 프로덕션: Netlify 프록시를 통한 WSS
+    // STOMP 클라이언트 생성 - 임시: HTTP WebSocket 사용 (Mixed Content 주의)
+    // 프로덕션에서는 HTTPS 사이트에서 WebSocket이 차단될 수 있음
+    const wsUrl = 'ws://3.39.43.178:8080/ws';
+    
+    console.log('⚠️ WebSocket 연결 시도:', wsUrl);
+    console.log('⚠️ HTTPS 환경에서는 Mixed Content로 인해 차단될 수 있습니다.');
     const client = new Client({
       brokerURL: wsUrl,
       reconnectDelay: 3000,
     });
 
     client.onConnect = () => {
-      console.log('STOMP WebSocket connected!');
+      console.log('✅ STOMP WebSocket connected!');
       setIsConnected(true);
       
       // 1) 채팅방 메시지 구독
@@ -266,17 +268,20 @@ const ChattingPageContainer = () => {
     };
 
     client.onStompError = (frame) => {
-      console.error('STOMP error:', frame);
+      console.error('❌ STOMP error:', frame);
       setIsConnected(false);
+      // 에러 발생 시 사용자에게 알림 (선택적)
+      console.warn('💬 실시간 채팅 연결에 문제가 있습니다. 새로고침을 시도해보세요.');
     };
 
     client.onWebSocketError = (error) => {
-      console.error('WebSocket error:', error);
+      console.error('❌ WebSocket error:', error);
       setIsConnected(false);
+      console.warn('💬 WebSocket 연결 실패 - Mixed Content 정책으로 인한 차단일 수 있습니다.');
     };
 
     client.onWebSocketClose = () => {
-      console.log('WebSocket connection closed');
+      console.log('🔌 WebSocket connection closed');
       setIsConnected(false);
     };
 

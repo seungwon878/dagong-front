@@ -309,9 +309,7 @@ export const ChatSubscriptionProvider: React.FC<ChatSubscriptionProviderProps> =
     console.log('Creating new STOMP connection...');
     
     const client = new Client({
-      brokerURL: import.meta.env.DEV 
-        ? 'ws://3.39.43.178:8080/ws'  // 개발환경: 직접 HTTP WebSocket
-        : 'wss://dagong.netlify.app/ws', // 프로덕션: Netlify 프록시를 통한 WSS
+      brokerURL: 'ws://3.39.43.178:8080/ws', // 임시: 직접 HTTP WebSocket 사용
       reconnectDelay: 3000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,

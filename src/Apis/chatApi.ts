@@ -125,18 +125,32 @@ export const getChatRoomCoordinates = async (chatRoomId: string): Promise<any> =
  * @returns 추천 지하철역 정보를 포함하는 API 응답
  */
 export const getRecommendedStation = async (users: Array<{latitude: number, longitude: number}>): Promise<any> => {
-  const response = await fetch('https://dagong-ai.onrender.com/station/recommend', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ users }),
-  });
+  try {
+    console.log('🚇 AI 지하철역 추천 요청:', users);
+    const response = await fetch('https://dagong-ai.onrender.com/station/recommend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ users }),
+    });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ message: '추천 지하철역을 불러오는데 실패했습니다.' }));
-    throw new Error(errorData.message);
+    if (!response.ok) {
+      console.warn(`⚠️ AI API 응답 에러 (${response.status}):`, response.statusText);
+      // 422 에러는 입력 데이터 형식 문제일 가능성
+      if (response.status === 422) {
+        console.warn('📝 AI API 요청 데이터 형식 확인 필요:', { users });
+      }
+      const errorData = await response.json().catch(() => ({ message: '추천 지하철역을 불러오는데 실패했습니다.' }));
+      throw new Error(`AI 서비스 에러 (${response.status}): ${errorData.message}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ AI 지하철역 추천 성공:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ AI 지하철역 추천 실패:', error);
+    // AI 서비스 에러는 치명적이지 않으므로 재발생시켜 호출자가 처리하도록 함
+    throw error;
   }
-
-  return response.json();
 }; 
