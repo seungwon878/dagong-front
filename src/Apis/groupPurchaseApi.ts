@@ -122,6 +122,7 @@ export const getAllProducts = async (memberId: number, page: number = 1, size: n
     const response = await fetch(`/api/purchases/${memberId}?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
@@ -162,6 +163,7 @@ export const getRankedProducts = async (
   const response = await fetch(`/api/purchases/ranking?${query}`, {
     method: 'GET',
     headers: {
+      'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
@@ -240,6 +242,7 @@ export const getLatestProducts = async (
     const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
         method: 'GET',
         headers: {
+            'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
     });
@@ -274,6 +277,7 @@ export const getMyProducts = async (
     const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
         method: 'GET',
         headers: {
+            'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
     });

@@ -57,7 +57,7 @@ const LandingPageContainer = () => {
     if (!isAuthenticated) return; // 로그인 안 했으면 실행하지 않음
     try {
       setLoadingLocation(true);
-      const res = await fetch(`/api/location/${memberId}/current`, {
+      const res = await fetch(`/location/${memberId}/current`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
