@@ -214,12 +214,18 @@ const ChattingPageContainer = () => {
 
     console.log('Creating new STOMP connection...');
     
-    // STOMP 클라이언트 생성 - 임시: HTTP WebSocket 사용 (Mixed Content 주의)
-    // 프로덕션에서는 HTTPS 사이트에서 WebSocket이 차단될 수 있음
+    // HTTPS 환경에서는 WebSocket 연결을 시도하지 않음
+    if (!import.meta.env.DEV && window.location.protocol === 'https:') {
+      console.warn('🚫 HTTPS 환경에서는 HTTP WebSocket이 차단됩니다.');
+      console.warn('💬 실시간 채팅 기능이 비활성화됩니다.');
+      setIsConnected(false);
+      return () => {}; // cleanup 함수 반환
+    }
+
+    // 개발환경에서만 WebSocket 연결 시도
     const wsUrl = 'ws://3.39.43.178:8080/ws';
+    console.log('🔌 WebSocket 연결 시도:', wsUrl);
     
-    console.log('⚠️ WebSocket 연결 시도:', wsUrl);
-    console.log('⚠️ HTTPS 환경에서는 Mixed Content로 인해 차단될 수 있습니다.');
     const client = new Client({
       brokerURL: wsUrl,
       reconnectDelay: 3000,
@@ -364,6 +370,7 @@ const ChattingPageContainer = () => {
       onInputChange={handleInputChange}
       onSend={handleSend}
       onSendLocation={handleSendLocation}
+      isConnected={isConnected}
     />
   );
 };

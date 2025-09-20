@@ -308,8 +308,16 @@ export const ChatSubscriptionProvider: React.FC<ChatSubscriptionProviderProps> =
 
     console.log('Creating new STOMP connection...');
     
+    // HTTPS 환경에서는 WebSocket 연결을 시도하지 않음
+    if (!import.meta.env.DEV && window.location.protocol === 'https:') {
+      console.warn('🚫 HTTPS 환경에서는 HTTP WebSocket이 차단됩니다.');
+      console.warn('💬 실시간 채팅 기능이 비활성화됩니다.');
+      setIsConnected(false);
+      return;
+    }
+    
     const client = new Client({
-      brokerURL: 'ws://3.39.43.178:8080/ws', // 임시: 직접 HTTP WebSocket 사용
+      brokerURL: 'ws://3.39.43.178:8080/ws', // 개발환경에서만 사용
       reconnectDelay: 3000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
