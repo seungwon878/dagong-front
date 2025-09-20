@@ -65,9 +65,11 @@ const LandingPageContainer = () => {
         },
       });
       if (!res.ok) {
-        // 500 에러면 로그인 상태일 때만 /map으로 이동
-        if (res.status === 500) {
+        // 404 또는 500 에러면 위치 정보가 없는 것으로 판단
+        if (res.status === 404 || res.status === 500) {
+          console.log('📍 위치 정보 없음 - 위치 등록 페이지로 이동');
           if (isAuthenticated) {
+            alert('위치 정보가 등록되지 않았습니다. 위치를 등록해주세요.');
             navigate('/map');
           } else {
             alert('로그인 후 주소를 등록할 수 있습니다.');
@@ -155,9 +157,17 @@ const LandingPageContainer = () => {
         setProducts([]);
       }
     } catch (err: any) {
-      setError(err.message || '상품 목록을 불러오는데 실패했습니다.');
+      console.error('인기 상품 목록 조회 실패:', err);
+      
+      // 404 에러의 경우 위치 정보 문제로 간주
+      if (err.message && err.message.includes('404')) {
+        console.log('📍 위치 정보 없음으로 인한 상품 조회 실패');
+        setError('위치 정보를 등록한 후 상품 목록을 확인할 수 있습니다.');
+      } else {
+        setError(err.message || '상품 목록을 불러오는데 실패했습니다.');
+      }
+      
       setProducts([]);
-      console.error(err);
     } finally {
       setLoading(false);
     }
