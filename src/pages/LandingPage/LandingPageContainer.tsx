@@ -30,6 +30,7 @@ const LandingPageContainer = () => {
   const { isAuthenticated, login } = useAuth();
   const [isProcessingLogin, setIsProcessingLogin] = useState(false);
   const processedCodeRef = useRef<string | null>(null);
+  const alertShownRef = useRef<boolean>(false); // 알림 표시 여부 추적
   // const { memberid, authToken, isSuccess } = useAppContext();
   const memberid = localStorage.getItem('memberId');
   const authToken = localStorage.getItem('authToken');
@@ -214,27 +215,41 @@ const LandingPageContainer = () => {
       getKakaoLogin(code)
         .then(data => {
           console.log('카카오 로그인 성공 응답:', data);
-          if (data.isSuccess && data.result && data.result.user && typeof data.result.user.id === 'number' && data.result.token) {
-            // AuthContext의 login 함수를 사용하여 로그인 상태 업데이트
-            login(
-              data.result.token,
-              data.result.user.id.toString(),
-              data.result.user.nickname,
-              data.result.user.email
-            );
-            localStorage.setItem('isSuccess', "true");
-            localStorage.setItem('authToken', data.result.token);
-            localStorage.setItem('memberId', data.result.user.id.toString());
-            localStorage.setItem('nickname', data.result.user.nickname);
-            localStorage.setItem('email', data.result.user.email);
+          
+          // 응답 구조 검증 및 토큰 추출
+          if (data.isSuccess && data.result && data.result.user && typeof data.result.user.id === 'number') {
+            const token = data.result.token; // result.token에서 토큰 추출
+            const user = data.result.user;
             
-            console.log('✅ 로그인 성공! URL 파라미터 즉시 제거하여 재시도 방지');
-            // 즉시 URL에서 code 파라미터 제거하여 재시도 방지
-            window.history.replaceState({}, document.title, '/landing');
+            console.log('🔑 추출된 토큰:', token);
+            console.log('👤 사용자 정보:', user);
             
-            console.log('🔄 로그인 완료 - 재시도 방지 완료');
+            if (token) {
+              // AuthContext의 login 함수를 사용하여 로그인 상태 업데이트
+              login(
+                token,
+                user.id.toString(),
+                user.nickname,
+                user.email
+              );
+              localStorage.setItem('isSuccess', "true");
+              localStorage.setItem('authToken', token);
+              localStorage.setItem('memberId', user.id.toString());
+              localStorage.setItem('nickname', user.nickname);
+              localStorage.setItem('email', user.email);
+              
+              console.log('✅ 로그인 성공! URL 파라미터 즉시 제거하여 재시도 방지');
+              // 즉시 URL에서 code 파라미터 제거하여 재시도 방지
+              window.history.replaceState({}, document.title, '/landing');
+              
+              console.log('🔄 로그인 완료 - 재시도 방지 완료');
+            } else {
+              console.error('❌ 토큰이 없습니다:', data);
+              alert('로그인 토큰을 받지 못했습니다. 다시 시도해주세요.');
+              window.history.replaceState({}, document.title, '/landing');
+            }
           } else {
-            console.error('카카오 로그인 실패: 백엔드 응답 데이터가 올바르지 않습니다.', data);
+            console.error('❌ 카카오 로그인 실패: 백엔드 응답 데이터가 올바르지 않습니다.', data);
             alert('카카오 로그인에 실패했습니다. (서버 응답 데이터 오류)');
             // 실패 시에도 URL 파라미터 제거하여 재시도 방지
             window.history.replaceState({}, document.title, '/landing');
@@ -246,11 +261,14 @@ const LandingPageContainer = () => {
             console.error('백엔드 응답 에러 메시지:', error.message);
           }
           
-          // invalid_grant 에러인 경우 특별한 메시지 표시
-          if (error?.message?.includes('invalid_grant')) {
-            alert('인증 코드가 만료되었거나 이미 사용되었습니다. 다시 로그인해주세요.');
-          } else {
-            alert('카카오 로그인 중 오류가 발생했습니다.');
+          // invalid_grant 에러인 경우 특별한 메시지 표시 (한 번만)
+          if (!alertShownRef.current) {
+            alertShownRef.current = true;
+            if (error?.message?.includes('invalid_grant')) {
+              alert('인증 코드가 만료되었거나 이미 사용되었습니다. 다시 로그인해주세요.');
+            } else {
+              alert('카카오 로그인 중 오류가 발생했습니다.');
+            }
           }
           
           // 에러 발생 시에도 URL 파라미터 제거하여 재시도 방지
