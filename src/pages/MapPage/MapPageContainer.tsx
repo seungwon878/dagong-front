@@ -106,7 +106,7 @@ const MapPageContainer: React.FC = () => {
       const response = await addUserLocation(memberId, lat, lng);
       if (response.isSuccess) {
         alert('위치 정보가 성공적으로 저장되었습니다.');
-        navigate(-1); // 이전 페이지로 돌아가기
+        navigate('/landing'); // Landing 페이지로 이동
       } else {
         throw new Error(response.message || '주소 저장에 실패했습니다.');
       }
