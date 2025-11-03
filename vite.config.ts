@@ -36,6 +36,26 @@ export default defineConfig({
         target: 'http://3.39.43.178:8080',
         changeOrigin: true,
       },
+      // 위치/주소 API 요청 프록시 설정
+      '/location': {
+        target: 'http://3.39.43.178:8080',
+        changeOrigin: true,
+      },
+      // 채팅 API 요청 프록시 설정
+      '/chat': {
+        target: 'http://3.39.43.178:8080',
+        changeOrigin: true,
+      },
+      // 공동구매 API 요청 프록시 설정
+      '/purchases': {
+        target: 'http://3.39.43.178:8080',
+        changeOrigin: true,
+      },
+      // 회원 API 요청 프록시 설정
+      '/member': {
+        target: 'http://3.39.43.178:8080',
+        changeOrigin: true,
+      },
     },
   },
 });
