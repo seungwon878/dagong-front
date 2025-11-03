@@ -3,6 +3,7 @@
 /search       http://3.39.43.178:8080/search            200!
 /auth/*       http://3.39.43.178:8080/auth/:splat       200
 /api/*        http://3.39.43.178:8080/api/:splat         200
+/location     http://3.39.43.178:8080/location          200!
 /location/*   http://3.39.43.178:8080/location/:splat   200
 /purchases/*  http://3.39.43.178:8080/purchases/:splat  200
 /member/*     http://3.39.43.178:8080/member/:splat     200
