@@ -27,7 +27,7 @@ const MyHeartPresentation = ({
             style={{ display: 'flex', alignItems: 'center', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '0 16px', margin: 0 }}
           >
             <div style={{ width: 110, height: 90, background: '#ededed', borderRadius: 12, position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
-              <img src={p.imageUrl} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+              <img src={p.imageUrl.startsWith('http://') ? p.imageUrl.replace('http://', 'https://') : p.imageUrl} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
               <span style={{ position: 'absolute', top: 10, right: 10, fontSize: 22, color: '#e89cae' }}>♡</span>
             </div>
             <div style={{ flex: 1, textAlign: 'left', fontSize: 16, color: '#222', fontWeight: 500, marginLeft: 16 }}>

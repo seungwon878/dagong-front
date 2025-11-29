@@ -6,7 +6,7 @@
  */
 export const updateNickname = async (memberId: number, nickname: string) => {
   const token = localStorage.getItem('authToken');
-  const res = await fetch(`/api/member/${memberId}`, {
+  const res = await fetch(`/member/${memberId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export const updateAddress = async (
   const token = localStorage.getItem('authToken');
   // 주소 변경을 위한 API 엔드포인트가 닉네임 변경과 동일하다고 가정합니다.
   // 백엔드에서 body의 필드를 보고 부분 업데이트를 지원해야 합니다.
-  const res = await fetch(`/api/member/${memberId}`, {
+  const res = await fetch(`/member/${memberId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export const updateUserInfo = async (
   // 실제로는 updateNickname과 updateAddress를 각각 사용해야 합니다.
   console.warn('updateUserInfo is deprecated. Use updateNickname or updateAddress instead.');
   const token = localStorage.getItem('authToken');
-  const res = await fetch(`/api/member/${memberId}`, {
+  const res = await fetch(`/member/${memberId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export const getUserInfo = async (memberId: number): Promise<{
   } 
 }> => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/member/${memberId}`, {
+  const response = await fetch(`/member/${memberId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export const getUserInfo = async (memberId: number): Promise<{
 export async function updateUserCategories(memberId: number, categories: { category1: string, category2: string }) {
   const token = localStorage.getItem('authToken');
 
-  const response = await fetch(`/api/member/${memberId}/categories`, {
+  const response = await fetch(`/member/${memberId}/categories`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ export async function updateUserCategories(memberId: number, categories: { categ
  */
 export const getMemberInfo = async (memberId: number) => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/member/${memberId}`, {
+  const response = await fetch(`/member/${memberId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ export const getMemberInfo = async (memberId: number) => {
  */
 export const deleteMember = async (memberId: number) => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/member/${memberId}`, {
+  const response = await fetch(`/member/${memberId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ export const deleteMember = async (memberId: number) => {
  */
 export const getLikedItems = async (memberId: number) => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/member/members/${memberId}/likes`, {
+  const response = await fetch(`/member/members/${memberId}/likes`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

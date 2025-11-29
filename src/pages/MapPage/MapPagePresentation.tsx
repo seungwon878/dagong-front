@@ -19,6 +19,7 @@ interface Props {
   postLocation: (memberId: number, latitude: number, longitude: number) => Promise<void>;
   showSaveBtn: boolean;
   onSaveLocation: () => void;
+  isSaving: boolean; // 저장 중 상태 추가
 }
 
 const MapPagePresentation: React.FC<Props> = ({
@@ -32,6 +33,7 @@ const MapPagePresentation: React.FC<Props> = ({
   coords,
   showSaveBtn,
   onSaveLocation,
+  isSaving,
 }) => {
   const navigate = useNavigate();
 
@@ -86,8 +88,9 @@ const MapPagePresentation: React.FC<Props> = ({
             navigate('/');
           }} 
           style={{ padding: '10px 24px', fontSize: 16, borderRadius: 8, background: '#e89cae', color: '#fff', border: 'none', cursor: 'pointer' }}
+          disabled={isSaving}
         >
-          위치 저장
+          {isSaving ? '저장 중...' : '위치 저장'}
         </button>
       </div>
     )}

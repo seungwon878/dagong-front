@@ -1,0 +1,66 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/location"
+  to = "http://3.39.43.178:8080/location"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/location/*"
+  to = "http://3.39.43.178:8080/location/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/auth/*"
+  to = "http://3.39.43.178:8080/auth/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "http://3.39.43.178:8080/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/purchases/*"
+  to = "http://3.39.43.178:8080/purchases/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/member/*"
+  to = "http://3.39.43.178:8080/member/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/chat/*"
+  to = "http://3.39.43.178:8080/chat/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/search"
+  to = "http://3.39.43.178:8080/search"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/search/*"
+  to = "http://3.39.43.178:8080/search/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "http://3.39.43.178:8080/login"
+  status = 200
+
+[[redirects]]
+  from = "/ws"
+  to = "http://3.39.43.178:8080/ws"
+  status = 200
+
+# SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

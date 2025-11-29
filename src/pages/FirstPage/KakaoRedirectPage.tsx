@@ -1,8 +1,3 @@
-// 
-
-
-// src/pages/KakaoRedirectPage.tsx
-
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getKakaoLogin, checkBackendHealth } from '../../Apis/kakaoLoginApi';
@@ -13,16 +8,36 @@ const KakaoRedirectPage: React.FC = () => {
   const handledRef = useRef(false);
 
   useEffect(() => {
-    if (handledRef.current) return;
-
     const params = new URLSearchParams(location.search);
     const code = params.get('code');
-    if (!code) return;
+    
+    // 디버그: URL 파라미터 확인
+    console.log('=== KakaoRedirectPage 디버그 ===');
+    console.log('현재 URL:', window.location.href);
+    console.log('location.search:', location.search);
+    console.log('전체 URL 파라미터:', Object.fromEntries(params.entries()));
+    console.log('추출된 code:', code);
+    console.log('code 타입:', typeof code);
+    console.log('code 길이:', code?.length);
+    console.log('handledRef.current:', handledRef.current);
+    console.log('========================');
+    
+    if (!code) {
+      console.log('❌ code 파라미터가 없습니다.');
+      return;
+    }
 
+    if (handledRef.current) {
+      console.log('❌ 이미 처리된 요청입니다.');
+      return;
+    }
+
+    console.log('✅ code 파라미터 발견 - 로그인 처리 시작');
     handledRef.current = true;
 
     // 백엔드 서버 상태 먼저 확인
     checkBackendHealth().then(isHealthy => {
+      console.log('백엔드 서버 상태:', isHealthy);
       if (!isHealthy) {
         console.error('백엔드 서버가 응답하지 않습니다.');
         alert('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -33,6 +48,7 @@ const KakaoRedirectPage: React.FC = () => {
       // 백엔드가 정상이면 카카오 로그인 진행
       getKakaoLogin(code)
         .then(data => {
+          console.log('카카오 로그인 성공 응답:', data);
           if (data.isSuccess && data.result) {
             localStorage.setItem('isSuccess', "true");
             localStorage.setItem('authToken', data.result.token);
@@ -41,6 +57,7 @@ const KakaoRedirectPage: React.FC = () => {
             localStorage.setItem('email', data.result.user.email);
             navigate('/upload', { replace: true });
           } else {
+            console.error('카카오 로그인 실패:', data);
             alert('카카오 로그인에 실패했습니다.');
             navigate('/', { replace: true });
           }
@@ -49,6 +66,11 @@ const KakaoRedirectPage: React.FC = () => {
           console.error('카카오 로그인 에러 상세:', err);
           alert('카카오 로그인 중 오류가 발생했습니다.');
           navigate('/', { replace: true });
+        })
+        .finally(() => {
+          console.log('KakaoRedirectPage 로그인 처리 완료 - 상태 초기화');
+          // 처리 완료 후 handledRef 초기화
+          handledRef.current = false;
         });
     });
   }, [location, navigate]);

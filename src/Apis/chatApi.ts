@@ -23,7 +23,7 @@ export interface ChatRoomListResponse {
  */
 export const getChatRooms = async (memberId: number): Promise<ChatRoomListResponse> => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/chat/rooms/${memberId}`, {
+  const response = await fetch(`/chat/rooms/${memberId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const getChatMessages = async (
     query.set('lastId', lastId);
   }
 
-  const response = await fetch(`/api/chat/rooms/${roomId}/messages?${query.toString()}`, {
+  const response = await fetch(`/chat/rooms/${roomId}/messages?${query.toString()}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -94,4 +94,63 @@ export const getChatMessages = async (
   }
 
   return response.json();
+};
+
+/**
+ * 특정 채팅방의 좌표 정보를 조회합니다.
+ * @param chatRoomId 채팅방 ID
+ * @returns 좌표 정보를 포함하는 API 응답
+ */
+export const getChatRoomCoordinates = async (chatRoomId: string): Promise<any> => {
+  const token = localStorage.getItem('authToken');
+  const response = await fetch(`/chat/rooms/${chatRoomId}/coordinates`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: '좌표 정보를 불러오는데 실패했습니다.' }));
+    throw new Error(errorData.message);
+  }
+
+  return response.json();
+};
+
+/**
+ * 사용자들의 위치를 기반으로 추천 지하철역을 조회합니다.
+ * @param users 사용자들의 위치 정보 배열
+ * @returns 추천 지하철역 정보를 포함하는 API 응답
+ */
+export const getRecommendedStation = async (users: Array<{latitude: number, longitude: number}>): Promise<any> => {
+  try {
+    console.log('🚇 AI 지하철역 추천 요청:', users);
+    const response = await fetch('https://dagong-ai.onrender.com/station/recommend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ users }),
+    });
+
+    if (!response.ok) {
+      console.warn(`⚠️ AI API 응답 에러 (${response.status}):`, response.statusText);
+      // 422 에러는 입력 데이터 형식 문제일 가능성
+      if (response.status === 422) {
+        console.warn('📝 AI API 요청 데이터 형식 확인 필요:', { users });
+      }
+      const errorData = await response.json().catch(() => ({ message: '추천 지하철역을 불러오는데 실패했습니다.' }));
+      throw new Error(`AI 서비스 에러 (${response.status}): ${errorData.message}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ AI 지하철역 추천 성공:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ AI 지하철역 추천 실패:', error);
+    // AI 서비스 에러는 치명적이지 않으므로 재발생시켜 호출자가 처리하도록 함
+    throw error;
+  }
 }; 

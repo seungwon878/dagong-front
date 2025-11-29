@@ -9,6 +9,8 @@ interface ChattingPagePresentationProps {
   input: string;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSend: () => void;
+  onSendLocation: () => void; // 추천 위치 전송 함수 추가
+  isConnected: boolean; // WebSocket 연결 상태
 }
 
 const UserListModal = ({ open, onClose, users, roomTitle, currentPeople }: { 
@@ -145,6 +147,8 @@ const ChattingPagePresentation = ({
   input,
   onInputChange,
   onSend,
+  onSendLocation,
+  isConnected,
 }: ChattingPagePresentationProps) => {
   const [userListOpen, setUserListOpen] = useState(false);
   return (
@@ -172,7 +176,27 @@ const ChattingPagePresentation = ({
         }}>
           {/* 제목을 비워달라는 요청에 따라 제거 */}
         </div>
-        <div style={{ width: 40, textAlign: 'right' }}>
+        <div style={{ width: 80, textAlign: 'right', display: 'flex', gap: 8 }}>
+          <button 
+            onClick={onSendLocation} 
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              fontSize: 20, 
+              color: '#444', 
+              cursor: 'pointer', 
+              padding: 4,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32
+            }}
+            title="추천 위치 전송"
+          >
+            📍
+          </button>
           <button onClick={() => setUserListOpen(true)} style={{ background: 'none', border: 'none', fontSize: 22, color: '#444', cursor: 'pointer', padding: 0 }}>⋮</button>
         </div>
       </div>
@@ -217,17 +241,62 @@ const ChattingPagePresentation = ({
           )
         )}
       </div>
+      {/* 연결 상태 알림 */}
+      {!isConnected && (
+        <div style={{ 
+          position: 'fixed', 
+          left: '50%', 
+          bottom: 80, 
+          transform: 'translateX(-50%)', 
+          background: '#fff3cd', 
+          color: '#856404', 
+          padding: '8px 16px', 
+          borderRadius: 8, 
+          fontSize: 13, 
+          border: '1px solid #ffeaa7',
+          zIndex: 101,
+          maxWidth: 400,
+          textAlign: 'center'
+        }}>
+          ⚠️ 실시간 채팅이 일시적으로 사용할 수 없습니다
+        </div>
+      )}
+      
       {/* 입력창 */}
       <div style={{ position: 'fixed', left: '50%', bottom: 0, transform: 'translateX(-50%)', width: '100%', maxWidth: 430, background: '#fff', borderTop: '1px solid #eee', display: 'flex', alignItems: 'center', padding: '8px 8px 8px 8px', zIndex: 100 }}>
         <input
           type="text"
           value={input}
           onChange={onInputChange}
-          placeholder="메시지를 입력하세요"
-          style={{ flex: 1, border: 'none', borderRadius: 20, background: '#f5f5f5', padding: '12px 16px', fontSize: 15, outline: 'none', marginRight: 8 }}
-          onKeyDown={e => { if (e.key === 'Enter') onSend(); }}
+          placeholder={isConnected ? "메시지를 입력하세요" : "실시간 채팅 연결 중..."}
+          disabled={!isConnected}
+          style={{ 
+            flex: 1, 
+            border: 'none', 
+            borderRadius: 20, 
+            background: isConnected ? '#f5f5f5' : '#f0f0f0', 
+            padding: '12px 16px', 
+            fontSize: 15, 
+            outline: 'none', 
+            marginRight: 8,
+            color: isConnected ? '#333' : '#999'
+          }}
+          onKeyDown={e => { if (e.key === 'Enter' && isConnected) onSend(); }}
         />
-        <button onClick={onSend} style={{ background: 'none', border: 'none', fontSize: 24, color: '#e89cae', cursor: 'pointer', padding: 0 }}>➤</button>
+        <button 
+          onClick={onSend} 
+          disabled={!isConnected}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            fontSize: 24, 
+            color: isConnected ? '#e89cae' : '#ccc', 
+            cursor: isConnected ? 'pointer' : 'not-allowed', 
+            padding: 0 
+          }}
+        >
+          ➤
+        </button>
       </div>
     </div>
   );

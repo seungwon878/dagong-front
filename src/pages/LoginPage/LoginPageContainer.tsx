@@ -15,7 +15,7 @@ const LoginPageContainer: React.FC = () => {
       setError(undefined);
       
       // TODO: 실제 API 호출로 대체
-      const response = await fetch('/api/login', {
+      const response = await fetch('/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

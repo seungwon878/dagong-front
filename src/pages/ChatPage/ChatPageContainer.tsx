@@ -12,9 +12,13 @@ const ChatPageContainer = () => {
   useEffect(() => {
     const fetchChatRooms = async () => {
       // TODO: memberId를 실제 로그인한 사용자 ID로 변경해야 합니다.
-      const memberId = 1;
+      const memberId = localStorage.getItem('memberId');
+      if (!memberId) {
+        setError('로그인이 필요합니다.');
+        return;
+      }
       try {
-        const response = await getChatRooms(memberId);
+        const response = await getChatRooms(Number(memberId));
         if (response.isSuccess) {
           setChatRooms(response.result);
         }

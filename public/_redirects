@@ -1,1 +1,15 @@
+# API 프록시 설정 - Mixed Content 오류 해결 (순서 중요!)
+/ws           http://3.39.43.178:8080/ws                200
+/search       http://3.39.43.178:8080/search            200!
+/auth/*       http://3.39.43.178:8080/auth/:splat       200
+/api/*        http://3.39.43.178:8080/api/:splat         200
+/location     http://3.39.43.178:8080/location          200!
+/location/*   http://3.39.43.178:8080/location/:splat   200
+/purchases/*  http://3.39.43.178:8080/purchases/:splat  200
+/member/*     http://3.39.43.178:8080/member/:splat     200
+/chat/*       http://3.39.43.178:8080/chat/:splat       200
+/login        http://3.39.43.178:8080/login             200
+/search/*     http://3.39.43.178:8080/search/:splat     200
+
+# SPA 라우팅 (가장 마지막에 위치)
 /*    /index.html   200

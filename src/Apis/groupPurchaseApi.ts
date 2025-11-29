@@ -10,7 +10,7 @@
 //   maxParticipants: number;
 // }) {
 //   const token = localStorage.getItem('authToken');
-//   const res = await fetch(`/api/purchases/${memberId}`, {
+//   const res = await fetch(`/purchases/${memberId}`, {
 //     method: 'POST',
 //     headers: {
 //       'Content-Type': 'application/json',
@@ -62,19 +62,48 @@ export async function registerGroupPurchase(
   // 1) 로컬스토리지에서 토큰 꺼내기
   const token = localStorage.getItem('authToken');
 
+  // 🔍 디버깅: 요청 전 상세 정보 로깅
+  console.log('🚀 공구 등록 API 호출 시작');
+  console.log('📋 memberId:', memberId, '(타입:', typeof memberId, ')');
+  console.log('📄 요청 데이터:', JSON.stringify(data, null, 2));
+  console.log('🔑 토큰 존재:', !!token, '길이:', token?.length || 0);
+  console.log('🌐 요청 URL:', `/purchases/${memberId}`);
+  
+  // 데이터 유효성 체크
+  const requiredFields = ['title', 'content', 'name', 'imageUrl', 'category1', 'category2', 'price', 'quantity', 'maxParticipants'];
+  const missingFields = requiredFields.filter(field => !data[field as keyof GroupPurchaseData]);
+  if (missingFields.length > 0) {
+    console.error('❌ 필수 필드 누락:', missingFields);
+  }
+
   // 2) API 호출
-  const res = await fetch(`/api/purchases/${memberId}`, {
+  const res = await fetch(`/purchases/${memberId}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // 토큰이 있으면 Authorization 헤더 추가
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      // 🧪 임시 테스트: Authorization 헤더 제거 (Swagger와 동일하게)
+      // ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(data),
   });
 
   // 3) 에러 처리 (401, 403, 400 등 status별 분기 가능)
   if (!res.ok) {
+    console.error(`🚨 공구 등록 API 에러 - Status: ${res.status}, StatusText: ${res.statusText}`);
+    console.error('📝 요청 데이터:', data);
+    console.error('🔑 요청 헤더 Authorization:', token ? 'Bearer ***' : 'None');
+    console.error('🌐 요청 URL:', `/purchases/${memberId}`);
+    
+    // 서버 에러 응답 상세 정보 수집
+    let errorMessage = `HTTP error! status: ${res.status}`;
+    try {
+      const errorData = await res.json();
+      console.error('🔴 서버 에러 응답:', errorData);
+      errorMessage = errorData.message || errorMessage;
+    } catch (e) {
+      console.error('❌ 에러 응답 파싱 실패:', e);
+    }
+    
     if (res.status === 401) {
       throw new Error('인증이 필요합니다. 로그인 후 다시 시도해주세요.');
     }
@@ -84,7 +113,10 @@ export async function registerGroupPurchase(
     if (res.status === 404) {
       throw new Error('잘못된 요청입니다.');
     }
-    throw new Error('공구 등록에 실패했습니다.');
+    if (res.status === 500) {
+      throw new Error(`서버 내부 에러가 발생했습니다: ${errorMessage}`);
+    }
+    throw new Error(`공구 등록에 실패했습니다: ${errorMessage}`);
   }
 
   // 4) 성공 응답 JSON 파싱
@@ -96,7 +128,7 @@ export async function registerGroupPurchase(
 export const getCategoryProducts = async (category1: string, category2: string, page: number = 1, size: number = 10) => {
   const token = localStorage.getItem('authToken');
   try {
-    const response = await fetch(`/api/purchases/category?category1=${encodeURIComponent(category1)}&category2=${encodeURIComponent(category2)}&page=${page}&size=${size}`, {
+    const response = await fetch(`/purchases/category?category1=${encodeURIComponent(category1)}&category2=${encodeURIComponent(category2)}&page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -119,9 +151,10 @@ export const getCategoryProducts = async (category1: string, category2: string, 
 export const getAllProducts = async (memberId: number, page: number = 1, size: number = 10) => {
   const token = localStorage.getItem('authToken');
   try {
-    const response = await fetch(`/api/purchases/${memberId}?page=${page}&size=${size}`, {
+    const response = await fetch(`/purchases/${memberId}?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
@@ -159,9 +192,10 @@ export const getRankedProducts = async (
     size: size.toString(),
   }).toString();
 
-  const response = await fetch(`/api/purchases/ranking?${query}`, {
+  const response = await fetch(`/purchases/ranking?${query}`, {
     method: 'GET',
     headers: {
+      'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
@@ -203,7 +237,7 @@ export const searchProducts = async (
     size: size.toString(),
   }).toString();
 
-  const response = await fetch(`/api/purchases/search/items?${query}`, {
+  const response = await fetch(`/purchases/search/items?${query}`, {
     method: 'GET',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -237,9 +271,10 @@ export const getLatestProducts = async (
         size: size.toString(),
     }).toString();
 
-    const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
+    const response = await fetch(`/purchases/mine/${memberId}?${query}`, {
         method: 'GET',
         headers: {
+            'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
     });
@@ -271,9 +306,10 @@ export const getMyProducts = async (
         size: size.toString(),
     }).toString();
 
-    const response = await fetch(`/api/purchases/mine/${memberId}?${query}`, {
+    const response = await fetch(`/purchases/mine/${memberId}?${query}`, {
         method: 'GET',
         headers: {
+            'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
     });
@@ -291,7 +327,7 @@ export const getMyProducts = async (
 export const getMyJoinedProducts = async (memberId: number) => {
   try {
     const response = await fetch(
-      `/api/purchases/participate/${memberId}`,
+      `/purchases/participate/${memberId}`,
       {
         method: 'GET',
         headers: {
@@ -319,7 +355,7 @@ export const getMyJoinedProducts = async (memberId: number) => {
 export const cancelParticipation = async (groupPurchaseId: number, memberId: number) => {
   try {
     const response = await fetch(
-      `/api/purchases/participate/${groupPurchaseId}/${memberId}`,
+      `/purchases/participate/${groupPurchaseId}/${memberId}`,
       {
         method: 'DELETE',
         headers: {
@@ -349,7 +385,7 @@ export const cancelParticipation = async (groupPurchaseId: number, memberId: num
  */
 export const deleteProduct = async (groupPurchaseId: number) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`/api/purchases/${groupPurchaseId}`, {
+    const response = await fetch(`/purchases/${groupPurchaseId}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -374,7 +410,7 @@ export const deleteProduct = async (groupPurchaseId: number) => {
  */
 export const getGroupPurchaseDetail = async (groupPurchaseId: number) => {
   const token = localStorage.getItem('authToken');
-  const response = await fetch(`/api/purchases/detail/${groupPurchaseId}`, {
+  const response = await fetch(`/purchases/detail/${groupPurchaseId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

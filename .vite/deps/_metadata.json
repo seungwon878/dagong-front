@@ -1,40 +1,76 @@
 {
-  "hash": "7687fa93",
-  "configHash": "9ba7cfa5",
-  "lockfileHash": "8d36867e",
-  "browserHash": "68b60cd3",
+  "hash": "73e8da0f",
+  "configHash": "b4cbea1c",
+  "lockfileHash": "b954e2eb",
+  "browserHash": "68636df1",
   "optimized": {
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "cbd654e1",
+      "fileHash": "f23c621f",
       "needsInterop": true
     },
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "ccb7f5a0",
+      "fileHash": "447ce36c",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "8982c1a4",
+      "fileHash": "d71505cf",
       "needsInterop": true
     },
     "react-router-dom": {
       "src": "../../node_modules/react-router-dom/dist/index.mjs",
       "file": "react-router-dom.js",
-      "fileHash": "6e3d5a71",
+      "fileHash": "445660e3",
+      "needsInterop": false
+    },
+    "@stomp/stompjs": {
+      "src": "../../node_modules/@stomp/stompjs/esm6/index.js",
+      "file": "@stomp_stompjs.js",
+      "fileHash": "b10b1807",
+      "needsInterop": false
+    },
+    "@emotion/styled": {
+      "src": "../../node_modules/@emotion/styled/dist/emotion-styled.browser.development.esm.js",
+      "file": "@emotion_styled.js",
+      "fileHash": "69a82f4e",
+      "needsInterop": false
+    },
+    "styled-components": {
+      "src": "../../node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "file": "styled-components.js",
+      "fileHash": "498648c6",
+      "needsInterop": false
+    },
+    "react-icons/fa": {
+      "src": "../../node_modules/react-icons/fa/index.mjs",
+      "file": "react-icons_fa.js",
+      "fileHash": "5321578b",
+      "needsInterop": false
+    },
+    "@emotion/react": {
+      "src": "../../node_modules/@emotion/react/dist/emotion-react.browser.development.esm.js",
+      "file": "@emotion_react.js",
+      "fileHash": "a877b377",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-QOVZGY7A": {
-      "file": "chunk-QOVZGY7A.js"
+    "chunk-XQIPT53K": {
+      "file": "chunk-XQIPT53K.js"
     },
-    "chunk-5WQJO2FO": {
-      "file": "chunk-5WQJO2FO.js"
+    "chunk-TFRVFYCL": {
+      "file": "chunk-TFRVFYCL.js"
+    },
+    "chunk-KS2M7ZJI": {
+      "file": "chunk-KS2M7ZJI.js"
+    },
+    "chunk-5WRI5ZAA": {
+      "file": "chunk-5WRI5ZAA.js"
     }
   }
 }
